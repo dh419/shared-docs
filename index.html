@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared Docs Hub</title>
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #273449;
+      --accent: #60a5fa;
+      --accent-soft: #1e3a8a;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .container { max-width: 980px; margin: 0 auto; padding: 28px 18px 64px; }
+    header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      gap: 14px; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    h1 { margin: 0 0 4px; font-size: 1.55rem; }
+    .sub { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .btn {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 14px; font-size: 0.88rem; cursor: pointer; box-shadow: var(--shadow);
+    }
+    .search-bar {
+      width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--border);
+      border-radius: 12px; padding: 11px 14px; font-size: 0.95rem; margin-bottom: 18px;
+    }
+    .doc-list { display: grid; gap: 12px; }
+    .doc-card {
+      display: flex; justify-content: space-between; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px 18px; text-decoration: none; color: inherit; box-shadow: var(--shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .doc-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .doc-title { font-weight: 650; font-size: 1.02rem; margin-bottom: 4px; }
+    .doc-meta { font-size: 0.83rem; color: var(--muted); }
+    .badge {
+      background: var(--accent-soft); color: var(--accent); padding: 4px 10px;
+      border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .empty { color: var(--muted); text-align: center; padding: 40px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Shared Docs Hub</h1>
+        <p class="sub">agy CLI 생성 → Google Drive (<code>dashboard_incoming/shared-docs</code>) → GitHub Pages 공유 문서 허브</p>
+      </div>
+      <button class="btn" id="themeToggle" aria-label="테마 전환">🌙 다크 모드</button>
+    </header>
+    <input type="search" class="search-bar" id="searchInput" placeholder="문서 제목 또는 날짜 검색..." aria-label="문서 검색" />
+    <div class="doc-list" id="docList"><div class="empty">문서 목록을 불러오는 중...</div></div>
+  </div>
+  <script>
+    (function () {
+      var btn = document.getElementById("themeToggle");
+      function sync() {
+        var cur = document.documentElement.dataset.theme || "light";
+        btn.textContent = cur === "dark" ? "☀️ 라이트 모드" : "🌙 다크 모드";
+      }
+      btn.addEventListener("click", function () {
+        var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        sync();
+      });
+      sync();
+
+      var allDocs = [];
+      var listEl = document.getElementById("docList");
+      var searchEl = document.getElementById("searchInput");
+
+      function render(items) {
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">표시할 공유 문서가 없습니다.</div>';
+          return;
+        }
+        listEl.innerHTML = items.map(function (d) {
+          return '<a class="doc-card" href="./' + d.path + '">' +
+            '<div><div class="doc-title">' + d.title + '</div>' +
+            '<div class="doc-meta">' + d.date + ' · <code>' + d.path + '</code></div></div>' +
+            '<span class="badge">열기 ↗</span></a>';
+        }).join("");
+      }
+
+      fetch("./hub-data.json?v=" + Date.now())
+        .then(function (r) { return r.json(); })
+        .then(function (data) { allDocs = data || []; render(allDocs); })
+        .catch(function () { render([]); });
+
+      searchEl.addEventListener("input", function () {
+        var q = searchEl.value.trim().toLowerCase();
+        render(allDocs.filter(function (d) {
+          return (d.title + " " + d.date + " " + d.path).toLowerCase().indexOf(q) !== -1;
+        }));
+      });
+    })();
+  </script>
+</body>
+</html>
