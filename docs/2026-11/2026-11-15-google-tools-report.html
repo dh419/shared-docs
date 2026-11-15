@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google 숨은 자동화·AI 도구 종합 분석 리포트</title>
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --good: #059669;
+      --good-bg: #d1fae5;
+      --warn: #d97706;
+      --warn-bg: #fef3c7;
+      --bad: #dc2626;
+      --bad-bg: #fee2e2;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #273449;
+      --accent: #60a5fa;
+      --accent-soft: #1e3a8a;
+      --good: #34d399;
+      --good-bg: #064e3b;
+      --warn: #fbbf24;
+      --warn-bg: #78350f;
+      --bad: #f87171;
+      --bad-bg: #7f1d1d;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 24px 18px 64px;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .theme-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; }
+    .kpi-val { font-size: 1.45rem; font-weight: 700; }
+    .kpi-desc { font-size: 0.84rem; color: var(--muted); margin-top: 4px; }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.22rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .callout {
+      background: var(--surface-2);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.93rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .controls input, .controls select {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+    .controls input { flex: 1; min-width: 220px; }
+    .count-badge {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 920px;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 11px 13px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface-2);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .b-ai { background: var(--accent-soft); color: var(--accent); }
+    .b-auto { background: var(--good-bg); color: var(--good); }
+    .b-data { background: var(--warn-bg); color: var(--warn); }
+    .b-cloud { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .b-high { background: var(--good-bg); color: var(--good); }
+    .b-mid { background: var(--warn-bg); color: var(--warn); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+    }
+    .card-mini {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .card-mini h3 { margin: 0 0 8px; font-size: 1rem; }
+    .card-mini ul { margin: 0; padding-left: 18px; font-size: 0.88rem; }
+    .card-mini li { margin-bottom: 5px; }
+    code {
+      background: var(--surface-2);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.84em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Google 숨은 자동화 · AI · 개발 도구 종합 분석 리포트</h1>
+        <p class="subtitle">범용 앱(Drive·Docs·Sheets) 외 실전 자동화·AI 도구 13종 전수 비교 · 대체 서비스 · 우리 워크플로 적용 전략 (2026-11-15)</p>
+      </div>
+      <button class="theme-btn" id="themeToggle" aria-label="테마 전환">🌙 테마 전환</button>
+    </header>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">분석 대상 Google 도구</div>
+        <div class="kpi-val">13종</div>
+        <div class="kpi-desc">AI/에이전트 · 자동화 · 데이터 · 클라우드</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">현재 워크플로 즉시 시너지 최상위</div>
+        <div class="kpi-val">Apps Script + Colab + NotebookLM</div>
+        <div class="kpi-desc">무료 · PC 전원 무관 · OAuth/Drive 직결</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">가장 주의할 제약</div>
+        <div class="kpi-val">AI Studio 무료 API 한도</div>
+        <div class="kpi-desc">429/모델 종료 이슈 → Gemini 앱/유료 키 분리</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">권장 조합 공식</div>
+        <div class="kpi-val">앱(추론) + GAS(감시) + GH(배포)</div>
+        <div class="kpi-desc">주식 · 나들이 · 노션 회의록 공통 적용</div>
+      </div>
+    </div>
+
+    <section>
+      <h2>1. 핵심 결론 (Executive Summary)</h2>
+      <div class="callout">
+        Google 생태계에는 일반 문서 앱 외에도 <strong>무료 클라우드 크론(Apps Script)</strong>, <strong>무료 Python/GPU 실행기(Colab)</strong>, <strong>문서 기반 RAG(NotebookLM)</strong>, <strong>서버리스 API(Cloud Run)</strong>가 촘촘히 연결되어 있습니다. 현재 사용 중인 <strong>제미나이 앱(추론·수집) + Google Drive(완충) + Apps Script(10분 감시) + GitHub Actions(렌더링·Pages)</strong> 구조에 <strong>Colab(백테스트/대용량 오디오)</strong>과 <strong>NotebookLM(회의/리서치 지식화)</strong>만 얹으면 추가 비용 거의 없이 웬만한 SaaS 유료 자동화 툴을 대체할 수 있습니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Google 숨은 도구 13종 전체 비교 매트릭스</h2>
+      <div class="controls">
+        <input type="search" id="searchInput" placeholder="도구명, 활용처, 장단점 검색 (예: 노션, 무료, 백테스트, 웹훅)..." aria-label="도구 검색" />
+        <select id="catFilter" aria-label="분류 필터">
+          <option value="all">전체 분류</option>
+          <option value="AI">AI · 에이전트</option>
+          <option value="자동화">자동화 · 노코드</option>
+          <option value="데이터">데이터 · 시각화</option>
+          <option value="클라우드">클라우드 · 백엔드</option>
+        </select>
+        <select id="fitFilter" aria-label="적합도 필터">
+          <option value="all">전체 적합도</option>
+          <option value="최상">적합도: 최상</option>
+          <option value="중상">적합도: 중상</option>
+          <option value="선택">적합도: 선택</option>
+        </select>
+        <span class="count-badge" id="rowCount" aria-live="polite">13개 표시 중</span>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Google 도구 비교표" tabindex="0">
+        <table id="toolsTable">
+          <thead>
+            <tr>
+              <th>도구명</th>
+              <th>분류</th>
+              <th>핵심 특성</th>
+              <th>우리 워크플로 활용성</th>
+              <th>장점</th>
+              <th>단점 · 무료 제약</th>
+              <th>적합도</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-cat="자동화" data-fit="최상">
+              <td><strong>Google Apps Script (GAS)</strong><br><code>script.google.com</code></td>
+              <td><span class="badge b-auto">자동화</span></td>
+              <td>Google 클라우드에서 JS 기반 스크립트를 시간·이벤트 트리거로 실행</td>
+              <td>Drive 감시 후 GitHub Dispatch 호출(적용 완료), Gmail/Calendar/Notion API 주기 연동</td>
+              <td>완전 무료, Drive/Gmail/Calendar 권한 네이티브 통합, GitHub schedule보다 훨씬 정확</td>
+              <td>1회 실행 6분 제한, 일일 UrlFetch 호출 한도(무료 2만 회/일), npm 패키지 직접 설치 불가</td>
+              <td><span class="badge b-high">최상</span></td>
+            </tr>
+            <tr data-cat="AI" data-fit="최상">
+              <td><strong>Gemini Gems & 예약 작업</strong><br><code>gemini.google.com</code></td>
+              <td><span class="badge b-ai">AI</span></td>
+              <td>맞춤 지침 + Google 검색 그라운딩 + Drive/Workspace 직접 저장 + 클라우드 예약 실행</td>
+              <td>주식 오전/저녁 브리핑 JSON, 주말 나들이 JSON, 향후 회의 메모 JSON 자동 저장</td>
+              <td>무료/구독 내 검색 그라운딩 강력, 모바일(갤럭시탭)에서 즉시 실행·수정 가능</td>
+              <td>예약 시간 대비 10~60분 지연 빈번(Apps Script 폴링으로 해결), Drive 하위 폴더 지정은 프롬프트 정밀도 필요</td>
+              <td><span class="badge b-high">최상</span></td>
+            </tr>
+            <tr data-cat="AI" data-fit="최상">
+              <td><strong>NotebookLM</strong><br><code>notebooklm.google.com</code></td>
+              <td><span class="badge b-ai">AI</span></td>
+              <td>업로드한 문서·PDF·오디오·웹링크만 근거로 답하는 출처 기반 AI 노트북</td>
+              <td>누적 회의록·실적 리포트·기술 문서를 모아 환각 없는 Q&A 및 음성 브리핑(Audio Overview) 생성</td>
+              <td>출처 인라인 각주 제공(환각 최소화), 한국어 음성 요약 팟캐스트 생성, 대용량 컨텍스트 무료</td>
+              <td>공식 자동 적재 API 부재(수동/Drive 링크 연결 필요), 실시간 웹 검색보다는 고정 문서 분석 특화</td>
+              <td><span class="badge b-high">최상</span></td>
+            </tr>
+            <tr data-cat="데이터" data-fit="최상">
+              <td><strong>Google Colab</strong><br><code>colab.research.google.com</code></td>
+              <td><span class="badge b-data">데이터</span></td>
+              <td>브라우저 기반 무료 클라우드 Jupyter Python + GPU(T4) 실행 환경</td>
+              <td>주식 지표 적중률 백테스트, 장시간 회의 녹음 로컬 Whisper 전사, 대량 데이터 크롤링</td>
+              <td>PC 사양 무관, Drive 마운트 1줄(`drive.mount`), 무료 T4 GPU로 오디오 전사·ML 실험 가능</td>
+              <td>무료 세션 비활성 시 90분 내 끊김, 상시 24시간 크론 서버 용도로는 부적합</td>
+              <td><span class="badge b-high">최상</span></td>
+            </tr>
+            <tr data-cat="AI" data-fit="중상">
+              <td><strong>Google AI Studio</strong><br><code>aistudio.google.com</code></td>
+              <td><span class="badge b-ai">AI</span></td>
+              <td>Gemini 모델의 System Prompt, JSON Schema, Thinking Budget, API 키 발급/실험 콘솔</td>
+              <td>제미나이 앱 Gem 지침 사전 튜닝, 구조화 JSON 출력 검증, Python/JS SDK 코드 즉시 추출</td>
+              <td>모델 파라미터·토큰·구조화 출력을 세밀하게 디버깅 가능, 웹 UI 무료 테스트</td>
+              <td>무료 API 키는 분당/일일 호출량(RPM/RPD) 및 Search Grounding `429` 제한 엄격</td>
+              <td><span class="badge b-mid">중상</span></td>
+            </tr>
+            <tr data-cat="데이터" data-fit="중상">
+              <td><strong>Looker Studio</strong><br><code>lookerstudio.google.com</code></td>
+              <td><span class="badge b-data">데이터</span></td>
+              <td>Google Sheets, BigQuery, CSV 등을 드래그&드롭으로 연결하는 무료 BI 대시보드</td>
+              <td>주식 예측 적중률(⭕/❌) 장기 추이, Notion A/I 부서별 완료율 대시보드 공유</td>
+              <td>완전 무료, URL 공유만으로 팀/모바일 열람 가능, 자동 새로고침 지원</td>
+              <td>HTML 직접 커스터마이징(현재 `daily-stock-brief` UI)만큼 유연한 인터랙션은 어려움</td>
+              <td><span class="badge b-mid">중상</span></td>
+            </tr>
+            <tr data-cat="클라우드" data-fit="중상">
+              <td><strong>Cloud Run / Functions</strong><br><code>console.cloud.google.com</code></td>
+              <td><span class="badge b-cloud">클라우드</span></td>
+              <td>컨테이너(Python/Node)를 요청 시에만 깨워 실행하는 서버리스 HTTP 백엔드</td>
+              <td>Notion 웹훅/슬래시 커맨드 실시간 수신, Telegram/Slack 봇, 상시 API 서버</td>
+              <td>월 200만 요청·18만 vCPU초 무료 티어 매우 넉넉, Python/Playwright 등 원하는 패키지 전부 실행</td>
+              <td>GCP 결제 카드 등록 필수(무료 한도 내 과금 0원이나 설정 난이도 높음), Cold Start 수 초</td>
+              <td><span class="badge b-mid">중상</span></td>
+            </tr>
+            <tr data-cat="클라우드" data-fit="중상">
+              <td><strong>Cloud Scheduler</strong><br><code>console.cloud.google.com</code></td>
+              <td><span class="badge b-cloud">클라우드</span></td>
+              <td>초·분 단위로 정확한 HTTP/PubSub 크론을 발사하는 GCP 매니지드 스케줄러</td>
+              <td>정확한 정시 실행이 필요한 Cloud Run API 호출 또는 GitHub Dispatch 트리거</td>
+              <td>GitHub `schedule`과 달리 시간 밀림/드롭 거의 없음, 계정당 월 3개 Job 무료</td>
+              <td>GCP 프로젝트 + 결제 계정 연동 필요 (단순 Drive 감시는 GAS가 훨씬 간편)</td>
+              <td><span class="badge b-mid">중상</span></td>
+            </tr>
+            <tr data-cat="자동화" data-fit="선택">
+              <td><strong>AppSheet</strong><br><code>appsheet.com</code></td>
+              <td><span class="badge b-auto">자동화</span></td>
+              <td>Google Sheets·Drive 데이터를 즉시 모바일 앱(iOS/Android) UI로 바꿔주는 노코드 플랫폼</td>
+              <td>갤럭시탭에서 현장 메모·나들이 후기·지출을 입력해 Sheets/Drive로 바로 적재하는 전용 앱</td>
+              <td>개발 없이 모바일 폼·오프라인 입력·푸시 알림 앱 생성(프로토타입 10명 무료)</td>
+              <td>외부 배포/고급 자동화 시 유료 라이선스 필요, Notion/HTML 대시보드와 UI 이중화 가능</td>
+              <td><span class="badge b-cloud">선택</span></td>
+            </tr>
+            <tr data-cat="AI" data-fit="선택">
+              <td><strong>Vertex AI Studio</strong><br><code>console.cloud.google.com/vertex-ai</code></td>
+              <td><span class="badge b-ai">AI</span></td>
+              <td>GCP 기업용 Gemini API 플랫폼 (SLA, 데이터 학습 미사용 보장, Batch API)</td>
+              <td>사내 보안 정책상 데이터 학습 제외가 필수이거나 무료 AI Studio 429 한도를 넘길 때 전환</td>
+              <td>안정적 높은 쿼터, 엔터프라이즈 보안·데이터 거버넌스, Batch 50% 할인</td>
+              <td>종량제 유료 과금(무료 크레딧 소진 후 비용 발생), 개인용으로는 과한 스펙</td>
+              <td><span class="badge b-cloud">선택</span></td>
+            </tr>
+            <tr data-cat="데이터" data-fit="선택">
+              <td><strong>BigQuery Sandbox</strong><br><code>console.cloud.google.com/bigquery</code></td>
+              <td><span class="badge b-data">데이터</span></td>
+              <td>신용카드 없이 쓰는 서버리스 페타바이트급 SQL 데이터 웨어하우스</td>
+              <td>수년 치 주가·공시·뉴스 아카이브 SQL 분석 및 Looker Studio 고속 연동</td>
+              <td>매월 1TB 쿼리·10GB 저장 무료, 대용량 CSV/JSON 즉시 쿼리</td>
+              <td>Sandbox는 테이블 만료 60일 제한(결제 연결 시 해제), 소규모 데이터엔 SQLite/Sheets로 충분</td>
+              <td><span class="badge b-cloud">선택</span></td>
+            </tr>
+            <tr data-cat="클라우드" data-fit="선택">
+              <td><strong>Firebase (Hosting/Firestore)</strong><br><code>firebase.google.com</code></td>
+              <td><span class="badge b-cloud">클라우드</span></td>
+              <td>정적 웹 호스팅 + 실시간 NoSQL DB + Google 로그인 인증 올인원 플랫폼</td>
+              <td>GitHub Pages 대신 로그인 보호가 필요한 사적 대시보드/실시간 상태 저장소 구축</td>
+              <td>Google 로그인 3줄 연동, 무료 Spark 플랜 호스팅/DB 넉넉</td>
+              <td>현재 Public GitHub Pages 구조엔 불필요(비공개 인증 웹앱 필요 시에만 유리)</td>
+              <td><span class="badge b-cloud">선택</span></td>
+            </tr>
+            <tr data-cat="자동화" data-fit="선택">
+              <td><strong>Google Workspace Flows / Add-ons</strong><br><code>workspace.google.com</code></td>
+              <td><span class="badge b-auto">자동화</span></td>
+              <td>Gmail·Calendar·Chat·Drive 사이를 노코드 규칙으로 연결하는 워크스페이스 자동화</td>
+              <td>특정 메일 수신 시 Drive 저장, 캘린더 일정 전 알림 등 사내 메일·일정 루틴</td>
+              <td>Google Workspace 계정 내 별도 코딩 없이 빠른 연결</td>
+              <td>무료 개인 Gmail(@gmail.com)에서는 기능/커스텀 액션 제한이 많음(GAS가 대체 가능)</td>
+              <td><span class="badge b-cloud">선택</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 구글 외 유사 서비스와의 포지셔닝 비교</h2>
+      <div class="table-wrap" role="region" aria-label="타사 유사 서비스 비교" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th>역할 영역</th>
+              <th>Google 도구</th>
+              <th>유사 외부 서비스</th>
+              <th>비교 결론 (우리 환경 기준)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>클라우드 트리거 & Glue</strong></td>
+              <td>Google Apps Script (GAS)</td>
+              <td>Make / Zapier / n8n / GitHub Actions</td>
+              <td>Zapier/Make는 무료 오퍼레이션 제한이 작고, GitHub Actions `schedule`은 누락이 잦음. <strong>Drive 감시는 GAS, 빌드·배포는 GitHub Actions</strong> 조합이 무료·안정성 최강.</td>
+            </tr>
+            <tr>
+              <td><strong>프롬프트 & 모델 실험</strong></td>
+              <td>Google AI Studio</td>
+              <td>OpenAI Playground / Anthropic Workbench</td>
+              <td>제미나이 앱/API 생태계와 호환되는 JSON Schema·Thinking 테스트는 <strong>AI Studio</strong>가 직관적.</td>
+            </tr>
+            <tr>
+              <td><strong>문서 기반 RAG Q&A</strong></td>
+              <td>NotebookLM</td>
+              <td>Perplexity Spaces / Notion AI (유료) / Obsidian+RAG</td>
+              <td>무료로 PDF·회의록 수십 개를 올려 출처 각주·한국어 음성 요약까지 뽑는 데는 <strong>NotebookLM</strong>이 압도적 가성비.</td>
+            </tr>
+            <tr>
+              <td><strong>클라우드 Python/GPU</strong></td>
+              <td>Google Colab</td>
+              <td>Kaggle Notebooks / Replit / Modal</td>
+              <td>Drive와 바로 마운트되는 무료 GPU(긴 회의 녹음 Whisper 전사, 주식 백테스트)는 <strong>Colab</strong>이 가장 편리.</td>
+            </tr>
+            <tr>
+              <td><strong>서버리스 봇 / 웹훅</strong></td>
+              <td>Cloud Run</td>
+              <td>Cloudflare Workers / Vercel / Render</td>
+              <td>Playwright·Python·무거운 라이브러리는 <strong>Cloud Run</strong>, 초경량 JS/TS 엣지 API는 <strong>Cloudflare Workers</strong>가 유리.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. 저장소명 변경(`shared-page → weekend-curator`) & `dashboard_incoming` 하위 폴더 개편 영향도</h2>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h3>📁 Drive 하위 폴더 구조 & 권한 상속 점검</h3>
+          <ul>
+            <li><strong>권한 상속 여부 (핵심 질문)</strong>: <strong>예, 100% 자동 상속됩니다!</strong> Google Drive는 상위 폴더(<code>dashboard_incoming</code>)에 공유된 서비스 계정(<code>github-dashboard-sync@...iam.gserviceaccount.com</code>) 권한이 새로 생성하는 모든 하위 폴더와 파일에 그대로 상속됩니다.</li>
+            <li><strong>주의 1 (비재귀 API)</strong>: Drive API의 <code>'FOLDER_ID' in parents</code>는 직계 자식만 조회하므로, 하위 폴더를 나누면 각 repo의 <code>sync_from_gdrive.py</code>와 <code>Code.gs</code>의 <code>FOLDER_ID</code>를 <strong>각각의 하위 폴더 ID</strong>로 바꿔야 합니다.</li>
+            <li><strong>주의 2 (제미나이 앱 저장)</strong>: 제미나이 앱이 하위 폴더 경로를 헷갈려 상위에 저장하지 않도록, 지침에 <strong>하위 폴더 ID</strong>까지 명시해야 안전합니다.</li>
+            <li><strong>주의 3 (쓰기 권한)</strong>: 향후 Notion 회의록 원본 이동(<code>processed/</code>)이 필요하면 서비스 계정 권한을 <code>뷰어</code>가 아닌 <code>편집자(Editor)</code>로 두고 <code>drive</code> 스코프를 써야 합니다.</li>
+          </ul>
+        </div>
+        <div class="card-mini">
+          <h3>🔄 `shared-page → weekend-curator` 변경 시 수정 대상</h3>
+          <ul>
+            <li><strong>GitHub</strong>: 저장소 Rename (<code>Settings → Repository name</code>) — Pages 주소가 <code>dh419.github.io/weekend-curator/</code>로 변경됨</li>
+            <li><strong>로컬/규칙/스킬</strong>: <code>F:\CLI\GEMINI.md</code>, <code>kids-activity-curator/SKILL.md</code> 내 <code>shared-page</code> 및 <code>dashboard_incoming</code> 설명</li>
+            <li><strong>Apps Script</strong>: <code>Code.gs</code>의 <code>repo: 'weekend-curator'</code> 및 하위 폴더 ID 매핑</li>
+            <li><strong>저장소 내부</strong>: <code>scripts/sync_from_gdrive.py</code>(하위 폴더 ID 반영), <code>README.md</code>, <code>index.html</code>(허브 링크 확인)</li>
+            <li><strong>제미나이 앱 Gem</strong>: 나들이 Gem 지침의 저장 폴더 ID/규칙 업데이트</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("themeToggle");
+      function syncBtn() {
+        var cur = document.documentElement.dataset.theme || "light";
+        btn.textContent = cur === "dark" ? "☀️ 라이트 모드" : "🌙 다크 모드";
+      }
+      btn.addEventListener("click", function () {
+        var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        syncBtn();
+      });
+      syncBtn();
+
+      var search = document.getElementById("searchInput");
+      var cat = document.getElementById("catFilter");
+      var fit = document.getElementById("fitFilter");
+      var rows = Array.prototype.slice.call(document.querySelectorAll("#toolsTable tbody tr"));
+      var countEl = document.getElementById("rowCount");
+
+      function filterRows() {
+        var q = search.value.trim().toLowerCase();
+        var c = cat.value;
+        var f = fit.value;
+        var visible = 0;
+        rows.forEach(function (tr) {
+          var text = tr.textContent.toLowerCase();
+          var okQ = !q || text.indexOf(q) !== -1;
+          var okC = c === "all" || tr.dataset.cat === c;
+          var okF = f === "all" || tr.dataset.fit === f;
+          var show = okQ && okC && okF;
+          tr.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        countEl.textContent = visible + "개 표시 중";
+      }
+      search.addEventListener("input", filterRows);
+      cat.addEventListener("change", filterRows);
+      fit.addEventListener("change", filterRows);
+    })();
+  </script>
+</body>
+</html>
