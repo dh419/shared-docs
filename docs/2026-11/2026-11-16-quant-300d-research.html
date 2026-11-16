@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>300거래일 퀀트 모델 리셋 & 가중치 최적화 리포트</title>
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+      --accent: #2563eb; --accent-soft: #dbeafe;
+      --good: #059669; --good-bg: #d1fae5; --bad: #dc2626; --bad-bg: #fee2e2;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1120; --surface: #111827; --surface-2: #1e293b;
+      --text: #f1f5f9; --muted: #94a3b8; --border: #273449;
+      --accent: #60a5fa; --accent-soft: #1e3a8a;
+      --good: #34d399; --good-bg: #064e3b; --bad: #f87171; --bad-bg: #7f1d1d;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.6;
+    }
+    .container { max-width: 1180px; margin: 0 auto; padding: 24px 18px 64px; }
+    header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+      gap: 14px; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    h1 { margin: 0 0 6px; font-size: 1.6rem; }
+    .sub { margin: 0; color: var(--muted); font-size: 0.92rem; }
+    .btn {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 14px; font-size: 0.88rem; cursor: pointer; box-shadow: var(--shadow);
+    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+    .kpi-l { font-size: 0.8rem; color: var(--muted); }
+    .kpi-v { font-size: 1.4rem; font-weight: 700; margin: 4px 0; }
+    .kpi-d { font-size: 0.82rem; color: var(--muted); }
+    section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 20px; box-shadow: var(--shadow);
+    }
+    h2 { margin: 0 0 12px; font-size: 1.18rem; }
+    h3 { margin: 16px 0 8px; font-size: 1rem; }
+    .callout {
+      background: var(--surface-2); border-left: 4px solid var(--accent);
+      padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.92rem;
+    }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; font-size: 0.86rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--surface-2); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.76rem; font-weight: 600; }
+    .b-good { background: var(--good-bg); color: var(--good); }
+    .b-blue { background: var(--accent-soft); color: var(--accent); }
+    .b-bad { background: var(--bad-bg); color: var(--bad); }
+    .muted { color: var(--muted); font-size: 0.8em; }
+    code { background: var(--surface-2); padding: 2px 5px; border-radius: 4px; font-size: 0.84em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>300거래일 퀀트 모델 리셋 · 가중치 최적화 · 다차원 검증 리포트</h1>
+        <p class="sub">분석 기간: 2025-08-20 ~ 2026-11-16 (300거래일 · In-Sample 180일 / Out-of-Sample 120일 · No Look-Ahead Bias)</p>
+      </div>
+      <button class="btn" id="themeToggle">🌙 다크</button>
+    </header>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-l">방향 적중률 (300D)</div><div class="kpi-v">61.8% → 66.3%</div><div class="kpi-d">S0 기존 대비 +4.5%p (OOS S4: 64.7%)</div></div>
+      <div class="kpi"><div class="kpi-l">밴드 적중률 (300D)</div><div class="kpi-v">56.7% → 85.3%</div><div class="kpi-d">연속 실패 최대 6일 → 3~4일 감소</div></div>
+      <div class="kpi"><div class="kpi-l">최상위 단독 예측 지표</div><div class="kpi-v">SOX+NVDA+MU (IC 0.465)</div><div class="kpi-d">EWY는 OOS(최근 120일) IC 0.452로 1위권</div></div>
+      <div class="kpi"><div class="kpi-l">기존 모델 최대 병목</div><div class="kpi-v">VOL_ERR 61.5%</div><div class="kpi-d">기존 실패 130건 중 80건이 변동폭 과소평가</div></div>
+    </div>
+
+    <section>
+      <h2>1. 초도 분석: 기존 틀 리셋 & 16개 후보 지표 300일 전수 검증</h2>
+      <div class="callout">
+        기존 4개 고정 틀과 6대 지표 제약을 모두 해제하고, 한국 개장 전 확정되는 <strong>16개 글로벌·국내 선행 변수</strong>의 정보계수(IC)와 Out-of-Sample(최근 120일 고변동장) 유지력을 측정했습니다.
+      </div>
+      <svg viewBox="0 0 520 416" style="width:100%;max-width:680px;height:auto;display:block;margin:0 auto;">
+  <line x1="240" y1="8" x2="240" y2="408" stroke="currentColor" stroke-opacity="0.25" stroke-dasharray="3,3"/>
+  <text x="10" y="33" font-size="11.5" fill="currentColor">SOX+NVDA+MU</text><rect x="240.0" y="20" width="167.4" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="413.4" y="32.5" font-size="11" font-weight="600" fill="currentColor">+0.465</text><text x="10" y="57" font-size="11.5" fill="currentColor">Semi+TSM Mix</text><rect x="240.0" y="44" width="167.0" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="413.0" y="56.5" font-size="11" font-weight="600" fill="currentColor">+0.464</text><text x="10" y="81" font-size="11.5" fill="currentColor">SOX (PHLX Semi)</text><rect x="240.0" y="68" width="163.4" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="409.4" y="80.5" font-size="11" font-weight="600" fill="currentColor">+0.454</text><text x="10" y="105" font-size="11.5" fill="currentColor">Micron</text><rect x="240.0" y="92" width="160.9" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="406.9" y="104.5" font-size="11" font-weight="600" fill="currentColor">+0.447</text><text x="10" y="129" font-size="11.5" fill="currentColor">EWY (MSCI Korea)</text><rect x="240.0" y="116" width="157.7" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="403.7" y="128.5" font-size="11" font-weight="600" fill="currentColor">+0.438</text><text x="10" y="153" font-size="11.5" fill="currentColor">NASDAQ</text><rect x="240.0" y="140" width="139.7" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="385.7" y="152.5" font-size="11" font-weight="600" fill="currentColor">+0.388</text><text x="10" y="177" font-size="11.5" fill="currentColor">TSM (TSMC ADR)</text><rect x="240.0" y="164" width="139.0" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="385.0" y="176.5" font-size="11" font-weight="600" fill="currentColor">+0.386</text><text x="10" y="201" font-size="11.5" fill="currentColor">S&P 500</text><rect x="240.0" y="188" width="129.6" height="16" rx="3" fill="#10b981" opacity="0.9"/><text x="375.6" y="200.5" font-size="11" font-weight="600" fill="currentColor">+0.360</text><text x="10" y="225" font-size="11.5" fill="currentColor">VIX Chg (inv)</text><rect x="240.0" y="212" width="123.1" height="16" rx="3" fill="#3b82f6" opacity="0.9"/><text x="369.1" y="224.5" font-size="11" font-weight="600" fill="currentColor">+0.342</text><text x="10" y="249" font-size="11.5" fill="currentColor">EWY 3D Flow</text><rect x="240.0" y="236" width="88.2" height="16" rx="3" fill="#3b82f6" opacity="0.9"/><text x="334.2" y="248.5" font-size="11" font-weight="600" fill="currentColor">+0.245</text><text x="10" y="273" font-size="11.5" fill="currentColor">NVIDIA</text><rect x="240.0" y="260" width="86.4" height="16" rx="3" fill="#3b82f6" opacity="0.9"/><text x="332.4" y="272.5" font-size="11" font-weight="600" fill="currentColor">+0.240</text><text x="10" y="297" font-size="11.5" fill="currentColor">DXY Chg (inv)</text><rect x="240.0" y="284" width="79.6" height="16" rx="3" fill="#3b82f6" opacity="0.9"/><text x="325.6" y="296.5" font-size="11" font-weight="600" fill="currentColor">+0.221</text><text x="10" y="321" font-size="11.5" fill="currentColor">US 10Y Chg (inv)</text><rect x="240.0" y="308" width="32.4" height="16" rx="3" fill="#94a3b8" opacity="0.9"/><text x="278.4" y="320.5" font-size="11" font-weight="600" fill="currentColor">+0.090</text><text x="10" y="345" font-size="11.5" fill="currentColor">KOSPI D-1 (rev)</text><rect x="240.0" y="332" width="32.4" height="16" rx="3" fill="#94a3b8" opacity="0.9"/><text x="278.4" y="344.5" font-size="11" font-weight="600" fill="currentColor">+0.090</text><text x="10" y="369" font-size="11.5" fill="currentColor">KRW=X Chg (inv)</text><rect x="209.8" y="356" width="30.2" height="16" rx="3" fill="#ef4444" opacity="0.9"/><text x="167.8" y="368.5" font-size="11" font-weight="600" fill="currentColor">-0.084</text><text x="10" y="393" font-size="11.5" fill="currentColor">WTI Oil Chg</text><rect x="202.6" y="380" width="37.4" height="16" rx="3" fill="#ef4444" opacity="0.9"/><text x="160.6" y="392.5" font-size="11" font-weight="600" fill="currentColor">-0.104</text>
+</svg>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>후보 지표</th><th>300D IC</th><th>Rank IC</th><th>IS (초기 180D)</th><th>OOS (최근 120D)</th><th>단독 방향 적중</th></tr></thead>
+          <tbody><tr><td><strong>SOX+NVDA+MU</strong><br><code>semi_mix</code></td><td><span class='badge b-good'>+0.465</span></td><td>+0.385</td><td>+0.466</td><td>+0.458</td><td><strong>66.7%</strong> (n=261)</td></tr><tr><td><strong>Semi+TSM Mix</strong><br><code>semi_tsm</code></td><td><span class='badge b-good'>+0.464</span></td><td>+0.388</td><td>+0.462</td><td>+0.459</td><td><strong>66.3%</strong> (n=267)</td></tr><tr><td><strong>SOX (PHLX Semi)</strong><br><code>sox</code></td><td><span class='badge b-good'>+0.454</span></td><td>+0.381</td><td>+0.469</td><td>+0.438</td><td><strong>66.9%</strong> (n=260)</td></tr><tr><td><strong>Micron</strong><br><code>mu</code></td><td><span class='badge b-good'>+0.447</span></td><td>+0.357</td><td>+0.431</td><td>+0.456</td><td><strong>63.7%</strong> (n=270)</td></tr><tr><td><strong>EWY (MSCI Korea)</strong><br><code>ewy</code></td><td><span class='badge b-good'>+0.438</span></td><td>+0.331</td><td>+0.403</td><td>+0.452</td><td><strong>63.1%</strong> (n=268)</td></tr><tr><td><strong>NASDAQ</strong><br><code>nasdaq</code></td><td><span class='badge b-good'>+0.388</span></td><td>+0.352</td><td>+0.438</td><td>+0.353</td><td><strong>66.7%</strong> (n=246)</td></tr><tr><td><strong>TSM (TSMC ADR)</strong><br><code>tsm</code></td><td><span class='badge b-good'>+0.386</span></td><td>+0.324</td><td>+0.366</td><td>+0.404</td><td><strong>63.3%</strong> (n=270)</td></tr><tr><td><strong>S&P 500</strong><br><code>sp500</code></td><td><span class='badge b-good'>+0.360</span></td><td>+0.345</td><td>+0.438</td><td>+0.304</td><td><strong>67.0%</strong> (n=230)</td></tr><tr><td><strong>VIX Chg (inv)</strong><br><code>vix_chg</code></td><td><span class='badge b-blue'>+0.342</span></td><td>+0.309</td><td>+0.401</td><td>+0.303</td><td><strong>63.3%</strong> (n=281)</td></tr><tr><td><strong>EWY 3D Flow</strong><br><code>ewy_3d</code></td><td><span class='badge b-blue'>+0.245</span></td><td>+0.229</td><td>+0.279</td><td>+0.200</td><td><strong>63.8%</strong> (n=290)</td></tr><tr><td><strong>NVIDIA</strong><br><code>nvda</code></td><td><span class='badge b-blue'>+0.240</span></td><td>+0.243</td><td>+0.267</td><td>+0.215</td><td><strong>64.9%</strong> (n=265)</td></tr><tr><td><strong>DXY Chg (inv)</strong><br><code>dxy_chg</code></td><td><span class='badge b-blue'>+0.221</span></td><td>+0.177</td><td>+0.231</td><td>+0.223</td><td><strong>57.8%</strong> (n=147)</td></tr><tr><td><strong>US 10Y Chg (inv)</strong><br><code>tnx_chg</code></td><td><span class='badge b-bad'>+0.090</span></td><td>+0.100</td><td>+0.065</td><td>+0.116</td><td><strong>51.7%</strong> (n=242)</td></tr><tr><td><strong>KOSPI D-1 (rev)</strong><br><code>kr_prev1</code></td><td><span class='badge b-bad'>+0.090</span></td><td>+0.034</td><td>+0.140</td><td>+0.079</td><td><strong>45.7%</strong> (n=280)</td></tr><tr><td><strong>KRW=X Chg (inv)</strong><br><code>krw_chg</code></td><td><span class='badge b-bad'>-0.084</span></td><td>-0.064</td><td>-0.069</td><td>-0.085</td><td><strong>46.8%</strong> (n=218)</td></tr><tr><td><strong>WTI Oil Chg</strong><br><code>oil_chg</code></td><td><span class='badge b-bad'>-0.104</span></td><td>-0.111</td><td>-0.174</td><td>-0.056</td><td><strong>51.0%</strong> (n=263)</td></tr></tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>핵심 발견 1 (예측력 상실 지표)</strong>: 무료 일봉 기준 <code>KRW=X</code> 역방향(<code>IC -0.084</code>, 적중 <code>46.8%</code>), <code>KOSPI 전일 평균회귀</code>(<code>45.7%</code>), <code>미 10년물 금리</code>(<code>51.7%</code>)는 단독 방향성이 동전 던지기 수준이었습니다.</li>
+        <li><strong>핵심 발견 2 (강력한 신규 축)</strong>: <code>TSM</code>(<code>IC 0.386</code>, OOS <code>0.404</code>)과 <code>VIX 일간 변화 역방향</code>(<code>IC 0.342</code>, <code>63.3%</code>)은 기존 틀에 없었거나 Auxiliary였던 변수지만 300일 내내 일관된 설명력을 보였습니다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>2. 가설 수립: 같은 지표 내에서 비중 변경은 어떻게 하는 것이 타당한가?</h2>
+      <div class="callout">
+        <strong>결론부터 말하면:</strong> 단순 Grid Search(과거에 끼워 맞추기)나 단순 IC 비례 배분은 <strong>다중공선성(Multicollinearity)</strong> 때문에 Out-of-Sample에서 무너집니다. 타당한 비중 변경은 <strong>① 직교 축 압축</strong>, <strong>② L2 정규화(Ridge)</strong>, <strong>③ 연속형 Z-Score</strong> 3원칙을 따라야 합니다.
+      </div>
+      <h3>① 왜 단순 IC 비례는 위험한가? (지표 간 상관계수 행렬)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>지표</th><th>ewy</th><th>tsm</th><th>sox</th><th>nasdaq</th><th>sp500</th><th>vix_chg</th><th>dxy_chg</th><th>krw_chg</th></tr></thead>
+          <tbody><tr><td><strong>ewy</strong></td><td style=''>+1.00</td><td style=''>+0.73</td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style=''>+0.71</td><td style=''>+0.67</td><td style=''>-0.55</td><td style=''>-0.27</td><td style=''>+0.14</td></tr><tr><td><strong>tsm</strong></td><td style=''>+0.73</td><td style=''>+1.00</td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style='font-weight:700;color:var(--accent);'>+0.75</td><td style=''>+0.71</td><td style=''>-0.61</td><td style=''>-0.12</td><td style=''>+0.04</td></tr><tr><td><strong>sox</strong></td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style=''>+1.00</td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style='font-weight:700;color:var(--accent);'>+0.77</td><td style=''>-0.64</td><td style=''>-0.14</td><td style=''>+0.10</td></tr><tr><td><strong>nasdaq</strong></td><td style=''>+0.71</td><td style='font-weight:700;color:var(--accent);'>+0.75</td><td style='font-weight:700;color:var(--accent);'>+0.83</td><td style=''>+1.00</td><td style='font-weight:700;color:var(--accent);'>+0.96</td><td style='font-weight:700;color:var(--accent);'>-0.79</td><td style=''>-0.25</td><td style=''>+0.09</td></tr><tr><td><strong>sp500</strong></td><td style=''>+0.67</td><td style=''>+0.71</td><td style='font-weight:700;color:var(--accent);'>+0.77</td><td style='font-weight:700;color:var(--accent);'>+0.96</td><td style=''>+1.00</td><td style='font-weight:700;color:var(--accent);'>-0.84</td><td style=''>-0.29</td><td style=''>+0.11</td></tr><tr><td><strong>vix_chg</strong></td><td style=''>-0.55</td><td style=''>-0.61</td><td style=''>-0.64</td><td style='font-weight:700;color:var(--accent);'>-0.79</td><td style='font-weight:700;color:var(--accent);'>-0.84</td><td style=''>+1.00</td><td style=''>+0.19</td><td style=''>-0.10</td></tr><tr><td><strong>dxy_chg</strong></td><td style=''>-0.27</td><td style=''>-0.12</td><td style=''>-0.14</td><td style=''>-0.25</td><td style=''>-0.29</td><td style=''>+0.19</td><td style=''>+1.00</td><td style=''>+0.02</td></tr><tr><td><strong>krw_chg</strong></td><td style=''>+0.14</td><td style=''>+0.04</td><td style=''>+0.10</td><td style=''>+0.09</td><td style=''>+0.11</td><td style=''>-0.10</td><td style=''>+0.02</td><td style=''>+1.00</td></tr></tbody>
+        </table>
+      </div>
+      <p class="muted">※ NASDAQ-S&amp;P500(<code>+0.96</code>), SOX-EWY(<code>+0.83</code>), SOX-TSM(<code>+0.83</code>)처럼 미국 지수·반도체끼리 겹침이 매우 큽니다. 겹치는 지표를 그대로 IC 비례로 넣으면 사실상 같은 신호에 2~3중 배팅하는 꼴이 됩니다.</p>
+
+      <h3>② 초기 180일(IS)에서 도출된 4가지 가중치 산정 방식</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>가중치 방식</th><th>EWY</th><th>TSM</th><th>SOX</th><th>NASDAQ</th><th>VIX(역)</th><th>DXY(역)</th></tr></thead>
+          <tbody><tr><td><strong>Equal</strong></td><td>16.7%</td><td>16.7%</td><td>16.7%</td><td>16.7%</td><td>16.7%</td><td>16.7%</td></tr><tr><td><strong>IC_Prop</strong></td><td>17.0%</td><td>16.1%</td><td>20.4%</td><td>18.8%</td><td>17.7%</td><td>10.0%</td></tr><tr><td><strong>Ridge_L2</strong></td><td>16.1%</td><td>7.1%</td><td>32.4%</td><td>9.4%</td><td>21.8%</td><td>13.0%</td></tr><tr><td><strong>Focus</strong></td><td>40.0%</td><td>30.0%</td><td>20.0%</td><td>0.0%</td><td>10.0%</td><td>0.0%</td></tr></tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Ridge (L2=50)</strong>: 중복이 큰 <code>TSM(7.1%)</code>·<code>NASDAQ(9.4%)</code> 비중을 자동 억제하고, 비대칭 공포/달러 축인 <code>VIX(21.8%)</code>·<code>DXY(13.0%)</code>에 방어 비중을 배분 → Full 300D 방향 적중률 <strong>66.3%</strong> 1위.</li>
+        <li><strong>Focus (직교 축 압축 40/30/20/10)</strong>: 중복 지수(<code>NASDAQ</code>)를 아예 빼고 한국(<code>EWY 40%</code>)·파운드리(<code>TSM 30%</code>)·반도체지수(<code>SOX 20%</code>)·공포(<code>VIX 10%</code>) 4개 직교 축으로 압축 → <strong>OOS 120일 방향 적중률 64.7%</strong>로 실전 안정성 1위.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. 시나리오별 다차원 결과 검증 (적중·실패 이분법 탈피)</h2>
+      <div class="callout">
+        적중률(%)만 높이는 것은 밴드 폭을 무작정 넓히면 가능한 착시입니다. 아래 <strong>효율 프론티어(밴드 폭 대비 적중률)</strong>와 <strong>In-Sample vs Out-of-Sample</strong> 분해로 실전 가치를 검증했습니다.
+      </div>
+      <svg viewBox="0 0 580 265" style="width:100%;max-width:660px;height:auto;display:block;margin:0 auto;">
+  <line x1="65" y1="230" x2="540" y2="230" stroke="currentColor" stroke-opacity="0.3"/>
+  <line x1="65" y1="20" x2="65" y2="230" stroke="currentColor" stroke-opacity="0.3"/>
+  <text x="295" y="255" text-anchor="middle" font-size="11.5" fill="currentColor">평균 총 밴드폭 (Width %p, 좁을수록 정밀)</text>
+  <text x="22" y="130" text-anchor="middle" font-size="11.5" fill="currentColor" transform="rotate(-90 22 130)">밴드 적중률 (%)</text>
+  <text x="70" y="244" font-size="10" fill="currentColor">3.0%</text>
+  <text x="295" y="244" font-size="10" fill="currentColor">6.0%</text>
+  <text x="515" y="244" font-size="10" fill="currentColor">9.0%</text>
+  <text x="34" y="233" font-size="10" fill="currentColor">40%</text>
+  <text x="34" y="133" font-size="10" fill="currentColor">65%</text>
+  <text x="34" y="33" font-size="10" fill="currentColor">90%</text>
+  <circle cx="131.5" cy="163.2" r="6.5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/><text x="139.5" y="153.2" font-size="11" font-weight="700" fill="currentColor">S0 (56.7% / 3.82%)</text><circle cx="131.5" cy="163.2" r="6.5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/><text x="139.5" y="179.2" font-size="11" font-weight="700" fill="currentColor">S1 (56.7% / 3.82%)</text><circle cx="131.5" cy="160.8" r="6.5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/><text x="139.5" y="150.8" font-size="11" font-weight="700" fill="currentColor">S2 (57.3% / 3.82%)</text><circle cx="131.5" cy="162.0" r="6.5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/><text x="139.5" y="178.0" font-size="11" font-weight="700" fill="currentColor">S3 (57.0% / 3.82%)</text><circle cx="131.5" cy="160.8" r="6.5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/><text x="139.5" y="150.8" font-size="11" font-weight="700" fill="currentColor">S4 (57.3% / 3.82%)</text><circle cx="464.5" cy="58.0" r="6.5" fill="#10b981" stroke="#fff" stroke-width="1.5"/><text x="436.5" y="74.0" font-size="11" font-weight="700" fill="currentColor">S5 (83.0% / 8.26%)</text><circle cx="445.0" cy="48.8" r="6.5" fill="#10b981" stroke="#fff" stroke-width="1.5"/><text x="417.0" y="38.8" font-size="11" font-weight="700" fill="currentColor">S6 (85.3% / 8.0%)</text>
+</svg>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>시나리오</th><th>방향 적중</th><th>밴드 적중</th><th>평균 총 폭</th><th>효율(Hit/Width)</th><th>VOL_ERR / DIR_ERR</th><th>최대 연속실패</th></tr></thead>
+          <tbody><tr><td><strong>S0: Baseline (Core 4 + Discrete Band)</strong></td><td><strong>61.8%</strong><br><span class='muted'>OOS 61.0%</span></td><td><strong>56.7%</strong><br><span class='muted'>OOS 42.5%</span></td><td>3.82%p<br><span class='muted'>OOS 3.97%p</span></td><td>14.83</td><td>80 / 50</td><td>6일</td></tr><tr><td><strong>S1: Reset 6-Factor Equal + Discrete Band</strong></td><td><strong>65.3%</strong><br><span class='muted'>OOS 59.5%</span></td><td><strong>56.7%</strong><br><span class='muted'>OOS 42.5%</span></td><td>3.82%p<br><span class='muted'>OOS 3.97%p</span></td><td>14.83</td><td>87 / 43</td><td>6일</td></tr><tr><td><strong>S2: IC-Prop Weights + Discrete Band</strong></td><td><strong>65.3%</strong><br><span class='muted'>OOS 62.1%</span></td><td><strong>57.3%</strong><br><span class='muted'>OOS 43.3%</span></td><td>3.82%p<br><span class='muted'>OOS 3.97%p</span></td><td>15.01</td><td>87 / 41</td><td>6일</td></tr><tr><td><strong>S3: Ridge(L2) Weights + Discrete Band</strong></td><td><strong>66.3%</strong><br><span class='muted'>OOS 62.9%</span></td><td><strong>57.0%</strong><br><span class='muted'>OOS 42.5%</span></td><td>3.82%p<br><span class='muted'>OOS 3.97%p</span></td><td>14.92</td><td>87 / 42</td><td>6일</td></tr><tr><td><strong>S4: Focus(EWY/TSM/SOX/VIX) + Discrete Band</strong></td><td><strong>66.0%</strong><br><span class='muted'>OOS 64.7%</span></td><td><strong>57.3%</strong><br><span class='muted'>OOS 43.3%</span></td><td>3.82%p<br><span class='muted'>OOS 3.97%p</span></td><td>15.01</td><td>90 / 38</td><td>6일</td></tr><tr><td><strong>S5: Ridge(L2) + Continuous Vol Band (1.45*STD10)</strong></td><td><strong>66.3%</strong><br><span class='muted'>OOS 62.9%</span></td><td><strong>83.0%</strong><br><span class='muted'>OOS 81.7%</span></td><td>8.26%p<br><span class='muted'>OOS 11.33%p</span></td><td>10.05</td><td>31 / 20</td><td>3일</td></tr><tr><td><strong>S6: Focus(40/30/20/10) + Regime Quantile Band</strong></td><td><strong>66.0%</strong><br><span class='muted'>OOS 64.7%</span></td><td><strong>85.3%</strong><br><span class='muted'>OOS 81.7%</span></td><td>8.00%p<br><span class='muted'>OOS 10.47%p</span></td><td>10.67</td><td>26 / 18</td><td>4일</td></tr></tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>이분법 탈피 해석</strong>: <code>S5/S6</code>는 밴드 적중률(<code>83~85%</code>)과 연속 실패 방어(<code>3~4일</code>)가 압도적이지만, 고변동장에서 평균 총 폭이 <code>8.0~11.3%p</code>로 넓어져 효율(<code>10.0~10.7</code>)이 떨어집니다. 반면 <code>S4</code>는 좁은 폭(<code>3.82%p</code>)을 유지하면서 OOS 방향 적중률을 <code>61.0% → 64.7%</code>로 끌어올렸습니다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>4. 시장 체제별 · 3대 타깃 검증 및 최종 권고안</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>시장 체제 (300D)</th><th>S0 기존 (방향 / 밴드)</th><th>S5 Ridge+동적폭</th><th>S6 Focus+레짐폭</th></tr></thead>
+          <tbody><tr><td><strong>High Vol (STD10>=1.5%)</strong> (n=209)</td><td>62.9% / 47.8%</td><td>64.7% / 85.6%</td><td><strong>66.2% / 83.7%</strong></td></tr><tr><td><strong>Normal/Calm</strong> (n=91)</td><td>59.3% / 76.9%</td><td>70.1% / 76.9%</td><td><strong>65.5% / 89.0%</strong></td></tr><tr><td><strong>Down Day</strong> (n=117)</td><td>56.8% / 48.7%</td><td>63.1% / 80.3%</td><td><strong>63.1% / 82.1%</strong></td></tr><tr><td><strong>Up Day</strong> (n=183)</td><td>65.0% / 61.7%</td><td>68.4% / 84.7%</td><td><strong>67.8% / 87.4%</strong></td></tr></tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>예측 타깃 (300D)</th><th>S0 기존</th><th>S5 Ridge+동적폭</th><th>S6 Focus+레짐폭</th></tr></thead>
+          <tbody><tr><td><strong>KOSPI</strong> (β=1.0)</td><td>61.8% / 56.7% <span class='muted'>(폭 3.82%)</span></td><td>66.3% / 83.0% <span class='muted'>(폭 8.26%)</span></td><td><strong>66.0% / 85.3%</strong> <span class='muted'>(폭 8.0%)</span></td></tr><tr><td><strong>SAMSUNG</strong> (β=1.2)</td><td>60.8% / 49.0% <span class='muted'>(폭 4.58%)</span></td><td>60.8% / 74.0% <span class='muted'>(폭 9.91%)</span></td><td><strong>61.8% / 77.3%</strong> <span class='muted'>(폭 9.6%)</span></td></tr><tr><td><strong>SKHYNIX</strong> (β=1.8)</td><td>62.5% / 52.7% <span class='muted'>(폭 6.88%)</span></td><td>63.2% / 76.7% <span class='muted'>(폭 14.87%)</span></td><td><strong>64.9% / 76.7%</strong> <span class='muted'>(폭 14.4%)</span></td></tr></tbody>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:14px;">
+        <strong>최종 실전 권고 (차기 모델 v2 제안):</strong><br>
+        1) <strong>방향 엔진</strong>: 기존 Core 4 고정 틀 대신 <code>EWY(35%) + 반도체[SOX·TSM·MU](35%) + VIX·DXY 역방향(20%) + 국내수급(10%)</code>의 직교 4축 + 연속형 Z-Score(강도 반영) 전환.<br>
+        2) <strong>밴드 폭 엔진</strong>: <code>S0</code>의 좁은 이산 폭(<code>±1~2%</code>)과 <code>S6</code>의 과도한 폭(<code>±4%</code>) 사이의 실전 균형점인 <strong><code>1.15 × 10일 실현표준편차</code> (예상 총폭 ~5.5~6.0%, 목표 적중률 ~72%+)</strong> 채택 권장.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("themeToggle");
+      function sync() {
+        var cur = document.documentElement.dataset.theme || "light";
+        btn.textContent = cur === "dark" ? "☀️ 라이트" : "🌙 다크";
+      }
+      btn.addEventListener("click", function () {
+        var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        sync();
+      });
+      sync();
+    })();
+  </script>
+</body>
+</html>

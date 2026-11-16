@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-11-16-quant-300d-research",
+    "month": "2026-11",
+    "date": "2026-11-16",
+    "title": "300거래일 퀀트 모델 리셋 & 가중치 최적화 리포트",
+    "path": "docs/2026-11/2026-11-16-quant-300d-research.html"
+  },
+  {
     "id": "2026-11-15-google-tools-report",
     "month": "2026-11",
     "date": "2026-11-15",
