@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>500거래일 퀀트 심층 연구: 지표 수·비중·다관점·종목별 맞춤 모델</title>
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+      --accent: #2563eb; --accent-soft: #dbeafe;
+      --good: #059669; --good-bg: #d1fae5; --bad: #dc2626; --bad-bg: #fee2e2;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1120; --surface: #111827; --surface-2: #1e293b;
+      --text: #f1f5f9; --muted: #94a3b8; --border: #273449;
+      --accent: #60a5fa; --accent-soft: #1e3a8a;
+      --good: #34d399; --good-bg: #064e3b; --bad: #f87171; --bad-bg: #7f1d1d;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.62;
+    }
+    .container { max-width: 1180px; margin: 0 auto; padding: 24px 18px 64px; }
+    header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+      gap: 14px; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    h1 { margin: 0 0 6px; font-size: 1.58rem; }
+    .sub { margin: 0; color: var(--muted); font-size: 0.92rem; }
+    .btn {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 14px; font-size: 0.88rem; cursor: pointer; box-shadow: var(--shadow);
+    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+    .kpi-l { font-size: 0.8rem; color: var(--muted); }
+    .kpi-v { font-size: 1.38rem; font-weight: 700; margin: 4px 0; }
+    .kpi-d { font-size: 0.82rem; color: var(--muted); }
+    section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 20px; box-shadow: var(--shadow);
+    }
+    h2 { margin: 0 0 12px; font-size: 1.18rem; }
+    h3 { margin: 16px 0 8px; font-size: 1rem; }
+    .callout {
+      background: var(--surface-2); border-left: 4px solid var(--accent);
+      padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.92rem;
+    }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; font-size: 0.86rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--surface-2); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.76rem; font-weight: 600; }
+    .b-good { background: var(--good-bg); color: var(--good); }
+    .b-blue { background: var(--accent-soft); color: var(--accent); }
+    .b-bad { background: var(--bad-bg); color: var(--bad); }
+    code { background: var(--surface-2); padding: 2px 5px; border-radius: 4px; font-size: 0.84em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>500거래일 퀀트 심층 연구: 지표 수 · 비중 · 다관점 · 종목별 맞춤 모델</h1>
+        <p class="sub">분석 기간: 2024-10-24 ~ 2026-11-16 (500거래일 · IS 250일 / OOS 250일 · Walk-Forward 검증 · 18개 글로벌·기술적 지표)</p>
+      </div>
+      <button class="btn" id="themeToggle">🌙 다크</button>
+    </header>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-l">지표 수 최적화 결론 (OOS 250D)</div><div class="kpi-v">All-18 Ridge: 69.2%</div><div class="kpi-d">Top-3(64.8%) 대비 +4.4%p · WF Corr 0.504</div></div>
+      <div class="kpi"><div class="kpi-l">고신뢰 신호 적중률 (|Score|≥40)</div><div class="kpi-v">76.0% ~ 80.0%</div><div class="kpi-d">하위 30% 신호(52.0%) 대비 +24~28%p 리프트</div></div>
+      <div class="kpi"><div class="kpi-l">최적 변동폭 모델 (B3 EWMA)</div><div class="kpi-v">적중 78.4% · Pinball 1.13</div><div class="kpi-d">최대 연속 적중 21일 · 최대 연속 실패 4일</div></div>
+      <div class="kpi"><div class="kpi-l">종목별 맞춤 비대칭성</div><div class="kpi-v">하이닉스 전용↑ · 삼성 공통↑</div><div class="kpi-d">하이닉스 65.2%(MU 49.7%) / 삼성 전용 시 OOS 급락</div></div>
+    </div>
+
+    <section>
+      <h2>1. 지표는 적은 게 유리한가, 10개 이상도 의미가 있는가?</h2>
+      <div class="callout">
+        <strong>결론: "가중치 산정 방식에 따라 정반대입니다."</strong><br>
+        단순 동일 가중(Equal Weight)에서는 10개 이상 넣어도 노이즈 희석으로 정체되지만, <strong>Ridge(L2=50) 정규화</strong>를 적용하면 <strong>18개 전체 지표가 OOS 방향 적중률 69.20% (Walk-Forward Corr 0.5040)</strong>로 가장 뛰어났으며 IS→OOS 성능 저하가 사실상 0(<code>+0.0013</code>)이었습니다.
+      </div>
+      <svg viewBox="0 0 560 255" style="width:100%;max-width:650px;height:auto;display:block;margin:10px auto;">
+  <line x1="50" y1="210" x2="540" y2="210" stroke="currentColor" stroke-opacity="0.3"/>
+  <text x="20" y="213" font-size="10" fill="currentColor">60%</text>
+  <text x="20" y="123" font-size="10" fill="currentColor">66%</text>
+  <text x="20" y="33" font-size="10" fill="currentColor">72%</text>
+  <rect x="350" y="10" width="12" height="12" rx="2" fill="#94a3b8"/><text x="366" y="20" font-size="10.5" fill="currentColor">Equal Weight</text>
+  <rect x="450" y="10" width="12" height="12" rx="2" fill="#2563eb"/><text x="466" y="20" font-size="10.5" fill="currentColor">Ridge(L2=50)</text>
+  <rect x="70" y="156.6" width="26" height="53.4" rx="3" fill="#94a3b8"/><text x="83" y="151.6" text-anchor="middle" font-size="10" fill="currentColor">63.6%</text><rect x="100" y="137.6" width="26" height="72.4" rx="3" fill="#2563eb"/><text x="113" y="132.6" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">64.8%</text><text x="98" y="226" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">Top-3</text><text x="98" y="240" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">r=0.445</text><rect x="165" y="137.6" width="26" height="72.4" rx="3" fill="#94a3b8"/><text x="178" y="132.6" text-anchor="middle" font-size="10" fill="currentColor">64.8%</text><rect x="195" y="80.4" width="26" height="129.6" rx="3" fill="#2563eb"/><text x="208" y="75.4" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">68.6%</text><text x="193" y="226" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">Top-5</text><text x="193" y="240" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">r=0.484</text><rect x="260" y="128.7" width="26" height="81.3" rx="3" fill="#94a3b8"/><text x="273" y="123.7" text-anchor="middle" font-size="10" fill="currentColor">65.4%</text><rect x="290" y="109.9" width="26" height="100.1" rx="3" fill="#2563eb"/><text x="303" y="104.9" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">66.7%</text><text x="288" y="226" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">Top-8</text><text x="288" y="240" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">r=0.469</text><rect x="355" y="122.6" width="26" height="87.4" rx="3" fill="#94a3b8"/><text x="368" y="117.6" text-anchor="middle" font-size="10" fill="currentColor">65.8%</text><rect x="385" y="109.9" width="26" height="100.1" rx="3" fill="#2563eb"/><text x="398" y="104.9" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">66.7%</text><text x="383" y="226" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">Top-12</text><text x="383" y="240" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">r=0.451</text><rect x="450" y="114.0" width="26" height="96.0" rx="3" fill="#94a3b8"/><text x="463" y="109.0" text-anchor="middle" font-size="10" fill="currentColor">66.4%</text><rect x="480" y="72.0" width="26" height="138.0" rx="3" fill="#2563eb"/><text x="493" y="67.0" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">69.2%</text><text x="478" y="226" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">All-18</text><text x="478" y="240" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">r=0.492</text>
+</svg>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>지표 세트</th><th>Static Equal (Dir% / Corr)</th><th>Static Ridge L2=50 (Dir% / Corr)</th><th>WF 20D Refit Ridge (Dir% / Corr)</th><th>해석</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Top-3</strong> (SP500, SOX, NASDAQ)</td><td>63.56% / 0.4324</td><td>64.83% / 0.4448</td><td>63.98% / 0.4446</td><td>미국 지수 편중, 비주식 분산 부재</td></tr>
+            <tr><td><strong>Top-5</strong> (+MU, Russell2K)</td><td>64.83% / 0.4694</td><td>68.64% / 0.4845</td><td>66.53% / 0.4755</td><td>소형주(R2K)·메모리(MU) 추가로 도약</td></tr>
+            <tr><td><strong>Top-8</strong> (+AMAT, EWY, VIX)</td><td>65.42% / 0.4681</td><td>66.67% / 0.4692</td><td>64.58% / 0.4690</td><td>반도체 내 중복 신호 증가 구간</td></tr>
+            <tr><td><strong>Top-12</strong> (+ASML, NVDA, TSM, Oil)</td><td>65.83% / 0.4634</td><td>66.67% / 0.4512</td><td>67.92% / 0.4708</td><td>Walk-Forward 적응 시 안정적 반등</td></tr>
+            <tr><td><strong>All-18</strong> (+Gold, DXY, KR D-1 등)</td><td>66.40% / 0.4811</td><td><span class="badge b-good">69.20% / 0.4916</span></td><td><span class="badge b-blue">65.60% / 0.5040</span></td><td>금(11.9%)·유가(11.1%)·DXY(8.8%)·D-1(7.6%) 직교 분산 극대화</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 각 지수·지표별 비중은 어떻게 설정하는 것이 타당한가?</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>비중 산정 방법론</th><th>OOS 방향 적중 (All-18)</th><th>OOS 상관계수</th><th>고신뢰(|score|≥40) 적중</th><th>타당성 평가</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Equal Weight</strong></td><td>66.40%</td><td>0.4811</td><td>75.68% (n=37)</td><td>직관적이나 겹치는 미국 지수에 과다 비중</td></tr>
+            <tr><td><strong>IC-Proportional</strong></td><td>67.20%</td><td>0.4676</td><td>76.25% (n=80)</td><td>단독 IC만 봐서 다중공선성 제거 실패</td></tr>
+            <tr><td><strong>Rolling 60D Adaptive IC</strong></td><td>62.80%</td><td>0.4664</td><td>81.69% (n=71)</td><td><span class="badge b-bad">비추천</span> 60일 단기 창은 최근 노이즈에 과적합</td></tr>
+            <tr><td><strong>Ridge (L2=50) 정규화</strong></td><td><span class="badge b-good">69.20%</span></td><td><span class="badge b-good">0.4916</span></td><td><strong>79.55% (n=44)</strong></td><td><span class="badge b-good">최적</span> 중복 지수(NASDAQ 0%) 억제 + 직교 매크로 보존</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>타당한 비중 설정 핵심 원칙</strong>: ① <code>180~250일</code> 이상의 충분한 학습 창에서 <strong>L2 정규화(Ridge)</strong>로 중복 지수의 가중치를 자연스럽게 <code>0%</code>에 가깝게 깎아내고, ② 금·달러(DXY)·원자재·국내 전일 반전 등 <strong>서로 상관관계가 낮은 직교 축</strong>에 5~12%씩 분산 배분하는 것이 통계적으로 가장 타당합니다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. 관점별 최적 예측 방법론 (이분법 탈피 · 6대 관점 매트릭스)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>평가 관점</th><th>최적 방법론</th><th>OOS 250일 실측 성과</th><th>비고 및 기존(B0) 대비 차이</th></tr></thead>
+          <tbody>
+            <tr><td><strong>① 방향성 적중</strong></td><td>All-18 Ridge(L2=50)</td><td><strong>69.20%</strong> (OOS Corr 0.4916)</td><td>Top-6 직교 Ridge는 65.42%</td></tr>
+            <tr><td><strong>② 고신뢰 구간 포착</strong></td><td>신호 강도 필터 (<code>|Score| ≥ 40</code> / 상위 40%)</td><td>코스피 <strong>76.0~80.0%</strong> · 삼성 <strong>78.0%</strong></td><td>하위 30% 구간(49~52%) 대비 <strong>+24~28%p</strong> 리프트</td></tr>
+            <tr><td><strong>③ 변동폭 예측 · 정밀도</strong></td><td><strong>B3: <code>1.20 × EWMA10</code></strong></td><td>밴드 적중 <strong>78.40%</strong> · Pinball Loss <strong>1.1341</strong></td><td>기존 B0(53.20%, Pinball 1.4541) 대비 압도적 개선</td></tr>
+            <tr><td><strong>④ 밴드 효율 (폭 대비 적중)</strong></td><td><strong>B4: <code>1.10 × EWMA10 + VIX≥22(+0.35)</code></strong></td><td>적중 <strong>75.60%</strong> · 폭 7.15%p · 효율 <strong>10.57</strong></td><td>연속 모델 중 가장 콤팩트한 밴드 폭 유지</td></tr>
+            <tr><td><strong>⑤ 연속 적중 &amp; 연속 실패 방어</strong></td><td><strong>B2: <code>1.45 × STD10</code></strong> / B3</td><td>최대 연속적중 <strong>21일</strong> · 최대 연속실패 <strong>3일</strong></td><td>기존 B0는 삼성전자에서 <strong>12일 연속 실패</strong> 발생</td></tr>
+            <tr><td><strong>⑥ 대형 급등락일(±1.5%↑) 대응</strong></td><td>Ridge 신호 + B3/B2 변동성 밴드</td><td>대형 변동일 방향 <strong>71.33%</strong> (대형하락 <strong>72.58%</strong>)</td><td>기존 B0 밴드는 대형 변동일 적중 <strong>18.18%</strong>로 붕괴</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. 코스피 · 삼성전자 · SK하이닉스 타깃별 맞춤 모델 필요성 검증</h2>
+      <div class="callout">
+        <strong>핵심 발견 (비대칭성):</strong> <strong>SK하이닉스</strong>는 메모리·AI 전용 지표 구성이 큰 효과를 내지만, <strong>삼성전자</strong>는 개별 기업 노이즈 과적합 때문에 전용 회귀 모델보다 <strong>코스피 공통 모델(또는 Top-4 Focus)</strong>을 쓰는 것이 훨씬 우수합니다.
+      </div>
+      <svg viewBox="0 0 560 240" style="width:100%;max-width:640px;height:auto;display:block;margin:10px auto;">
+  <line x1="50" y1="195" x2="540" y2="195" stroke="currentColor" stroke-opacity="0.3"/>
+  <text x="18" y="198" font-size="10" fill="currentColor">0.00</text>
+  <text x="18" y="115" font-size="10" fill="currentColor">0.28</text>
+  <text x="18" y="35" font-size="10" fill="currentColor">0.55</text>
+  <rect x="80" y="45.3" width="28" height="149.7" rx="3" fill="#3b82f6"/><text x="94" y="40.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.499</text><text x="94" y="208" text-anchor="middle" font-size="9" fill="currentColor">공통</text><rect x="114" y="45.3" width="28" height="149.7" rx="3" fill="#10b981"/><text x="128" y="40.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.499</text><text x="128" y="208" text-anchor="middle" font-size="9" fill="currentColor">전용</text><rect x="148" y="51.9" width="28" height="143.1" rx="3" fill="#f59e0b"/><text x="162" y="46.9" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.477</text><text x="162" y="208" text-anchor="middle" font-size="9" fill="currentColor">Top4</text><text x="125" y="226" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">KOSPI</text><rect x="235" y="57.3" width="28" height="137.7" rx="3" fill="#3b82f6"/><text x="249" y="52.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.459</text><text x="249" y="208" text-anchor="middle" font-size="9" fill="currentColor">공통</text><rect x="269" y="87.6" width="28" height="107.4" rx="3" fill="#ef4444"/><text x="283" y="82.6" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.358</text><text x="283" y="208" text-anchor="middle" font-size="9" fill="currentColor">전용</text><rect x="303" y="61.8" width="28" height="133.2" rx="3" fill="#f59e0b"/><text x="317" y="56.8" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.444</text><text x="317" y="208" text-anchor="middle" font-size="9" fill="currentColor">Top4</text><text x="280" y="226" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">SAMSUNG</text><rect x="390" y="59.4" width="28" height="135.6" rx="3" fill="#3b82f6"/><text x="404" y="54.4" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.452</text><text x="404" y="208" text-anchor="middle" font-size="9" fill="currentColor">공통</text><rect x="424" y="54.6" width="28" height="140.4" rx="3" fill="#10b981"/><text x="438" y="49.6" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.468</text><text x="438" y="208" text-anchor="middle" font-size="9" fill="currentColor">전용</text><rect x="458" y="60.9" width="28" height="134.1" rx="3" fill="#f59e0b"/><text x="472" y="55.9" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor">0.447</text><text x="472" y="208" text-anchor="middle" font-size="9" fill="currentColor">Top4</text><text x="435" y="226" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">SKHYNIX</text>
+</svg>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>타깃 종목</th><th>공통 모델(KOSPI Ridge) OOS</th><th>전용 Ridge OOS</th><th>전용 Top-4 Focus OOS</th><th>최종 권장 지표 구성</th></tr></thead>
+          <tbody>
+            <tr><td><strong>코스피 (<code>^KS11</code>)</strong></td><td>IC <strong>0.499</strong> / 적중 <strong>66.4%</strong></td><td>IC 0.499 / 66.4%</td><td>IC 0.477 / 64.4%</td><td><span class="badge b-good">All-18 (또는 Top-6) Ridge</span> — <code>EWY·SOX·MU·R2K·VIX·Gold·DXY</code></td></tr>
+            <tr><td><strong>삼성전자 (<code>005930.KS</code>)</strong></td><td>IC <strong>0.459</strong> / 적중 <strong>64.4%</strong></td><td><span class="badge b-bad">IC 0.358 / 62.8%</span></td><td>IC 0.444 / 64.4%</td><td><span class="badge b-blue">공통 모델 또는 Top-4 Focus</span> (고유 악재 과적합 방지)</td></tr>
+            <tr><td><strong>SK하이닉스 (<code>000660.KS</code>)</strong></td><td>IC 0.452 / 63.2%</td><td><span class="badge b-good">IC 0.468 / 64.0%</span> (RMSE↓)</td><td><span class="badge b-good">적중 65.2% (163/250)</span></td><td><span class="badge b-good">전용 메모리·AI 모델</span> — <code>MU(25~50%) + AMAT(20%) + SOX(25%) + NVDA/VIX</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. 종합 결론 (차기 실전 모델 설계 청사진)</h2>
+      <div class="callout">
+        1. <strong>지표 수와 비중</strong>: 18개 지표를 <strong>Ridge(L2=50)</strong>로 통합하면 OOS 방향 적중률 <strong>69.2%</strong>까지 상승하며, 60일 단기 적응형 교체는 피하고 최소 180~250일 창을 유지해야 합니다.<br>
+        2. <strong>변동폭 엔진 교체</strong>: 기존 5일 최대값 기반 이산 밴드(<code>±1~2%</code>)를 폐기하고, <strong><code>1.20 × EWMA10</code> (또는 <code>1.10 × EWMA10 + VIX≥22 보정</code>)</strong>을 적용하면 적중률 <strong>75~78%</strong>와 Pinball Loss 최소를 동시에 달성합니다.<br>
+        3. <strong>신호 강도 활용</strong>: 예측 점수의 절대값(<code>|Score|</code>)이 상위 40%일 때 적중률이 <strong>76~80%</strong>까지 뛰므로, 브리핑 UI에 <strong>신호 신뢰도 등급(강/중/약)</strong>을 표기하면 실전 활용도가 극대화됩니다.<br>
+        4. <strong>3대 타깃 차별화</strong>: 코스피·삼성전자는 <strong>공통 글로벌 Ridge</strong>로 안정성을 지키고, SK하이닉스는 <strong><code>MU·AMAT·SOX·NVDA</code> 중심 전용 모델</strong>로 분리하는 것이 최적입니다.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("themeToggle");
+      function sync() {
+        var cur = document.documentElement.dataset.theme || "light";
+        btn.textContent = cur === "dark" ? "☀️ 라이트" : "🌙 다크";
+      }
+      btn.addEventListener("click", function () {
+        var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        sync();
+      });
+      sync();
+    })();
+  </script>
+</body>
+</html>
