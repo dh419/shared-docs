@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-11-18-external-pipelines-architecture",
+    "month": "2026-11",
+    "date": "2026-11-18",
+    "title": "외부 도구 파이프라인 & 시스템 아키텍처 대시보드",
+    "path": "docs/2026-11/2026-11-18-external-pipelines-architecture.html"
+  },
+  {
     "id": "2026-11-16-quant-500d-deep-research",
     "month": "2026-11",
     "date": "2026-11-16",
