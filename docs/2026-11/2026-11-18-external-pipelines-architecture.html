@@ -365,7 +365,7 @@
         <p class="subtitle">F:\CLI 중심 클라우드·로컬 AI 하이브리드 자동화 맵 (역할, 실행 주기, 연결 및 개선 현황)</p>
       </div>
       <div class="header-actions">
-        <span class="badge-date">업데이트: 2026-11-18 KST</span>
+        <span class="badge-date">업데이트: 2026-11-19 KST</span>
         <button id="themeToggle" class="theme-btn" type="button" aria-label="테마 전환">
           <span id="themeIcon">🌙</span>
           <span id="themeText">다크 모드</span>
@@ -430,6 +430,7 @@
             </marker>
           </defs>
 
+          <!-- Layer Headers -->
           <text x="20" y="24" class="layer-label">1. 입력 / 트리거 (Trigger)</text>
           <text x="275" y="24" class="layer-label">2. 완충 / 브리지 (Buffer)</text>
           <text x="555" y="24" class="layer-label">3. 감시 / 실행 엔진 (GAS · Actions · CLI)</text>
@@ -439,6 +440,7 @@
           <line x1="530" y1="36" x2="530" y2="520" stroke="var(--border)" stroke-dasharray="4 4" />
           <line x1="825" y1="36" x2="825" y2="520" stroke="var(--border)" stroke-dasharray="4 4" />
 
+          <!-- Edges -->
           <path data-pipes="p1" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M230,90 L275,90" />
           <path data-pipes="p1 p3" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M505,86 L555,86" />
           <path data-pipes="p1 p3" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M675,134 L675,172" />
@@ -460,6 +462,7 @@
           <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M795,330 L850,234" />
           <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M795,485 L850,485" />
 
+          <!-- Layer 1 -->
           <g data-pipes="p1 p2">
             <rect x="20" y="48" width="210" height="94" class="node-box" />
             <circle cx="36" cy="66" r="4.5" fill="#60a5fa" class="cv-pulse" />
@@ -484,6 +487,7 @@
             <text x="32" y="507" class="node-sub">회사 ↔ 집 북마크·파비콘 동기화</text>
           </g>
 
+          <!-- Layer 2 -->
           <g data-pipes="p1 p3">
             <rect x="275" y="48" width="230" height="98" class="node-box" />
             <text x="287" y="70" class="node-title">Dashboard_Incoming</text>
@@ -493,23 +497,24 @@
             <text x="287" y="138" class="node-sub">개인 드라이브와 권한 격리</text>
           </g>
 
-          <g data-pipes="p2">
+          <g data-pipes="p2 p4">
             <rect x="275" y="182" width="230" height="86" class="node-box" />
             <text x="287" y="204" class="node-title">AGY-Bridge (비공개)</text>
             <text x="287" y="222" class="node-sub">eril82 단독 소유 (혼용 금지)</text>
-            <text x="287" y="239" class="node-sub">• Config + source/ + archive/</text>
-            <text x="287" y="256" class="node-sub">• 상단 Handoff 요약 유지</text>
+            <text x="287" y="239" class="node-sub">• Config + source/(Feedback) + archive/</text>
+            <text x="287" y="256" class="node-sub">• 상단 Handoff &amp; Last Actor 교대 턴</text>
           </g>
 
           <g data-pipes="p4">
             <rect x="275" y="362" width="230" height="82" class="node-box" />
             <circle cx="291" cy="380" r="4.5" fill="#fbbf24" class="cv-pulse" />
             <text x="303" y="384" class="node-title">Google Apps Script (NotionSync)</text>
-            <text x="287" y="402" class="node-sched">⏰ 30분 주기 클라우드 트리거</text>
-            <text x="287" y="418" class="node-sub">v1.4: 메타 채움 · 연결 · 정렬 · [A/I]</text>
-            <text x="287" y="434" class="node-sub">PC 꺼져도 24시간 무인 실행</text>
+            <text x="287" y="402" class="node-sched">⏰ 30분 주기 · 본문 15분 수정 유예</text>
+            <text x="287" y="418" class="node-sub">v1.10: 골격·연결·리마인드·유사도 중복방지</text>
+            <text x="287" y="434" class="node-sub">Notion-AI-Feedback 양방향 기준 자동 로드</text>
           </g>
 
+          <!-- Layer 3 -->
           <g data-pipes="p1 p3">
             <rect x="555" y="48" width="240" height="86" class="node-box" />
             <circle cx="571" cy="66" r="4.5" fill="#60a5fa" class="cv-pulse" />
@@ -539,8 +544,8 @@
           <g data-pipes="p4">
             <rect x="555" y="370" width="240" height="72" class="node-box" />
             <text x="567" y="392" class="node-title">Gemini API (Flash 폴백)</text>
-            <text x="567" y="410" class="node-sched">⏰ NotionSync 실행 시 호출 (최대 3건/회)</text>
-            <text x="567" y="427" class="node-sub">3.6/3.5-flash → preview → lite 순차</text>
+            <text x="567" y="410" class="node-sched">⏰ 미처리·수정·기준변경 시 최대 3건</text>
+            <text x="567" y="427" class="node-sub">V10Q 페르소나 · 개조식 요약 · 질문 도출</text>
           </g>
 
           <g data-pipes="p5">
@@ -550,6 +555,7 @@
             <text x="567" y="507" class="node-sub">DOM/E2E 검증 후 버전 동기화</text>
           </g>
 
+          <!-- Layer 4 -->
           <g data-pipes="p1 p3">
             <rect x="850" y="65" width="205" height="90" class="node-box" />
             <text x="862" y="88" class="node-title">GitHub Pages (3개 웹)</text>
@@ -568,8 +574,8 @@
           <g data-pipes="p4">
             <rect x="850" y="366" width="205" height="72" class="node-box" />
             <text x="862" y="388" class="node-title">Notion Command Center</text>
-            <text x="862" y="408" class="node-sub">회의록 DB · Action Items DB</text>
-            <text x="862" y="424" class="node-sub">리마인드 콜아웃 &amp; 시리즈 정렬</text>
+            <text x="862" y="408" class="node-sub">회의록 · A/I(15개 파트 · 결정=완료)</text>
+            <text x="862" y="424" class="node-sub">API 뱃지(질문 포함) · AI 댓글 연동</text>
           </g>
 
           <g data-pipes="p5">
@@ -698,34 +704,34 @@
           <div class="pipe-top">
             <div class="pipe-name">
               <span class="tag tag-amber">Pipeline D</span>
-              <span>Notion 회의 Command Center 자동화</span>
+              <span>Notion 회의 Command Center 양방향 자동화</span>
             </div>
-            <span class="badge-date">30분 클라우드 주기</span>
+            <span class="badge-date">30분 클라우드 · 15분 수정 유예</span>
           </div>
           <div class="steps-row">
             <div class="step-box">
               <div class="step-num">STEP 1</div>
-              <div class="step-tool">Google Apps Script (NotionSync.gs)</div>
-              <span class="step-sched">⏰ 30분 주기 클라우드 트리거</span>
-              <div class="step-why">로컬 PC 전원 상태와 무관하게 최근 수정 회의록 15건을 24시간 무인 순회</div>
+              <div class="step-tool">Google Apps Script (NotionSync v1.10)</div>
+              <span class="step-sched">⏰ 30분 주기 트리거 (본문 15분 유예)</span>
+              <div class="step-why">골격·회의링크·리마인드는 즉시, 요약·태그·[]/AI 추출은 15분 유예 후 중복 없이 처리</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 2</div>
               <div class="step-tool">Notion REST API</div>
-              <span class="step-sched">⏰ syncNotionMeetings 내 실시간 호출</span>
-              <div class="step-why">이전/다음 회의 연결, 메타 채움, 체크박스 [A/I] 추출 및 최신순 정렬 수행</div>
+              <span class="step-sched">⏰ 실행 시 페이지·블록·댓글 호출</span>
+              <div class="step-why">15개 파트 팀 배정, 결정사항 기본 완료, API 뱃지(골격·회의링크·리마인드·요약·태그·질문) 관리</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 3</div>
               <div class="step-tool">Gemini API (Flash 폴백)</div>
-              <span class="step-sched">⏰ 미처리 회의록 감지 시 최대 3건/회</span>
-              <div class="step-why">GAS에서 제미나이 앱을 부를 수 없어 HTTP API로 요약·태그·리마인드 생성</div>
+              <span class="step-sched">⏰ 미처리·수정·기준변경 시 최대 3건</span>
+              <div class="step-why">V10Q 리더·NAND 약어 사전 기반 개조식 4~6줄 요약 및 미등록 약어 questions 도출</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 4</div>
-              <div class="step-tool">로컬 AGY + clasp push -f</div>
-              <span class="step-sched">⏰ 코드 수정 시 수동 푸시</span>
-              <div class="step-why">로컬에서 수정한 .gs 코드를 웹 편집기 복붙 없이 Apps Script에 즉시 배포</div>
+              <div class="step-tool">Notion-AI-Feedback ↔ AGY</div>
+              <span class="step-sched">⏰ 양방향 학습 (재푸시 불필요)</span>
+              <div class="step-why">AI 질문을 source/ 문서에 누적 → AGY/사용자 확정 기준을 매 실행 시 자동 로드해 진화</div>
             </div>
           </div>
         </article>
@@ -808,8 +814,8 @@
             <tr>
               <td><strong>Google Apps Script (NotionSync.gs)</strong></td>
               <td>D</td>
-              <td>30분 주기 클라우드 트리거</td>
-              <td>PC가 꺼져 있어도 24시간 Notion 회의록 정리·연결·AI 호출 오케스트레이션</td>
+              <td>30분 주기 트리거 (본문 15분 유예)</td>
+              <td>24시간 Notion 회의록 정리·연결·유사도 중복방지 및 <code>Notion-AI-Feedback</code> 양방향 학습</td>
               <td><code>NOTION_TOKEN</code> + <code>GEMINI_API_KEY</code></td>
             </tr>
             <tr>
