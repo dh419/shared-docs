@@ -377,6 +377,17 @@
       transition: opacity 0.2s ease, stroke-width 0.2s ease;
     }
     .tool-edge.active { opacity: 1; stroke-width: 2.8; }
+    .edge-label {
+      font-size: 9.6px;
+      font-weight: 700;
+      fill: var(--text);
+      paint-order: stroke;
+      stroke: var(--surface-2);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
     .tool-io-bar {
       margin-top: 12px;
       background: var(--surface-2);
@@ -666,10 +677,10 @@
         <h2 class="section-title">🧩 도구 중심 전체 구성 &amp; 입출력(I/O) 토폴로지 (1 Tool = 1 Node)</h2>
         <button id="resetToolGraph" class="pill active" type="button">전체 연결 보기</button>
       </div>
-      <div class="sr-status">노드를 클릭하면 해당 도구의 <strong>입력(IN)</strong>·<strong>출력(OUT)</strong> 연결만 강조됩니다. (중복 없이 도구별 단일 노드)</div>
+      <div class="sr-status">노드를 클릭하면 해당 주체/도구의 <strong>활동 기준(주기·모니터링)</strong>과 <strong>입력(IN)·출력(OUT)</strong> 연결만 강조됩니다. (PC/모바일 사용자 구분 · 화살표별 전달 데이터 표기)</div>
 
       <div class="diagram-wrap" style="margin-top: 12px;">
-        <svg id="toolGraphSvg" class="arch-svg" viewBox="0 0 1120 680" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="도구 중심 전체 구성 및 입출력 토폴로지">
+        <svg id="toolGraphSvg" class="arch-svg" viewBox="0 0 1160 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="도구 중심 전체 구성 및 입출력 토폴로지">
           <defs>
             <marker id="t-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#60a5fa" /></marker>
             <marker id="t-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#34d399" /></marker>
@@ -679,129 +690,185 @@
             <marker id="t-rose" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#fb7185" /></marker>
           </defs>
 
-          <path data-from="user" data-to="gemini_app" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M190,265 L270,130" />
-          <path data-from="user" data-to="agy" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M210,305 L270,305" />
-          <path data-from="user" data-to="chrome" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M190,345 L270,545" />
-          <path data-from="user" data-to="notion" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M165,352 C210,635 760,645 895,435" />
-          <path data-from="github" data-to="user" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M895,70 C620,10 210,30 120,255" />
+          <path data-from="user_mobile" data-to="gemini_app" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M208,98 L275,98" />
+          <text data-from="user_mobile" data-to="gemini_app" x="241" y="90" text-anchor="middle" class="edge-label">음성·메모</text>
 
-          <path data-from="gemini_app" data-to="gdrive" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M475,105 L560,185" />
-          <path data-from="gdrive" data-to="gemini_app" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M560,205 L475,125" />
+          <path data-from="github" data-to="user_mobile" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M895,62 C640,12 290,12 115,52" />
+          <text data-from="github" data-to="user_mobile" x="520" y="26" text-anchor="middle" class="edge-label">GitHub Pages 모바일 열람</text>
 
-          <path data-from="agy" data-to="gdrive" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M475,280 L560,225" />
-          <path data-from="gdrive" data-to="agy" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M560,245 L475,300" />
-          <path data-from="agy" data-to="github" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M475,260 C600,120 750,90 875,105" />
-          <path data-from="agy" data-to="notion" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M475,330 C640,345 740,355 875,375" />
-          <path data-from="agy" data-to="chrome" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M370,356 L370,515" />
-          <path data-from="chrome" data-to="agy" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M390,515 L390,356" />
-          <path data-from="agy" data-to="confluence" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M475,345 C650,470 760,545 875,565" />
+          <path data-from="user_pc" data-to="agy" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M208,332 L275,318" />
+          <text data-from="user_pc" data-to="agy" x="241" y="314" text-anchor="middle" class="edge-label">PC 지시</text>
 
-          <path data-from="gdrive" data-to="gas" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M665,260 L665,365" />
-          <path data-from="gas" data-to="gdrive" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M685,365 L685,260" />
-          <path data-from="gdrive" data-to="github" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M780,195 L875,135" />
-          <path data-from="gas" data-to="github" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M760,365 L885,170" />
-          <path data-from="gas" data-to="gemini_api" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M665,465 L665,530" />
-          <path data-from="gemini_api" data-to="gas" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M685,530 L685,465" />
-          <path data-from="gas" data-to="notion" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M780,410 L875,400" />
-          <path data-from="notion" data-to="gas" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M875,420 L780,430" />
+          <path data-from="user_pc" data-to="chrome" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M165,420 L275,585" />
+          <text data-from="user_pc" data-to="chrome" x="206" y="512" text-anchor="middle" class="edge-label">브라우징·2FA</text>
 
-          <path data-from="chrome" data-to="github" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M475,570 C740,565 820,250 930,170" />
+          <path data-from="user_pc" data-to="notion" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M115,420 C140,685 780,685 950,445" />
+          <text data-from="user_pc" data-to="notion" x="515" y="676" text-anchor="middle" class="edge-label">회의록 작성 · 질문 댓글 답글 · DOOKI 열람</text>
 
-          <g class="tool-node" data-tool="user" data-in="GitHub Pages 대시보드, Notion 회의/DOOKI, Confluence, 크롬 결과" data-out="자연어 지시(AGY/Gemini앱), 회의록·댓글, 크롬 브라우징">
-            <rect x="20" y="255" width="190" height="96" />
-            <circle cx="36" cy="274" r="5" fill="#60a5fa" class="cv-pulse" />
-            <text x="48" y="278" class="node-title">👤 사용자 (PC·모바일)</text>
-            <text x="32" y="298" class="node-sub">IN: 웹 허브 · Notion · Confluence</text>
-            <text x="32" y="314" class="node-sub">OUT: 지시(AGY/앱) · 회의록/댓글</text>
-            <text x="32" y="330" class="node-sched">최종 의사결정 &amp; 수동 인증(Handoff)</text>
+          <path data-from="gemini_app" data-to="gdrive" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M485,86 L575,158" />
+          <text data-from="gemini_app" data-to="gdrive" x="536" y="110" text-anchor="middle" class="edge-label">JSON·DOOKI메모</text>
+
+          <path data-from="gdrive" data-to="gemini_app" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M575,180 L485,112" />
+          <text data-from="gdrive" data-to="gemini_app" x="526" y="158" text-anchor="middle" class="edge-label">브리지 지침</text>
+
+          <path data-from="agy" data-to="gdrive" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M485,280 L575,204" />
+          <text data-from="agy" data-to="gdrive" x="522" y="232" text-anchor="middle" class="edge-label">HTML·스킬</text>
+
+          <path data-from="gdrive" data-to="agy" class="tool-edge cv-flow" stroke="#a78bfa" marker-end="url(#t-purple)" d="M575,226 L485,302" />
+          <text data-from="gdrive" data-to="agy" x="542" y="274" text-anchor="middle" class="edge-label">요청 큐[4]</text>
+
+          <path data-from="agy" data-to="github" class="tool-edge cv-flow" stroke="#34d399" marker-end="url(#t-green)" d="M460,252 C565,105 740,85 895,95" />
+          <text data-from="agy" data-to="github" x="678" y="96" text-anchor="middle" class="edge-label">코드·MCP푸시·gh run</text>
+
+          <path data-from="agy" data-to="notion" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M485,318 C660,305 760,320 895,358" />
+          <text data-from="agy" data-to="notion" x="700" y="314" text-anchor="middle" class="edge-label">DOOKI 직접기록·정리</text>
+
+          <path data-from="agy" data-to="chrome" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M368,370 L368,545" />
+          <text data-from="agy" data-to="chrome" x="330" y="458" text-anchor="middle" class="edge-label">3종 제어</text>
+
+          <path data-from="chrome" data-to="agy" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M392,545 L392,370" />
+          <text data-from="chrome" data-to="agy" x="434" y="458" text-anchor="middle" class="edge-label">DOM·스냅샷</text>
+
+          <path data-from="agy" data-to="confluence" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M485,355 C570,485 740,565 895,585" />
+          <text data-from="agy" data-to="confluence" x="595" y="505" text-anchor="middle" class="edge-label">문서·ZIP(REST v1)</text>
+
+          <path data-from="gdrive" data-to="gas" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M672,240 L672,340" />
+          <text data-from="gdrive" data-to="gas" x="628" y="294" text-anchor="middle" class="edge-label">감시·DOOKI메모</text>
+
+          <path data-from="gas" data-to="gdrive" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M696,340 L696,240" />
+          <text data-from="gas" data-to="gdrive" x="742" y="294" text-anchor="middle" class="edge-label">인박스비움·질문</text>
+
+          <path data-from="gdrive" data-to="github" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M795,168 L895,128" />
+          <text data-from="gdrive" data-to="github" x="845" y="138" text-anchor="middle" class="edge-label">JSON/HTML</text>
+
+          <path data-from="gas" data-to="github" class="tool-edge cv-flow" stroke="#60a5fa" marker-end="url(#t-blue)" d="M785,340 L908,162" />
+          <text data-from="gas" data-to="github" x="855" y="254" text-anchor="middle" class="edge-label">dispatch</text>
+
+          <path data-from="gas" data-to="gemini_api" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M672,454 L672,545" />
+          <text data-from="gas" data-to="gemini_api" x="630" y="502" text-anchor="middle" class="edge-label">요약·분류 질의</text>
+
+          <path data-from="gemini_api" data-to="gas" class="tool-edge cv-flow" stroke="#fb7185" marker-end="url(#t-rose)" d="M696,545 L696,454" />
+          <text data-from="gemini_api" data-to="gas" x="740" y="502" text-anchor="middle" class="edge-label">결과 JSON 반환</text>
+
+          <path data-from="gas" data-to="notion" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M795,384 L895,384" />
+          <text data-from="gas" data-to="notion" x="845" y="376" text-anchor="middle" class="edge-label">요약·A/I·DOOKI</text>
+
+          <path data-from="notion" data-to="gas" class="tool-edge cv-flow" stroke="#fbbf24" marker-end="url(#t-amber)" d="M895,412 L795,412" />
+          <text data-from="notion" data-to="gas" x="845" y="428" text-anchor="middle" class="edge-label">변경·댓글 폴링</text>
+
+          <path data-from="chrome" data-to="github" class="tool-edge cv-flow" stroke="#22d3ee" marker-end="url(#t-cyan)" d="M485,605 C810,630 860,295 965,162" />
+          <text data-from="chrome" data-to="github" x="850" y="518" text-anchor="middle" class="edge-label">Gist 북마크 동기화</text>
+
+          <g class="tool-node" data-tool="user_mobile" data-trigger="외출·이동 중 수시 / 매일 웹 브리핑 확인" data-in="GitHub Pages 대시보드(주식·나들이·공유문서)" data-out="Gemini 앱 음성·텍스트 지시(두키 메모·수정 요청)">
+            <rect x="18" y="52" width="190" height="100" />
+            <circle cx="34" cy="70" r="4.5" fill="#60a5fa" class="cv-pulse" />
+            <text x="46" y="74" class="node-title">📱 사용자 (모바일)</text>
+            <text x="30" y="92" class="node-sched">⏰ 수시 · 이동 중 열람/메모</text>
+            <text x="30" y="109" class="node-sub">IN: 웹 대시보드 3종 열람</text>
+            <text x="30" y="125" class="node-sub">OUT: 앱 지시(DOOKI·피드백)</text>
+            <text x="30" y="141" class="node-sub">모바일 진입점 (앱 대화)</text>
           </g>
 
-          <g class="tool-node" data-tool="gemini_app" data-in="사용자 지시, 예약 크론(07/19시·금15시), AGY-Bridge 지침" data-out="Dashboard_Incoming JSON, DOOKI-Inbox 메모, [3]/[4] 피드백">
-            <rect x="270" y="55" width="205" height="96" />
-            <circle cx="286" cy="74" r="4.5" fill="#60a5fa" class="cv-pulse" />
-            <text x="298" y="78" class="node-title">🤖 Gemini 앱 (모바일/웹)</text>
-            <text x="282" y="96" class="node-sub">IN: 예약(주식/나들이) · 브리지 지침</text>
-            <text x="282" y="112" class="node-sub">OUT: 시황/나들이 JSON · DOOKI 메모</text>
-            <text x="282" y="128" class="node-sched">실시간 웹 검색 · 모바일 진입점</text>
+          <g class="tool-node" data-tool="user_pc" data-trigger="PC 업무·개발 시 수시 / 회의록·댓글 직접 작성" data-in="AGY CLI 결과, Chrome 화면, Notion, Confluence" data-out="AGY CLI 작업 지시, 크롬 브라우징/2FA, 회의록·댓글">
+            <rect x="18" y="310" width="190" height="110" />
+            <circle cx="34" cy="328" r="4.5" fill="#34d399" class="cv-pulse" />
+            <text x="46" y="332" class="node-title">💻 사용자 (PC)</text>
+            <text x="30" y="350" class="node-sched">⏰ 업무·개발 시 수시</text>
+            <text x="30" y="367" class="node-sub">IN: AGY·크롬·Notion·위키</text>
+            <text x="30" y="383" class="node-sub">OUT: AGY 지시 · 2FA 인증</text>
+            <text x="30" y="399" class="node-sub">OUT: 회의록·질문 댓글 답글</text>
           </g>
 
-          <g class="tool-node" data-tool="agy" data-in="사용자 PC 지시, AGY-Bridge 큐, Chrome DOM/스냅샷" data-out="코드·스킬·clasp·GitHub 푸시, DOOKI 직접 기록, 3종 크롬·Confluence">
-            <rect x="270" y="252" width="205" height="104" />
-            <circle cx="286" cy="271" r="4.5" fill="#34d399" class="cv-pulse" />
-            <text x="298" y="275" class="node-title">⚡ 로컬 AGY CLI (F:\CLI)</text>
-            <text x="282" y="293" class="node-sub">IN: PC 지시 · AGY-Bridge · 크롬상태</text>
-            <text x="282" y="309" class="node-sub">OUT: GitHub·clasp·DOOKI·Confluence</text>
-            <text x="282" y="325" class="node-sub">OUT: 3종 크롬 제어 · HTML 생성</text>
-            <text x="282" y="341" class="node-sched">중앙 오케스트레이터 &amp; 스킬 허브</text>
+          <g class="tool-node" data-tool="gemini_app" data-trigger="예약 크론(주식 07/19시, 나들이 금 15시) + 모바일 수시 대화" data-in="모바일 사용자 지시, 예약 스케줄, AGY-Bridge 지침" data-out="Dashboard_Incoming JSON, DOOKI-Inbox 메모, [3]/[4] 피드백">
+            <rect x="275" y="48" width="210" height="108" />
+            <circle cx="291" cy="66" r="4.5" fill="#60a5fa" class="cv-pulse" />
+            <text x="303" y="70" class="node-title">🤖 Gemini 앱 (모바일/웹)</text>
+            <text x="287" y="88" class="node-sched">⏰ 07/19시 · 금15시 + 수시</text>
+            <text x="287" y="105" class="node-sub">IN: 모바일 지시 · 브리지 지침</text>
+            <text x="287" y="121" class="node-sub">OUT: 시황/나들이 JSON</text>
+            <text x="287" y="137" class="node-sub">OUT: @dooki-inbox 메모</text>
           </g>
 
-          <g class="tool-node" data-tool="chrome" data-in="사용자 브라우징, AGY 3종 제어(agent-browser/browse/Playwright)" data-out="GitHub Gist 북마크/파비콘 동기화, DOM 스냅샷·UI 검증">
-            <rect x="270" y="515" width="205" height="96" />
-            <text x="282" y="537" class="node-title">🌐 Chrome &amp; 3종 컨트롤</text>
-            <text x="282" y="555" class="node-sub">IN: 사용자 · agent-browser/browse/PW</text>
-            <text x="282" y="571" class="node-sub">OUT: Gist 북마크 · DOM/E2E 검증</text>
-            <text x="282" y="587" class="node-sched">릴레이(19988) + 격리 크롬 + BookmarkHub</text>
+          <g class="tool-node" data-tool="agy" data-trigger="PC 사용자 수동 호출 (온디맨드 + 스킬 자동 체이닝)" data-in="PC 사용자 지시, AGY-Bridge 큐[4], Chrome DOM/스냅샷" data-out="GitHub·clasp·HTML·DOOKI 직접기록·Confluence·3종 크롬 제어">
+            <rect x="275" y="252" width="210" height="118" />
+            <circle cx="291" cy="270" r="4.5" fill="#34d399" class="cv-pulse" />
+            <text x="303" y="274" class="node-title">⚡ 로컬 AGY CLI (F:\CLI)</text>
+            <text x="287" y="292" class="node-sched">⏰ 수동 호출 (온디맨드)</text>
+            <text x="287" y="309" class="node-sub">IN: PC 지시 · 브리지 · 크롬DOM</text>
+            <text x="287" y="325" class="node-sub">OUT: 코드·clasp·DOOKI·위키</text>
+            <text x="287" y="341" class="node-sub">OUT: 3종 크롬·shared-docs</text>
+            <text x="287" y="357" class="node-sub">중앙 오케스트레이터</text>
           </g>
 
-          <g class="tool-node" data-tool="gdrive" data-in="Gemini 앱(JSON/DOOKI-Inbox), AGY(HTML/스킬), GAS(Feedback 정리)" data-out="GAS 폴더감시/동기화, Actions JSON/HTML 수집, AGY 브리지 읽기">
-            <rect x="560" y="160" width="220" height="100" />
-            <text x="572" y="182" class="node-title">☁️ Google Drive (이원화 버퍼)</text>
-            <text x="572" y="200" class="node-sub">IN: 앱/AGY (Incoming vs AGY-Bridge)</text>
-            <text x="572" y="216" class="node-sub">OUT: GAS 감시 · Actions · AGY 전달</text>
-            <text x="572" y="232" class="node-sub">포함: DOOKI-Inbox · Notion-AI-Feedback</text>
-            <text x="572" y="248" class="node-sched">배포용 SA vs 개인 단독 권한 격리</text>
+          <g class="tool-node" data-tool="chrome" data-trigger="북마크 변경 시 + AGY 3종 크롬 제어 호출 시" data-in="PC 사용자 브라우징, AGY(agent-browser / browse / Playwright)" data-out="GitHub Gist 북마크 동기화, AGY로 DOM 스냅샷·UI 검증">
+            <rect x="275" y="545" width="210" height="106" />
+            <text x="287" y="567" class="node-title">🌐 Chrome &amp; 3종 컨트롤</text>
+            <text x="287" y="585" class="node-sched">⏰ 변경 시 / 온디맨드 제어</text>
+            <text x="287" y="602" class="node-sub">IN: PC사용자 · 3종 크롬 엔진</text>
+            <text x="287" y="618" class="node-sub">OUT: Gist 동기화 · DOM/E2E</text>
+            <text x="287" y="634" class="node-sub">19988 릴레이 + 격리 크롬</text>
           </g>
 
-          <g class="tool-node" data-tool="gas" data-in="Drive 감시(Code.gs/DOOKI-Inbox/Feedback), Notion 회의·댓글, Gemini API" data-out="GitHub workflow_dispatch, Gemini API 질의, Notion 회의/DOOKI 적재">
-            <rect x="560" y="365" width="220" height="100" />
-            <circle cx="576" cy="384" r="4.5" fill="#fbbf24" class="cv-pulse" />
-            <text x="588" y="388" class="node-title">⚙️ Google Apps Script</text>
-            <text x="572" y="406" class="node-sub">IN: Drive 변경 · Notion · Gemini API</text>
-            <text x="572" y="422" class="node-sub">OUT: GH Dispatch · Notion 회의/DOOKI</text>
-            <text x="572" y="438" class="node-sub">Code.gs + NotionSync(v1.11) + DookiSync</text>
-            <text x="572" y="454" class="node-sched">⏰ 30분 주기 · 본문 15분 수정 유예</text>
+          <g class="tool-node" data-tool="gdrive" data-trigger="상시 대기 (GAS 주기 감시 · Actions 수집 대상)" data-in="Gemini 앱(JSON/DOOKI-Inbox), AGY(HTML/스킬), GAS(정리·질문)" data-out="GAS(감시·인박스), Actions(JSON/HTML), Gemini앱/AGY 브리지">
+            <rect x="575" y="130" width="220" height="110" />
+            <text x="587" y="152" class="node-title">☁️ Google Drive (이원화 버퍼)</text>
+            <text x="587" y="170" class="node-sched">⏰ 상시 대기 (권한 격리 저장소)</text>
+            <text x="587" y="187" class="node-sub">IN: 앱/AGY (Incoming · Bridge)</text>
+            <text x="587" y="203" class="node-sub">OUT: GAS 감시 · Actions 수집</text>
+            <text x="587" y="219" class="node-sub">포함: DOOKI-Inbox · Feedback</text>
           </g>
 
-          <g class="tool-node" data-tool="gemini_api" data-in="GAS(NotionSync 회의록 본문/댓글, DookiSync 개인 메모)" data-out="GAS로 회의 요약·A/I·질문 JSON &amp; DOOKI 8페이지 분류 JSON 반환">
-            <rect x="560" y="530" width="220" height="84" />
-            <text x="572" y="552" class="node-title">🧠 Gemini API (Flash 폴백)</text>
-            <text x="572" y="570" class="node-sub">IN: GAS(회의록 최대 3건 + DOOKI 메모)</text>
-            <text x="572" y="586" class="node-sub">OUT: 요약/A·I JSON + DOOKI 분류 JSON</text>
-            <text x="572" y="602" class="node-sched">서버리스(.gs) 전용 무인 추론 엔진</text>
+          <g class="tool-node" data-tool="gas" data-trigger="30분 주기 트리거(NotionSync+DookiSync) + 폴더 감시 트리거(Code.gs)" data-in="Drive 변경/인박스, Notion 회의·댓글 폴링, Gemini API JSON" data-out="GitHub dispatch, Gemini API 질의, Notion 적재, Drive 정리">
+            <rect x="575" y="340" width="220" height="114" />
+            <circle cx="591" cy="358" r="4.5" fill="#fbbf24" class="cv-pulse" />
+            <text x="603" y="362" class="node-title">⚙️ Google Apps Script</text>
+            <text x="587" y="380" class="node-sched">⏰ 30분 주기 · 본문 15분 유예</text>
+            <text x="587" y="397" class="node-sub">IN: Drive · Notion · Gemini API</text>
+            <text x="587" y="413" class="node-sub">OUT: GH Dispatch · Notion · Drive</text>
+            <text x="587" y="429" class="node-sub">Code.gs + NotionSync + DookiSync</text>
           </g>
 
-          <g class="tool-node" data-tool="github" data-in="GAS Dispatch, Drive JSON/HTML, AGY 푸시, Chrome Gist 동기화" data-out="3개 GitHub Pages 웹 허브(stock/weekend/shared-docs), Gist 백업">
-            <rect x="875" y="70" width="225" height="100" />
-            <text x="887" y="92" class="node-title">🐙 GitHub (Actions·Pages·Gist)</text>
-            <text x="887" y="110" class="node-sub">IN: GAS · Drive · AGY · BookmarkHub</text>
-            <text x="887" y="126" class="node-sub">OUT: 3대 웹 허브 + all-spots 아카이브</text>
-            <text x="887" y="142" class="node-sub">OUT: Gist 다중 PC 북마크 동기화</text>
-            <text x="887" y="158" class="node-sched">⏰ 10분 cron + dispatch 자동 빌드</text>
+          <g class="tool-node" data-tool="gemini_api" data-trigger="GAS 30분 주기 실행 시 미처리·수정 건만 온디맨드 호출" data-in="GAS(NotionSync 회의록 최대 3건, DookiSync 개인 메모)" data-out="GAS로 회의 요약·A/I·질문 JSON &amp; DOOKI 8페이지 분류 JSON">
+            <rect x="575" y="545" width="220" height="100" />
+            <text x="587" y="567" class="node-title">🧠 Gemini API (Flash 폴백)</text>
+            <text x="587" y="585" class="node-sched">⏰ GAS 호출 시 (최대 3건/회)</text>
+            <text x="587" y="602" class="node-sub">IN: 회의록/댓글 · DOOKI 메모</text>
+            <text x="587" y="618" class="node-sub">OUT: 구조화 JSON 응답</text>
           </g>
 
-          <g class="tool-node" data-tool="notion" data-in="사용자(회의록·댓글), GAS(NotionSync·DookiSync), AGY(DOOKI 직접)" data-out="사용자 열람, GAS 폴링(변경·사용자 답글 감지)">
-            <rect x="875" y="340" width="225" height="96" />
-            <circle cx="891" cy="359" r="4.5" fill="#fb7185" class="cv-pulse" />
-            <text x="903" y="363" class="node-title">📝 Notion (회의록 + DOOKI)</text>
-            <text x="887" y="381" class="node-sub">IN: 사용자 · GAS(v1.11/Dooki) · AGY</text>
-            <text x="887" y="397" class="node-sub">OUT: 회의 요약/A·I/댓글 · DOOKI 8종</text>
-            <text x="887" y="413" class="node-sched">업무(Command Center) ↔ 개인(DOOKI) 분리</text>
+          <g class="tool-node" data-tool="github" data-trigger="10분 cron(브리핑 시간대) + workflow_dispatch 즉시 + 수동 푸시" data-in="GAS Dispatch, Drive JSON/HTML, AGY 푸시, Chrome Gist" data-out="모바일/웹 3대 Pages 허브(stock·weekend·shared-docs), Gist">
+            <rect x="895" y="48" width="235" height="114" />
+            <text x="907" y="70" class="node-title">🐙 GitHub (Actions·Pages·Gist)</text>
+            <text x="907" y="88" class="node-sched">⏰ 10분 cron + dispatch 즉시</text>
+            <text x="907" y="105" class="node-sub">IN: GAS · Drive · AGY · Gist</text>
+            <text x="907" y="121" class="node-sub">OUT: 3대 Pages + all-spots</text>
+            <text x="907" y="137" class="node-sub">OUT: 다중 PC 북마크 동기화</text>
           </g>
 
-          <g class="tool-node" data-tool="confluence" data-in="AGY (confluence_manager.py REST v1 + ZIP 첨부)" data-out="사용자 팀/개인 위키 릴리스 페이지 및 KST 첨부파일">
-            <rect x="875" y="520" width="225" height="84" />
-            <text x="887" y="542" class="node-title">📘 Confluence Cloud</text>
-            <text x="887" y="560" class="node-sub">IN: AGY(confluence_manager.py)</text>
-            <text x="887" y="576" class="node-sub">OUT: 위키 문서 + ZIP 첨부(KST 표기)</text>
-            <text x="887" y="592" class="node-sched">REST v1 직결 (개인 스페이스 호환)</text>
+          <g class="tool-node" data-tool="notion" data-trigger="사용자 상시 입력 · GAS 30분 폴링 감시 대상" data-in="PC 사용자(회의록·댓글), GAS(v1.11·DookiSync), AGY(DOOKI)" data-out="GAS 폴링(신규/수정/댓글 답글 감지), 사용자 열람">
+            <rect x="895" y="335" width="235" height="110" />
+            <circle cx="911" cy="353" r="4.5" fill="#fb7185" class="cv-pulse" />
+            <text x="923" y="357" class="node-title">📝 Notion (회의록 + DOOKI)</text>
+            <text x="907" y="375" class="node-sched">⏰ 상시 (GAS 30분 폴링)</text>
+            <text x="907" y="392" class="node-sub">IN: PC사용자 · GAS · AGY</text>
+            <text x="907" y="408" class="node-sub">OUT: 변경·댓글 · 위키 열람</text>
+            <text x="907" y="424" class="node-sub">업무(회의) ↔ 개인(DOOKI) 분리</text>
+          </g>
+
+          <g class="tool-node" data-tool="confluence" data-trigger="BookmarkHub 릴리스 등 배포 시 온디맨드" data-in="AGY(confluence_manager.py REST v1 + ZIP 첨부)" data-out="팀/개인 위키 릴리스 문서 &amp; KST 첨부파일">
+            <rect x="895" y="545" width="235" height="100" />
+            <text x="907" y="567" class="node-title">📘 Confluence Cloud</text>
+            <text x="907" y="585" class="node-sched">⏰ 배포 시 온디맨드</text>
+            <text x="907" y="602" class="node-sub">IN: AGY (REST v1 + ZIP)</text>
+            <text x="907" y="618" class="node-sub">OUT: 위키 문서 + KST 첨부</text>
           </g>
         </svg>
       </div>
 
       <div id="toolIoBar" class="tool-io-bar">
         <div>
-          <strong id="ioToolTitle">전체 10개 주체/도구 연결 표시 중</strong>
-          <span id="ioToolDetail" style="color:var(--muted); margin-left:8px;">위 다이어그램에서 도구 노드를 클릭하면 해당 도구의 입력(IN)과 출력(OUT)만 강조됩니다.</span>
+          <strong id="ioToolTitle">전체 11개 주체/도구 연결 표시 중 (모바일·PC 사용자 분리)</strong>
+          <span id="ioToolDetail" style="color:var(--muted); margin-left:8px;">위 다이어그램에서 노드를 클릭하면 해당 도구의 <strong>활동 기준</strong>과 <strong>입력(IN)·출력(OUT)</strong>만 강조됩니다.</span>
         </div>
       </div>
     </section>
@@ -1213,6 +1280,7 @@
     (function () {
       var nodes = document.querySelectorAll("#toolGraphSvg .tool-node");
       var edges = document.querySelectorAll("#toolGraphSvg .tool-edge");
+      var edgeLabels = document.querySelectorAll("#toolGraphSvg .edge-label");
       var resetBtn = document.getElementById("resetToolGraph");
       var titleEl = document.getElementById("ioToolTitle");
       var detailEl = document.getElementById("ioToolDetail");
@@ -1220,9 +1288,10 @@
       function resetAll() {
         nodes.forEach(function (n) { n.classList.remove("dimmed", "active"); });
         edges.forEach(function (e) { e.classList.remove("dimmed", "active"); });
+        edgeLabels.forEach(function (l) { l.classList.remove("dimmed"); });
         resetBtn.classList.add("active");
-        titleEl.textContent = "전체 10개 주체/도구 연결 표시 중";
-        detailEl.innerHTML = "위 다이어그램에서 도구 노드를 클릭하면 해당 도구의 입력(IN)과 출력(OUT)만 강조됩니다.";
+        titleEl.textContent = "전체 11개 주체/도구 연결 표시 중 (모바일·PC 사용자 분리)";
+        detailEl.innerHTML = "위 다이어그램에서 노드를 클릭하면 해당 도구의 <strong>활동 기준</strong>과 <strong>입력(IN)·출력(OUT)</strong>만 강조됩니다.";
       }
 
       nodes.forEach(function (node) {
@@ -1245,6 +1314,11 @@
             }
           });
 
+          edgeLabels.forEach(function (l) {
+            if (l.dataset.from === id || l.dataset.to === id) l.classList.remove("dimmed");
+            else l.classList.add("dimmed");
+          });
+
           nodes.forEach(function (n) {
             if (n === node) {
               n.classList.remove("dimmed");
@@ -1260,7 +1334,7 @@
 
           resetBtn.classList.remove("active");
           var label = node.querySelector(".node-title").textContent;
-          titleEl.textContent = label;
+          titleEl.textContent = label + " · [" + (node.dataset.trigger || "") + "]";
           detailEl.innerHTML =
             '<span class="io-pill io-in">IN</span>' + (node.dataset.in || "-") +
             ' &nbsp;&nbsp;<span class="io-pill io-out">OUT</span>' + (node.dataset.out || "-");
