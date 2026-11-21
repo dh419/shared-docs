@@ -365,7 +365,7 @@
         <p class="subtitle">F:\CLI 중심 클라우드·로컬 AI 하이브리드 자동화 맵 (역할, 실행 주기, 연결 및 개선 현황)</p>
       </div>
       <div class="header-actions">
-        <span class="badge-date">업데이트: 2026-11-19 KST</span>
+        <span class="badge-date">업데이트: 2026-11-21 KST</span>
         <button id="themeToggle" class="theme-btn" type="button" aria-label="테마 전환">
           <span id="themeIcon">🌙</span>
           <span id="themeText">다크 모드</span>
@@ -376,13 +376,13 @@
     <section class="kpi-grid" aria-label="핵심 지표">
       <div class="kpi-card">
         <div class="kpi-label">구축된 핵심 파이프라인</div>
-        <div class="kpi-value">5개</div>
-        <div class="kpi-sub">브리핑 · 브리지 · 공유문서 · Notion · BookmarkHub</div>
+        <div class="kpi-value">6개</div>
+        <div class="kpi-sub">브리핑 · 브리지 · 공유문서 · Notion · 3종 크롬 · DOOKI</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">연동 외부 도구 (GAS 포함)</div>
-        <div class="kpi-value">10종</div>
-        <div class="kpi-sub">Gemini 앱/API, Drive, GAS(.gs), GitHub, Notion, Confluence 등</div>
+        <div class="kpi-label">연동 외부 도구 &amp; 엔진</div>
+        <div class="kpi-value">12종+</div>
+        <div class="kpi-sub">Gemini 앱/API, Drive, GAS, GitHub, Notion, Confluence, 3종 크롬</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">예약 스케줄 자동화</div>
@@ -392,7 +392,7 @@
       <div class="kpi-card">
         <div class="kpi-label">보안 · 권한 격리 구조</div>
         <div class="kpi-value">이원화</div>
-        <div class="kpi-sub">외부 배포용(Dashboard_Incoming) vs 개인(AGY-Bridge)</div>
+        <div class="kpi-sub">배포(Dashboard_Incoming) vs 개인(AGY-Bridge/DOOKI)</div>
       </div>
     </section>
 
@@ -404,14 +404,15 @@
           <button class="pill" data-filter="p1" type="button">A. 정기 브리핑</button>
           <button class="pill" data-filter="p2" type="button">B. AGY-Bridge</button>
           <button class="pill" data-filter="p3" type="button">C. 공유문서</button>
-          <button class="pill" data-filter="p4" type="button">D. Notion</button>
-          <button class="pill" data-filter="p5" type="button">E. Bookmark/Confluence</button>
+          <button class="pill" data-filter="p4" type="button">D. Notion 회의</button>
+          <button class="pill" data-filter="p5" type="button">E. 3종 크롬 · Bookmark</button>
+          <button class="pill" data-filter="p6" type="button">F. DOOKI 개인위키</button>
         </div>
       </div>
-      <div id="filterStatus" class="sr-status" aria-live="polite">표시 중: 전체 5개 파이프라인</div>
+      <div id="filterStatus" class="sr-status" aria-live="polite">표시 중: 전체 6개 파이프라인</div>
 
       <div class="diagram-wrap" style="margin-top: 12px;">
-        <svg class="arch-svg" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="외부 도구 파이프라인 시스템 아키텍처 다이어그램">
+        <svg class="arch-svg" viewBox="0 0 1120 650" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="외부 도구 파이프라인 시스템 아키텍처 다이어그램">
           <defs>
             <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
               <path d="M0,0 L8,4 L0,8 Z" fill="#60a5fa" />
@@ -428,63 +429,72 @@
             <marker id="arr-cyan" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
               <path d="M0,0 L8,4 L0,8 Z" fill="#22d3ee" />
             </marker>
+            <marker id="arr-rose" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#fb7185" />
+            </marker>
           </defs>
 
           <!-- Layer Headers -->
           <text x="20" y="24" class="layer-label">1. 입력 / 트리거 (Trigger)</text>
           <text x="275" y="24" class="layer-label">2. 완충 / 브리지 (Buffer)</text>
           <text x="555" y="24" class="layer-label">3. 감시 / 실행 엔진 (GAS · Actions · CLI)</text>
-          <text x="850" y="24" class="layer-label">4. 최종 게시 / 저장 (Target)</text>
+          <text x="865" y="24" class="layer-label">4. 최종 게시 / 저장 (Target)</text>
 
-          <line x1="252" y1="36" x2="252" y2="520" stroke="var(--border)" stroke-dasharray="4 4" />
-          <line x1="530" y1="36" x2="530" y2="520" stroke="var(--border)" stroke-dasharray="4 4" />
-          <line x1="825" y1="36" x2="825" y2="520" stroke="var(--border)" stroke-dasharray="4 4" />
+          <line x1="252" y1="36" x2="252" y2="635" stroke="var(--border)" stroke-dasharray="4 4" />
+          <line x1="530" y1="36" x2="530" y2="635" stroke="var(--border)" stroke-dasharray="4 4" />
+          <line x1="840" y1="36" x2="840" y2="635" stroke="var(--border)" stroke-dasharray="4 4" />
 
           <!-- Edges -->
           <path data-pipes="p1" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M230,90 L275,90" />
           <path data-pipes="p1 p3" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M505,86 L555,86" />
           <path data-pipes="p1 p3" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M675,134 L675,172" />
           <path data-pipes="p1" class="edge cv-flow" stroke="#60a5fa" marker-end="url(#arr-blue)" d="M505,112 C532,112 532,208 555,208" />
-          <path data-pipes="p1 p3" class="edge cv-flow" stroke="#34d399" marker-end="url(#arr-green)" d="M795,212 L850,114" />
+          <path data-pipes="p1 p3" class="edge cv-flow" stroke="#34d399" marker-end="url(#arr-green)" d="M800,212 L865,114" />
 
-          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M230,126 C254,126 254,220 275,220" />
-          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M505,220 C530,220 530,315 555,315" />
-          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M555,332 C522,332 522,240 505,240" />
+          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M230,124 C254,124 254,206 275,206" />
+          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M505,212 C530,212 530,308 555,308" />
+          <path data-pipes="p2" class="edge cv-flow" stroke="#a78bfa" marker-end="url(#arr-purple)" d="M555,326 C522,326 522,232 505,232" />
 
-          <path data-pipes="p3" class="edge cv-flow" stroke="#34d399" marker-end="url(#arr-green)" d="M555,294 C515,294 515,135 505,135" />
+          <path data-pipes="p3" class="edge cv-flow" stroke="#34d399" marker-end="url(#arr-green)" d="M555,292 C515,292 515,135 505,135" />
           <path data-pipes="p3" class="edge cv-flow" stroke="#34d399" marker-end="url(#arr-green)" d="M675,280 L675,254" />
 
-          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M555,356 C520,356 520,398 505,398" />
-          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M505,405 L555,405" />
-          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M505,425 L850,405" />
+          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M230,400 L275,400" />
+          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M505,400 L555,400" />
+          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M505,425 C700,455 760,455 865,402" />
+          <path data-pipes="p4" class="edge cv-flow" stroke="#fbbf24" marker-end="url(#arr-amber)" d="M390,360 L390,264" />
 
-          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M230,485 L555,485" />
-          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M795,330 L850,234" />
-          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M795,485 L850,485" />
+          <path data-pipes="p6" class="edge cv-flow" stroke="#fb7185" marker-end="url(#arr-rose)" d="M230,136 C248,136 248,308 275,308" />
+          <path data-pipes="p6" class="edge cv-flow" stroke="#fb7185" marker-end="url(#arr-rose)" d="M390,342 L390,362" />
+          <path data-pipes="p6" class="edge cv-flow" stroke="#fb7185" marker-end="url(#arr-rose)" d="M505,432 C680,500 770,500 865,492" />
+          <path data-pipes="p6" class="edge cv-flow" stroke="#fb7185" marker-end="url(#arr-rose)" d="M800,338 C832,338 832,475 865,475" />
+
+          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M230,578 L555,578" />
+          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M800,320 L865,234" />
+          <path data-pipes="p5" class="edge cv-flow" stroke="#22d3ee" marker-end="url(#arr-cyan)" d="M800,578 L865,578" />
 
           <!-- Layer 1 -->
-          <g data-pipes="p1 p2">
-            <rect x="20" y="48" width="210" height="94" class="node-box" />
+          <g data-pipes="p1 p2 p6">
+            <rect x="20" y="48" width="210" height="106" class="node-box" />
             <circle cx="36" cy="66" r="4.5" fill="#60a5fa" class="cv-pulse" />
             <text x="48" y="70" class="node-title">Gemini 앱 (모바일/웹)</text>
-            <text x="32" y="88" class="node-sched">⏰ 주식 07:00(월~토) / 19:00(월~금)</text>
-            <text x="32" y="103" class="node-sched">⏰ 나들이 금 15:00 · 15:30 KST</text>
-            <text x="32" y="120" class="node-sub">실시간 웹 검색 · 브리지 스킬 협업</text>
-            <text x="32" y="134" class="node-sub">API 429 회피용 검색/초안 주체</text>
+            <text x="32" y="88" class="node-sched">⏰ 주식 07/19시 · 나들이 금 15시</text>
+            <text x="32" y="104" class="node-sub">• 실시간 검색 (14종목 ANT 포함)</text>
+            <text x="32" y="120" class="node-sub">• @dooki-inbox (개인 메모 투척)</text>
+            <text x="32" y="136" class="node-sub">• @agy-bridge-collaborator</text>
           </g>
 
           <g data-pipes="p4">
-            <rect x="20" y="368" width="210" height="68" class="node-box" />
-            <text x="32" y="390" class="node-title">Notion 회의록 변경</text>
-            <text x="32" y="408" class="node-sub">회의 전후 페이지/체크박스 작성</text>
-            <text x="32" y="424" class="node-sub">GAS 30분 폴링이 자동 감지</text>
+            <rect x="20" y="366" width="210" height="72" class="node-box" />
+            <text x="32" y="388" class="node-title">Notion 회의록 · 댓글</text>
+            <text x="32" y="406" class="node-sub">회의 전후 본문/체크박스 작성</text>
+            <text x="32" y="422" class="node-sub">질문 스레드 직접 답글 → 재분석</text>
           </g>
 
           <g data-pipes="p5">
-            <rect x="20" y="454" width="210" height="58" class="node-box" />
-            <text x="32" y="476" class="node-title">Chrome BookmarkHub</text>
-            <text x="32" y="494" class="node-sched">⏰ 변경 시 / 수동 동기화</text>
-            <text x="32" y="507" class="node-sub">회사 ↔ 집 북마크·파비콘 동기화</text>
+            <rect x="20" y="544" width="210" height="68" class="node-box" />
+            <text x="32" y="566" class="node-title">Chrome &amp; BookmarkHub</text>
+            <text x="32" y="584" class="node-sched">⏰ 변경 시 / 실시간 크롬 제어</text>
+            <text x="32" y="600" class="node-sub">회사↔집 북마크 + browse 확장</text>
           </g>
 
           <!-- Layer 2 -->
@@ -498,25 +508,33 @@
           </g>
 
           <g data-pipes="p2 p4">
-            <rect x="275" y="182" width="230" height="86" class="node-box" />
-            <text x="287" y="204" class="node-title">AGY-Bridge (비공개)</text>
-            <text x="287" y="222" class="node-sub">eril82 단독 소유 (혼용 금지)</text>
-            <text x="287" y="239" class="node-sub">• Config + source/(Feedback) + archive/</text>
-            <text x="287" y="256" class="node-sub">• 상단 Handoff &amp; Last Actor 교대 턴</text>
+            <rect x="275" y="176" width="230" height="86" class="node-box" />
+            <text x="287" y="198" class="node-title">AGY-Bridge (비공개)</text>
+            <text x="287" y="216" class="node-sub">eril82 단독 소유 (혼용 금지)</text>
+            <text x="287" y="233" class="node-sub">• Config + Notion-AI-Feedback</text>
+            <text x="287" y="250" class="node-sub">• source/ 스킬 + archive/ 이력</text>
           </g>
 
-          <g data-pipes="p4">
-            <rect x="275" y="362" width="230" height="82" class="node-box" />
+          <g data-pipes="p6">
+            <rect x="275" y="274" width="230" height="68" class="node-box" />
+            <circle cx="291" cy="292" r="4.5" fill="#fb7185" class="cv-pulse" />
+            <text x="303" y="296" class="node-title">DOOKI-Inbox (Docs)</text>
+            <text x="287" y="314" class="node-sub">AGY-Bridge/source/ 내 버퍼</text>
+            <text x="287" y="330" class="node-sub">Gemini 앱 1줄 기록 → 자동 정리</text>
+          </g>
+
+          <g data-pipes="p4 p6">
+            <rect x="275" y="362" width="230" height="88" class="node-box" />
             <circle cx="291" cy="380" r="4.5" fill="#fbbf24" class="cv-pulse" />
-            <text x="303" y="384" class="node-title">Google Apps Script (NotionSync)</text>
-            <text x="287" y="402" class="node-sched">⏰ 30분 주기 · 본문 15분 수정 유예</text>
-            <text x="287" y="418" class="node-sub">v1.10: 골격·연결·리마인드·유사도 중복방지</text>
-            <text x="287" y="434" class="node-sub">Notion-AI-Feedback 양방향 기준 자동 로드</text>
+            <text x="303" y="384" class="node-title">GAS (NotionSync + DookiSync)</text>
+            <text x="287" y="402" class="node-sched">⏰ 30분 주기 · 본문 15분 유예</text>
+            <text x="287" y="418" class="node-sub">v1.11: 유사도 중복방지 · 댓글 대화</text>
+            <text x="287" y="434" class="node-sub">DookiSync: DOOKI-Inbox 자동 분류</text>
           </g>
 
           <!-- Layer 3 -->
           <g data-pipes="p1 p3">
-            <rect x="555" y="48" width="240" height="86" class="node-box" />
+            <rect x="555" y="48" width="245" height="86" class="node-box" />
             <circle cx="571" cy="66" r="4.5" fill="#60a5fa" class="cv-pulse" />
             <text x="583" y="70" class="node-title">Google Apps Script (Code.gs)</text>
             <text x="567" y="88" class="node-sched">⏰ GAS 주기 트리거 (폴더 감시)</text>
@@ -525,63 +543,73 @@
           </g>
 
           <g data-pipes="p1 p3">
-            <rect x="555" y="172" width="240" height="82" class="node-box" />
+            <rect x="555" y="172" width="245" height="82" class="node-box" />
             <text x="567" y="194" class="node-title">GitHub Actions (Runner)</text>
-            <text x="567" y="211" class="node-sched">⏰ stock 07:00~08:30 / 19:00~20:30 (10분)</text>
-            <text x="567" y="226" class="node-sched">⏰ weekend 금 16:00~17:30 (10분) + 즉시</text>
-            <text x="567" y="242" class="node-sub">HTML 빌드 · hub-data.json 갱신</text>
+            <text x="567" y="211" class="node-sched">⏰ stock 07/19시 · weekend 금 16시</text>
+            <text x="567" y="226" class="node-sub">all-spots.json/html · 실내·외 · 유사묶음</text>
+            <text x="567" y="242" class="node-sub">만료 축제 제외 · 통합 테마 빌드</text>
           </g>
 
-          <g data-pipes="p2 p3 p4 p5">
-            <rect x="555" y="280" width="240" height="78" class="node-box" />
+          <g data-pipes="p2 p3 p4 p5 p6">
+            <rect x="555" y="280" width="245" height="84" class="node-box" />
             <circle cx="571" cy="298" r="4.5" fill="#34d399" class="cv-pulse" />
             <text x="583" y="302" class="node-title">로컬 AGY CLI (F:\CLI)</text>
-            <text x="567" y="320" class="node-sched">⏰ 수동 호출 (온디맨드)</text>
-            <text x="567" y="336" class="node-sub">코드 · clasp push · Playwright · Archive</text>
-            <text x="567" y="350" class="node-sub">Confluence 배포 · gh workflow run</text>
+            <text x="567" y="320" class="node-sched">⏰ 온디맨드 (스킬 기반 자동 체이닝)</text>
+            <text x="567" y="336" class="node-sub">DOOKI 직접 정리 · clasp · GitHub MCP</text>
+            <text x="567" y="352" class="node-sub">Confluence · 3종 크롬 · Archive</text>
           </g>
 
-          <g data-pipes="p4">
-            <rect x="555" y="370" width="240" height="72" class="node-box" />
-            <text x="567" y="392" class="node-title">Gemini API (Flash 폴백)</text>
-            <text x="567" y="410" class="node-sched">⏰ 미처리·수정·기준변경 시 최대 3건</text>
-            <text x="567" y="427" class="node-sub">V10Q 페르소나 · 개조식 요약 · 질문 도출</text>
+          <g data-pipes="p4 p6">
+            <rect x="555" y="378" width="245" height="72" class="node-box" />
+            <text x="567" y="400" class="node-title">Gemini API (Flash 폴백)</text>
+            <text x="567" y="418" class="node-sched">⏰ 회의 최대 3건 + DOOKI-Inbox 분류</text>
+            <text x="567" y="434" class="node-sub">V10Q 페르소나 · DOOKI 8페이지 매핑</text>
           </g>
 
           <g data-pipes="p5">
-            <rect x="555" y="454" width="240" height="58" class="node-box" />
-            <text x="567" y="476" class="node-title">Playwright + ZIP 패키저</text>
-            <text x="567" y="494" class="node-sched">⏰ 배포 전 검증 시 실행</text>
-            <text x="567" y="507" class="node-sub">DOM/E2E 검증 후 버전 동기화</text>
+            <rect x="555" y="544" width="245" height="68" class="node-box" />
+            <text x="567" y="566" class="node-title">3종 크롬 컨트롤 + ZIP 패키저</text>
+            <text x="567" y="584" class="node-sub">agent-browser(격리) · browse(실제크롬)</text>
+            <text x="567" y="600" class="node-sub">Playwright E2E 검증 후 ZIP/Tag</text>
           </g>
 
           <!-- Layer 4 -->
           <g data-pipes="p1 p3">
-            <rect x="850" y="65" width="205" height="90" class="node-box" />
-            <text x="862" y="88" class="node-title">GitHub Pages (3개 웹)</text>
-            <text x="862" y="108" class="node-sub">• dh419/daily-stock-brief</text>
-            <text x="862" y="125" class="node-sub">• dh419/weekend-curator</text>
-            <text x="862" y="142" class="node-sub">• dh419/shared-docs</text>
+            <rect x="865" y="65" width="230" height="94" class="node-box" />
+            <text x="877" y="88" class="node-title">GitHub Pages (3개 웹 허브)</text>
+            <text x="877" y="108" class="node-sub">• daily-stock-brief (14종목 ANT)</text>
+            <text x="877" y="125" class="node-sub">• weekend-curator/#all-spots</text>
+            <text x="877" y="142" class="node-sub">• shared-docs (온디맨드 리포트)</text>
           </g>
 
           <g data-pipes="p5">
-            <rect x="850" y="196" width="205" height="72" class="node-box" />
-            <text x="862" y="218" class="node-title">Confluence Cloud</text>
-            <text x="862" y="238" class="node-sub">REST v1 직결 (개인 스페이스)</text>
-            <text x="862" y="254" class="node-sub">문서 갱신 · ZIP 첨부 · KST 표기</text>
+            <rect x="865" y="196" width="230" height="72" class="node-box" />
+            <text x="877" y="218" class="node-title">Confluence Cloud</text>
+            <text x="877" y="238" class="node-sub">REST v1 직결 (개인 스페이스)</text>
+            <text x="877" y="254" class="node-sub">문서 갱신 · ZIP 첨부 · KST 표기</text>
           </g>
 
           <g data-pipes="p4">
-            <rect x="850" y="366" width="205" height="72" class="node-box" />
-            <text x="862" y="388" class="node-title">Notion Command Center</text>
-            <text x="862" y="408" class="node-sub">회의록 · A/I(15개 파트 · 결정=완료)</text>
-            <text x="862" y="424" class="node-sub">API 뱃지(질문 포함) · AI 댓글 연동</text>
+            <rect x="865" y="356" width="230" height="76" class="node-box" />
+            <text x="877" y="378" class="node-title">Notion 회의 Command Center</text>
+            <text x="877" y="396" class="node-sub">회의록 · A/I(15파트 · 결정=완료)</text>
+            <text x="877" y="412" class="node-sub">질문 댓글 양방향 + [AI 처리 완료]</text>
+          </g>
+
+          <g data-pipes="p6">
+            <rect x="865" y="446" width="230" height="82" class="node-box" />
+            <circle cx="881" cy="464" r="4.5" fill="#fb7185" class="cv-pulse" />
+            <text x="893" y="468" class="node-title">Notion DOOKI 개인 위키</text>
+            <text x="877" y="486" class="node-sub">업무 DB와 완전 분리 (8개 스타터)</text>
+            <text x="877" y="502" class="node-sub">• 가족여행 · 차량/가전/월세 · 건강</text>
+            <text x="877" y="518" class="node-sub">• 빠른메모 · 구독 · 민감정보 비저장</text>
           </g>
 
           <g data-pipes="p5">
-            <rect x="850" y="454" width="205" height="58" class="node-box" />
-            <text x="862" y="476" class="node-title">GitHub Gist</text>
-            <text x="862" y="494" class="node-sub">다중 PC 북마크·파비콘 동기화</text>
+            <rect x="865" y="544" width="230" height="68" class="node-box" />
+            <text x="877" y="566" class="node-title">GitHub Gist &amp; 실시간 Chrome</text>
+            <text x="877" y="584" class="node-sub">다중 PC 북마크 동기화 +</text>
+            <text x="877" y="600" class="node-sub">DOODESK 크롬 릴레이(19988)</text>
           </g>
         </svg>
       </div>
@@ -711,15 +739,15 @@
           <div class="steps-row">
             <div class="step-box">
               <div class="step-num">STEP 1</div>
-              <div class="step-tool">Google Apps Script (NotionSync v1.10)</div>
+              <div class="step-tool">Google Apps Script (NotionSync v1.11)</div>
               <span class="step-sched">⏰ 30분 주기 트리거 (본문 15분 유예)</span>
-              <div class="step-why">골격·회의링크·리마인드는 즉시, 요약·태그·[]/AI 추출은 15분 유예 후 중복 없이 처리</div>
+              <div class="step-why">골격·회의링크·리마인드는 즉시, 요약·태그·[]/AI 추출은 15분 유예 후 유사도 중복방지 적용</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 2</div>
-              <div class="step-tool">Notion REST API</div>
-              <span class="step-sched">⏰ 실행 시 페이지·블록·댓글 호출</span>
-              <div class="step-why">15개 파트 팀 배정, 결정사항 기본 완료, API 뱃지(골격·회의링크·리마인드·요약·태그·질문) 관리</div>
+              <div class="step-tool">Notion REST API + 댓글 양방향</div>
+              <span class="step-sched">⏰ 실행 시 페이지·블록·댓글 스레드 조회</span>
+              <div class="step-why">15개 파트 배정, 결정=완료, 질문 댓글에 사용자 답글 시 재분석 후 [AI 처리 완료] 답글</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 3</div>
@@ -740,22 +768,22 @@
           <div class="pipe-top">
             <div class="pipe-name">
               <span class="tag tag-cyan">Pipeline E</span>
-              <span>BookmarkHub 동기화 &amp; Confluence 배포</span>
+              <span>3종 크롬 컨트롤 · BookmarkHub · Confluence 배포</span>
             </div>
-            <span class="badge-date">로컬 개발 · 검증 · 배포</span>
+            <span class="badge-date">로컬 개발 · 브라우저 제어 · 배포</span>
           </div>
           <div class="steps-row">
             <div class="step-box">
               <div class="step-num">STEP 1</div>
-              <div class="step-tool">BookmarkHub ↔ GitHub Gist</div>
-              <span class="step-sched">⏰ 북마크 변경 / 수동 동기화</span>
-              <div class="step-why">별도 백엔드 서버 없이 회사 PC와 집 PC 간 북마크·파비콘 캐시 동기화</div>
+              <div class="step-tool">3종 크롬 컨트롤 라우팅</div>
+              <span class="step-sched">⏰ 작업별 최적 엔진 자동 선택</span>
+              <div class="step-why">agent-browser(격리 고속) · browse(실제 크롬 19988) · Playwright(E2E/콘솔 검증)</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 2</div>
-              <div class="step-tool">Playwright E2E 검증</div>
-              <span class="step-sched">⏰ 배포 전 자동 실행</span>
-              <div class="step-why">확장 프로그램 UI·DOM·필터 동작을 실제 브라우저에서 자동 회귀 테스트</div>
+              <div class="step-tool">BookmarkHub ↔ GitHub Gist</div>
+              <span class="step-sched">⏰ 북마크 변경 / 파비콘 웜업</span>
+              <div class="step-why">도메인 파비콘 크롤링 + URL 단위 웜업으로 회사↔집 PC 북마크 동기화</div>
             </div>
             <div class="step-box">
               <div class="step-num">STEP 3</div>
@@ -768,6 +796,42 @@
               <div class="step-tool">confluence_manager.py</div>
               <span class="step-sched">⏰ 배포 시 수동/자율 실행</span>
               <div class="step-why">개인 스페이스 호환을 위해 REST v1으로 직결해 문서·ZIP 첨부·KST 시간 갱신</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="pipe-card" data-pipe="p6">
+          <div class="pipe-top">
+            <div class="pipe-name">
+              <span class="tag tag-rose">Pipeline F</span>
+              <span>DOOKI 개인 위키 자동 적재 (모바일 Gemini 앱 ↔ AGY ↔ Notion)</span>
+            </div>
+            <span class="badge-date">업무 DB 분리 · 30분 무인 + 즉시</span>
+          </div>
+          <div class="steps-row">
+            <div class="step-box">
+              <div class="step-num">STEP 1</div>
+              <div class="step-tool">Gemini 앱 (@dooki-inbox)</div>
+              <span class="step-sched">⏰ 모바일/웹 자연어 메모</span>
+              <div class="step-why">"두키에 적어줘" 발동 시 민감 원문을 마스킹해 DOOKI-Inbox 문서에 1줄 추가</div>
+            </div>
+            <div class="step-box">
+              <div class="step-num">STEP 2</div>
+              <div class="step-tool">AGY-Bridge/source/DOOKI-Inbox</div>
+              <span class="step-sched">⏰ 비공개 Docs 버퍼</span>
+              <div class="step-why">Notion API를 직접 부를 수 없는 Gemini 앱을 대신해 안전하게 메모를 수신</div>
+            </div>
+            <div class="step-box">
+              <div class="step-num">STEP 3</div>
+              <div class="step-tool">DookiSync.gs + Gemini API</div>
+              <span class="step-sched">⏰ 30분 주기 자동 분류·적재</span>
+              <div class="step-why">가족여행·차량/가전/월세·아이·구독·건강 등 8개 페이지로 자동 분류 후 인박스 정리</div>
+            </div>
+            <div class="step-box">
+              <div class="step-num">STEP 4</div>
+              <div class="step-tool">Notion DOOKI + AGY (dooki-personal-wiki)</div>
+              <span class="step-sched">⏰ PC에서는 AGY가 즉시 반영</span>
+              <div class="step-why">영역(5종)·유형·즐겨찾기·인증(만료알림) 구조로 장기 유지·확장</div>
             </div>
           </div>
         </article>
@@ -792,16 +856,16 @@
           <tbody>
             <tr>
               <td><strong>Gemini 앱</strong></td>
-              <td>A, B</td>
+              <td>A, B, F</td>
               <td>예약 4건(주식 07/19시, 나들이 금 15/15:30) + 수동</td>
-              <td>API 할당량 제약 없이 실시간 웹 검색 및 모바일 진입점 제공</td>
+              <td>API 할당량 제약 없이 실시간 웹 검색, <code>@dooki-inbox</code> 및 모바일 진입점 제공</td>
               <td>본인 Google 계정 OAuth</td>
             </tr>
             <tr>
               <td><strong>Google Drive (2원화)</strong></td>
-              <td>A, B, C</td>
+              <td>A, B, C, F</td>
               <td>상시 대기 (버퍼 저장소)</td>
-              <td><code>Dashboard_Incoming</code>(배포)과 <code>AGY-Bridge</code>(개인) 권한 격리</td>
+              <td><code>Dashboard_Incoming</code>(배포)과 <code>AGY-Bridge</code>(개인·<code>DOOKI-Inbox</code>) 권한 격리</td>
               <td>SA 키 공유 vs 본인 단독</td>
             </tr>
             <tr>
@@ -812,11 +876,18 @@
               <td><code>GH_TOKEN</code> + <code>clasp</code></td>
             </tr>
             <tr>
-              <td><strong>Google Apps Script (NotionSync.gs)</strong></td>
-              <td>D</td>
+              <td><strong>Google Apps Script (NotionSync + DookiSync)</strong></td>
+              <td>D, F</td>
               <td>30분 주기 트리거 (본문 15분 유예)</td>
-              <td>24시간 Notion 회의록 정리·연결·유사도 중복방지 및 <code>Notion-AI-Feedback</code> 양방향 학습</td>
+              <td>회의록 연결·댓글 양방향 대화(<code>v1.11</code>) 및 <code>DOOKI-Inbox</code> 개인 위키 자동 적재</td>
               <td><code>NOTION_TOKEN</code> + <code>GEMINI_API_KEY</code></td>
+            </tr>
+            <tr>
+              <td><strong>3종 크롬 컨트롤</strong></td>
+              <td>E</td>
+              <td>온디맨드 (작업별 라우팅)</td>
+              <td><code>agent-browser</code>(격리) · <code>browse</code>(실제 크롬 19988) · <code>Playwright</code>(E2E/검증)</td>
+              <td>격리 / 페어링 토큰</td>
             </tr>
             <tr>
               <td><strong>Gemini API (Flash)</strong></td>
@@ -858,24 +929,24 @@
       <div class="improve-grid">
         <div class="imp-card">
           <div class="imp-head">
-            <span class="imp-title">1. Code.gs에 shared-docs 감시 추가</span>
-            <span class="tag tag-green">✅ 적용 완료 (v1.3)</span>
+            <span class="imp-title">1. DOOKI 개인 위키 &amp; 모바일 적재 완성</span>
+            <span class="tag tag-green">✅ 적용 완료 (11/21)</span>
           </div>
-          <p class="imp-desc"><code>Code.gs</code> v1.3에 <code>shared-docs</code>(<code>*.html</code> → <code>sync_shared_docs.yml</code>) 라우트를 반영해 Drive 업로드만으로 자동 배포됩니다.</p>
+          <p class="imp-desc">Notion <code>DOOKI</code> 8개 스타터 페이지 + <code>@dooki-inbox</code> ↔ <code>DookiSync.gs</code> 30분 자동 분류 파이프라인이 가동 중입니다.</p>
         </div>
         <div class="imp-card">
           <div class="imp-head">
-            <span class="imp-title">2. AGY-Bridge 로컬 워처 (토큰 0원 감지)</span>
-            <span class="tag tag-amber">선택 추천</span>
+            <span class="imp-title">2. 나들이 허브 아카이브 &amp; 통합 테마</span>
+            <span class="tag tag-green">✅ 적용 완료 (11/21)</span>
           </div>
-          <p class="imp-desc">Windows 작업 스케줄러 + Python이 10분마다 <code>[PENDING]</code> 유무만 0원으로 체크하고, 새 요청이 있을 때만 알림 또는 <code>agy -p</code>를 실행하면 양방향 무인화가 완성됩니다.</p>
+          <p class="imp-desc"><code>weekend-curator/#all-spots</code>에 실내/실외 분류, 유사 장소 클러스터, 만료 축제 자동 제외 및 사이드바 통합 라이트/다크 전환을 반영했습니다.</p>
         </div>
         <div class="imp-card">
           <div class="imp-head">
-            <span class="imp-title">3. Notion AI 처리 주체 선택</span>
-            <span class="tag tag-blue">구조 최적화</span>
+            <span class="imp-title">3. 3종 크롬 컨트롤 &amp; GEMINI.md 경량화</span>
+            <span class="tag tag-green">✅ 적용 완료 (11/21)</span>
           </div>
-          <p class="imp-desc">24시간 즉시성이 중요하면 현행 <code>NotionSync.gs</code>를 유지하고, Flash API 한도·품질이 아쉬워지면 AI 요약만 로컬 <code>agy</code> 워처로 이관할 수 있습니다.</p>
+          <p class="imp-desc"><code>agent-browser</code>·<code>browse</code>·<code>Playwright</code> 3종 라우팅을 구축하고, 도메인 런북을 전역 스킬로 분리해 규칙 잘림을 해소했습니다.</p>
         </div>
         <div class="imp-card">
           <div class="imp-head">
@@ -913,12 +984,13 @@
       var svgItems = document.querySelectorAll("[data-pipes]");
       var status = document.getElementById("filterStatus");
       var labels = {
-        all: "전체 5개 파이프라인",
-        p1: "A. 정기 브리핑 (주식/나들이)",
+        all: "전체 6개 파이프라인",
+        p1: "A. 정기 브리핑 (주식 14종목/나들이)",
         p2: "B. AGY-Bridge 양방향 협업",
         p3: "C. 온디맨드 공유문서",
-        p4: "D. Notion 회의록 자동화",
-        p5: "E. BookmarkHub & Confluence"
+        p4: "D. Notion 회의록 (v1.11)",
+        p5: "E. 3종 크롬 · BookmarkHub · Confluence",
+        p6: "F. DOOKI 개인 위키 (모바일+PC)"
       };
 
       pills.forEach(function (pill) {
