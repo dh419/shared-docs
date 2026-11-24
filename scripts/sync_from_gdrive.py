@@ -11,6 +11,30 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS_DIR = os.path.join(REPO_ROOT, 'docs')
 FOLDER_ID = '1IW8ytiDhiZknLmrkffisi1uZ8i1S6xed'  # dashboard_incoming/shared-docs
 KST = timezone(timedelta(hours=9))
+ROBOTS_META_TAG = '<meta name="robots" content="noindex, nofollow" />'
+
+
+def ensure_noindex_meta(html_bytes: bytes) -> bytes:
+    """Inject noindex, nofollow meta tag into HTML <head> if not already present."""
+    try:
+        text = html_bytes.decode('utf-8')
+    except UnicodeDecodeError:
+        return html_bytes
+
+    if re.search(r'<meta\s+name=["\']robots["\']', text, re.IGNORECASE):
+        return html_bytes
+
+    if re.search(r'<head[^>]*>', text, re.IGNORECASE):
+        updated = re.sub(
+            r'(<head[^>]*>)',
+            rf'\1\n  {ROBOTS_META_TAG}',
+            text,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        return updated.encode('utf-8')
+
+    return html_bytes
 
 
 def resolve_month_dir(filename, modified_time_str):
@@ -64,7 +88,7 @@ def main():
             _, done = downloader.next_chunk()
 
         with open(out_path, 'wb') as out_f:
-            out_f.write(buf.getvalue())
+            out_f.write(ensure_noindex_meta(buf.getvalue()))
         print(f"Synced: {out_path}")
 
 
