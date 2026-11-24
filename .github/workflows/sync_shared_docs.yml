@@ -37,7 +37,7 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/ hub-data.json
+          git add docs/ hub-data.json robots.txt index.html
           if git diff --staged --quiet; then
             echo "No changes detected."
           else
