@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Antigravity CLI (agy) 모델 × Effort 성능·가성비 대시보드</title>
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --accent-text: #1e40af;
+      --gold: #b45309;
+      --gold-bg: #fef3c7;
+      --silver: #334155;
+      --silver-bg: #e2e8f0;
+      --bronze: #9a3412;
+      --bronze-bg: #ffedd5;
+      --good: #047857;
+      --good-bg: #d1fae5;
+      --warn: #b45309;
+      --warn-bg: #fef3c7;
+      --danger: #b91c1c;
+      --danger-bg: #fee2e2;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --radius: 12px;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #60a5fa;
+      --accent-soft: #1e3a8a;
+      --accent-text: #dbeafe;
+      --gold: #fde68a;
+      --gold-bg: #78350f;
+      --silver: #e2e8f0;
+      --silver-bg: #334155;
+      --bronze: #fed7aa;
+      --bronze-bg: #7c2d12;
+      --good: #6ee7b7;
+      --good-bg: #064e3b;
+      --warn: #fcd34d;
+      --warn-bg: #78350f;
+      --danger: #fca5a5;
+      --danger-bg: #7f1d1d;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 20px 56px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .theme-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .theme-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 960px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pro-card {
+      position: relative;
+      border-top: 4px solid var(--accent);
+    }
+    .pro-card.rank-1 { border-top-color: #f59e0b; }
+    .pro-card.rank-2 { border-top-color: #64748b; }
+    .pro-card.rank-3 { border-top-color: #ea580c; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-gold { background: var(--gold-bg); color: var(--gold); }
+    .badge-silver { background: var(--silver-bg); color: var(--silver); }
+    .badge-bronze { background: var(--bronze-bg); color: var(--bronze); }
+    .badge-good { background: var(--good-bg); color: var(--good); }
+    .badge-warn { background: var(--warn-bg); color: var(--warn); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+    .badge-accent { background: var(--accent-soft); color: var(--accent-text); }
+    .badge-neutral { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+
+    .pro-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+    .pro-id {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .pro-desc {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* Scatter Chart */
+    .chart-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+    svg.scatter {
+      width: 100%;
+      min-width: 520px;
+      height: auto;
+      display: block;
+    }
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    /* Effort table mini */
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      font-size: 0.85rem;
+    }
+    .mini-row strong { font-family: ui-monospace, monospace; }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .controls-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      flex: 1;
+    }
+    .search-input {
+      min-width: 240px;
+      flex: 1;
+      max-width: 360px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .search-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+    .btn {
+      padding: 8px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .status-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+      min-width: 980px;
+    }
+    th, td {
+      padding: 11px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    th {
+      background: var(--surface-2);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      white-space: nowrap;
+    }
+    tbody tr:hover {
+      background: rgba(37, 99, 235, 0.05);
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.79rem;
+      background: var(--surface-2);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    /* Column Filter Popover */
+    .th-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .column-filter-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .column-filter-trigger:hover,
+    .column-filter-trigger[aria-expanded="true"] {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .filter-count {
+      display: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .filter-count.has-filter { display: inline-block; }
+
+    .sort-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 4px;
+      font-size: 0.78rem;
+      border-radius: 4px;
+    }
+    .sort-btn:hover, .sort-btn.active { color: var(--accent); background: var(--surface); }
+
+    .filter-popover {
+      position: fixed;
+      z-index: 50;
+      min-width: 210px;
+      max-width: 280px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      padding: 10px;
+      display: none;
+    }
+    .filter-popover.open { display: block; }
+    .filter-popover-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 4px;
+      font-size: 0.83rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .filter-option:hover { background: var(--surface-2); }
+    .filter-option label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      font-size: 0.85rem;
+    }
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    select.page-size {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.84rem;
+    }
+
+    footer {
+      margin-top: 28px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Antigravity CLI (<code>agy</code>) 모델 × Effort 성능·가성비 대시보드</h1>
+        <p class="subtitle">전체 27개 모델-Effort 조합의 추론/코딩 성능, 토큰 소비 배수(기준: Hydrogen Medium = 1.0x), Google AI Pro 추천 순위</p>
+      </div>
+      <div class="header-actions">
+        <span class="meta-pill">기준일: 2026-11-25</span>
+        <button id="themeToggle" class="theme-btn" type="button" aria-label="테마 전환" title="라이트/다크 모드 전환">🌙</button>
+      </div>
+    </header>
+
+    <!-- Pro Subscription Top 3 -->
+    <section aria-label="Google AI Pro 구독 추천 Top 3">
+      <div class="grid-3">
+        <article class="card pro-card rank-1">
+          <span class="badge badge-gold">🥇 Pro 추천 1등 · 가성비 1위</span>
+          <h3 class="pro-title">Orchestrator (Neon)</h3>
+          <span class="pro-id">gemini-pro-orchestrator-neon</span>
+          <p class="pro-desc"><strong>선정 이유:</strong> Pro의 5시간/주간 공유 Gemini 쿼터를 가장 현명하게 쓰는 공식 기본 추천. 설계·리뷰는 <strong>Neon</strong>, 반복 탐색·파일 수정·빌드는 <strong>Hydrogen</strong>이 분담해 단독 Neon 대비 쿼터를 40-60% 절약하면서 최상위 품질을 유지합니다 (약 <code>1.8x-2.5x</code>).</p>
+          <p class="pro-desc" style="margin-top:8px;"><strong>활용법:</strong> <code>agy --model "Orchestrator (Neon)"</code> 또는 <code>/model</code>에서 기본값으로 고정해 기능 개발·리팩토링·다중 파일 버그 수정에 상시 사용하세요.</p>
+        </article>
+        <article class="card pro-card rank-2">
+          <span class="badge badge-silver">🥈 Pro 추천 2등 · 가성비 3위</span>
+          <h3 class="pro-title">Gemini 4 Neon (Medium)</h3>
+          <span class="pro-id">gemini-4-neon-medium</span>
+          <p class="pro-desc"><strong>선정 이유:</strong> 모델 전환 없이 단일 모델의 일관된 추론 흐름이 필요할 때 1순위입니다. 약 127 tok/s의 빠른 속도와 코딩 에이전트 최상위권 성능을 적당한 소비량(<code>2.5x-3.0x</code>)으로 제공합니다.</p>
+          <p class="pro-desc" style="margin-top:8px;"><strong>활용법:</strong> 평소는 <code>Medium</code>으로 두고, 원인 불명의 동시성 버그·난해한 설계에서만 1회성으로 <code>agy --effort high</code> 또는 <code>xhigh</code>를 붙여 호출하세요.</p>
+        </article>
+        <article class="card pro-card rank-3">
+          <span class="badge badge-bronze">🥉 Pro 추천 3등 · 가성비 5위</span>
+          <h3 class="pro-title">Claude Sonnet 5.5 (Medium)</h3>
+          <span class="pro-id">claude-sonnet-5-5-medium</span>
+          <p class="pro-desc"><strong>선정 이유:</strong> 유료 Pro(비체험판)에서 사용 가능한 서드파티 1순위. Terminal-Bench 4.0 <strong>70.6%</strong>로 CLI/에이전트 루프 실행력이 Opus 5.5보다 높고, 단가는 절반($2/$10 per M), 속도는 약 116 tok/s입니다 (<code>2.5x-3.5x</code>).</p>
+          <p class="pro-desc" style="margin-top:8px;"><strong>활용법:</strong> Gemini 공유 쿼터가 아슬아슬하거나 Gemini와 다른 시각의 코드 리뷰·테스트 디버깅이 필요할 때 <code>/model</code>로 전환해 교차 검증용으로 활용하세요.</p>
+        </article>
+      </div>
+      <div class="card" style="margin-top:-8px;margin-bottom:24px;padding:12px 18px;font-size:0.85rem;color:var(--text-muted);">
+        💡 <strong>Pro 쿼터 절약 보너스 팁:</strong> 단순 스크립트·문서화·보일러플레이트 생성은 <code>Gemini 4 Hydrogen (Medium/Low)</code>(<code>0.5x-1.0x</code>)로 분리하면 5시간/주간 쿼터를 훨씬 오래 유지할 수 있습니다. (단, <strong>Google AI Pro 무료 체험판</strong>은 Hydrogen 위주로 모델이 제한되며 Claude 5.5 계열이 비활성화될 수 있습니다.)
+      </div>
+    </section>
+
+    <!-- Visual Scatter + Effort Guide -->
+    <section class="grid-2" aria-label="성능 대 토큰 소비량 분포 및 Effort 가이드">
+      <div class="card">
+        <h2>📊 성능 vs 토큰 소비 배수 (가성비 프론티어)</h2>
+        <div class="chart-wrap">
+          <svg id="scatterChart" class="scatter" viewBox="0 0 640 310" role="img" aria-label="모델별 성능 순위와 토큰 소비 배수 산점도"></svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="dot" style="background:#f59e0b"></span>Orchestrator</span>
+          <span class="legend-item"><span class="dot" style="background:#2563eb"></span>Gemini 4 Neon</span>
+          <span class="legend-item"><span class="dot" style="background:#8b5cf6"></span>Gemini 4 Carbon</span>
+          <span class="legend-item"><span class="dot" style="background:#10b981"></span>Gemini 4 Hydrogen</span>
+          <span class="legend-item"><span class="dot" style="background:#ec4899"></span>Claude 5.5</span>
+          <span class="legend-item"><span class="dot" style="background:#94a3b8"></span>종료 예정/기타</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⚙️ Effort 단계별 추론 예산 가이드</h2>
+        <div class="mini-list">
+          <div class="mini-row">
+            <div><strong>low</strong><br><span style="color:var(--text-muted)">최소 Thinking · 초고속</span></div>
+            <span class="badge badge-good">단순 수정·요약</span>
+          </div>
+          <div class="mini-row">
+            <div><strong>medium</strong><br><span style="color:var(--text-muted)">균형 (대부분 기본값)</span></div>
+            <span class="badge badge-accent">일상 개발 표준</span>
+          </div>
+          <div class="mini-row">
+            <div><strong>high</strong><br><span style="color:var(--text-muted)">심층 추론 · 검증 루프 확장</span></div>
+            <span class="badge badge-warn">복합 디버깅·설계</span>
+          </div>
+          <div class="mini-row">
+            <div><strong>xhigh</strong><br><span style="color:var(--text-muted)">Neon / Hydrogen 전용 최대 확장</span></div>
+            <span class="badge badge-danger">프론티어 난제</span>
+          </div>
+        </div>
+        <p class="subtitle" style="margin-top:12px;">💡 CLI 팁: <code>agy --effort low</code> (1회성 오버라이드) / <code>/effort high</code> (세션 기본값 변경). Orchestrator는 고정 예산으로 <code>/effort</code>가 적용되지 않습니다.</p>
+      </div>
+    </section>
+
+    <!-- Main Interactive Table -->
+    <section class="card" aria-label="전체 27개 모델 비교표">
+      <h2>📋 전체 27개 모델 × Effort 비교표</h2>
+      <div class="controls-bar">
+        <div class="controls-left">
+          <input id="searchInput" class="search-input" type="search" placeholder="모델명, CLI ID, 특징 검색 (예: neon, 70.6%, 종료)..." aria-label="모델 표 검색" />
+          <button id="sortPerfBtn" class="btn active" type="button">성능 순위순</button>
+          <button id="sortValueBtn" class="btn" type="button">가성비 랭킹순</button>
+          <button id="sortCostBtn" class="btn" type="button">소비 배수 낮은순</button>
+          <button id="resetBtn" class="btn" type="button">필터 초기화</button>
+        </div>
+        <div id="resultCounter" class="status-count" aria-live="polite">표시 중: 27 / 27개</div>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="모델 비교 데이터 테이블" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <div class="th-inner">
+                  <span>성능 순위</span>
+                </div>
+              </th>
+              <th>
+                <div class="th-inner">
+                  <span>가성비 랭킹</span>
+                </div>
+              </th>
+              <th>
+                <div class="th-inner">
+                  <span>패밀리</span>
+                  <button class="column-filter-trigger" data-filter="family" aria-expanded="false" title="패밀리 필터">
+                    <span class="filter-count"></span>▾
+                  </button>
+                </div>
+              </th>
+              <th>모델명</th>
+              <th>
+                <div class="th-inner">
+                  <span>Effort</span>
+                  <button class="column-filter-trigger" data-filter="effort" aria-expanded="false" title="Effort 필터">
+                    <span class="filter-count"></span>▾
+                  </button>
+                </div>
+              </th>
+              <th>CLI 모델 ID</th>
+              <th>
+                <div class="th-inner">
+                  <span>성능 등급</span>
+                  <button class="column-filter-trigger" data-filter="tier" aria-expanded="false" title="성능 등급 필터">
+                    <span class="filter-count"></span>▾
+                  </button>
+                </div>
+              </th>
+              <th>토큰·쿼터 배수</th>
+              <th>속도 체감</th>
+              <th>
+                <div class="th-inner">
+                  <span>상태</span>
+                  <button class="column-filter-trigger" data-filter="status" aria-expanded="false" title="상태 필터">
+                    <span class="filter-count"></span>▾
+                  </button>
+                </div>
+              </th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination-bar">
+        <div class="page-controls">
+          <label for="pageSizeSelect">행 개수:</label>
+          <select id="pageSizeSelect" class="page-size">
+            <option value="25">25개</option>
+            <option value="50" selected>50개</option>
+            <option value="100">100개</option>
+          </select>
+        </div>
+        <div class="page-controls">
+          <button id="prevPage" class="btn" type="button">이전</button>
+          <span id="pageInfo">1 / 1</span>
+          <button id="nextPage" class="btn" type="button">다음</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      출처: <code>agy models</code> 출력 및 Antigravity 공식 문서 (<code>antigravity.google/docs/models</code>, <code>/docs/plans</code>, <code>/docs/cli/commands/effort</code>) · 배수는 상대적 추정치입니다.
+    </footer>
+  </div>
+
+  <div id="filterPopover" class="filter-popover" role="dialog" aria-label="컬럼 필터"></div>
+
+  <script>
+    const DATA = [
+      { perf: 1, val: 22, family: "Gemini 4 Carbon", model: "Gemini 4 Carbon", effort: "High", id: "gemini-4-carbon-high", tier: "최상++", perfNote: "Terminal-Bench 4.1 64.5%", cost: "약 7.0x-8.0x", costNum: 7.5, speed: "매우 느림", status: "현역", note: "장기·보안·대형 아키텍처 최강" },
+      { perf: 2, val: 16, family: "Gemini 4 Neon", model: "Gemini 4 Neon", effort: "XHigh", id: "gemini-4-neon-xhigh", tier: "최상++", perfNote: "Terminal-Bench 4.1 61.2-65.2%", cost: "약 6.0x-6.5x", costNum: 6.25, speed: "느림", status: "현역", note: "코딩 에이전트 1위권 난제 전용" },
+      { perf: 3, val: 26, family: "Claude 5.5", model: "Claude Opus 5.5", effort: "High", id: "claude-opus-5-5-high", tier: "최상++", perfNote: "Terminal-Bench 4.0 66.4%", cost: "약 8.0x-10.0x", costNum: 9.0, speed: "매우 느림", status: "유료 Pro+", note: "최고 비용·최고 복합 판단력" },
+      { perf: 4, val: 10, family: "Orchestrator", model: "Orchestrator (Carbon)", effort: "고정", id: "gemini-pro-orchestrator", tier: "최상+", perfNote: "Carbon 설계 + Hydrogen 실행", cost: "약 3.0x-4.0x", costNum: 3.5, speed: "보통", status: "현역", note: "고난도 설계 + 실행 비용 절감" },
+      { perf: 5, val: 14, family: "Claude 5.5", model: "Claude Sonnet 5.5", effort: "High", id: "claude-sonnet-5-5-high", tier: "최상+", perfNote: "고노력 에이전트/CLI", cost: "약 4.5x-5.5x", costNum: 5.0, speed: "보통", status: "유료 Pro+", note: "정교한 다중 파일 수정" },
+      { perf: 6, val: 13, family: "Gemini 4 Neon", model: "Gemini 4 Neon", effort: "High", id: "gemini-4-neon-high", tier: "최상+", perfNote: "고노력 프로덕션 코딩", cost: "약 4.0x-5.0x", costNum: 4.5, speed: "보통", status: "현역", note: "복합 디버깅·설계" },
+      { perf: 7, val: 23, family: "Claude 5.5", model: "Claude Opus 5.5", effort: "Medium", id: "claude-opus-5-5-medium", tier: "최상+", perfNote: "대규모 리팩토링", cost: "약 5.5x-6.5x", costNum: 6.0, speed: "느림 (약 74 tok/s)", status: "유료 Pro+", note: "고밀도 문서·비전·설계" },
+      { perf: 8, val: 20, family: "Gemini 4 Carbon", model: "Gemini 4 Carbon", effort: "Medium", id: "gemini-4-carbon-medium", tier: "최상+", perfNote: "심층 추론 기본값", cost: "약 4.5x-5.5x", costNum: 5.0, speed: "느림 (약 46 tok/s)", status: "현역", note: "안정적 아키텍처 추론" },
+      { perf: 9, val: 1, family: "Orchestrator", model: "Orchestrator (Neon)", effort: "고정", id: "gemini-pro-orchestrator-neon", tier: "최상", perfNote: "Neon 설계 + Hydrogen 실행", cost: "약 1.8x-2.5x", costNum: 2.15, speed: "빠름-보통", status: "현역", note: "🥇 Pro 추천 1위 (가성비 1위)" },
+      { perf: 10, val: 5, family: "Claude 5.5", model: "Claude Sonnet 5.5", effort: "Medium", id: "claude-sonnet-5-5-medium", tier: "최상", perfNote: "Terminal-Bench 4.0 70.6%", cost: "약 2.5x-3.5x", costNum: 3.0, speed: "빠름 (약 116 tok/s)", status: "유료 Pro+", note: "🥉 Pro 추천 3위 (에이전트 루프 최강)" },
+      { perf: 11, val: 3, family: "Gemini 4 Neon", model: "Gemini 4 Neon", effort: "Medium", id: "gemini-4-neon-medium", tier: "최상", perfNote: "AA Coding Index 1위권", cost: "약 2.5x-3.0x", costNum: 2.75, speed: "빠름 (약 127 tok/s)", status: "현역", note: "🥈 Pro 추천 2위 (단일 모델 최상)" },
+      { perf: 12, val: 21, family: "Claude 5.5", model: "Claude Opus 5.5", effort: "Low", id: "claude-opus-5-5-low", tier: "상+", perfNote: "플래그십 경량 추론", cost: "약 3.0x-4.0x", costNum: 3.5, speed: "보통", status: "유료 Pro+", note: "유료 Pro 전용 (비체험판)" },
+      { perf: 13, val: 18, family: "Gemini 4 Carbon", model: "Gemini 4 Carbon", effort: "Low", id: "gemini-4-carbon-low", tier: "상+", perfNote: "심층 모델 경량 추론", cost: "약 2.5x-3.0x", costNum: 2.75, speed: "보통", status: "현역", note: "빠른 Carbon 판단" },
+      { perf: 14, val: 27, family: "Gemini 4 Argon", model: "Gemini 4 Argon", effort: "High", id: "gemini-4-argon-high", tier: "상+", perfNote: "초기 프론티어 고노력", cost: "약 4.5x-5.0x", costNum: 4.75, speed: "느림", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 15, val: 9, family: "Gemini 4 Hydrogen", model: "Gemini 4 Hydrogen", effort: "XHigh", id: "gemini-4-hydrogen-xhigh", tier: "상+", perfNote: "경량 모델 최대 추론", cost: "약 3.0x-3.2x", costNum: 3.1, speed: "보통", status: "현역", note: "쿼터 절약형 심층 추론" },
+      { perf: 16, val: 15, family: "Orchestrator", model: "Orchestrator (Argon)", effort: "고정", id: "gemini-pro-orchestrator-argon", tier: "상", perfNote: "Argon 설계 + Hydrogen 실행", cost: "약 1.8x-2.5x", costNum: 2.15, speed: "빠름-보통", status: "종료 예정", note: "Argon 종료로 Neon 권장" },
+      { perf: 17, val: 6, family: "Gemini 4 Neon", model: "Gemini 4 Neon", effort: "Low", id: "gemini-4-neon-low", tier: "상", perfNote: "고속 고품질 응답", cost: "약 1.5x-2.0x", costNum: 1.75, speed: "매우 빠름", status: "현역", note: "빠른 코드 생성·질의" },
+      { perf: 18, val: 7, family: "Claude 5.5", model: "Claude Sonnet 5.5", effort: "Low", id: "claude-sonnet-5-5-low", tier: "상", perfNote: "고속 에이전트 실행", cost: "약 1.5x-2.0x", costNum: 1.75, speed: "매우 빠름", status: "유료 Pro+", note: "유료 Pro 전용 (비체험판)" },
+      { perf: 19, val: 2, family: "Gemini 4 Hydrogen", model: "Gemini 4 Hydrogen", effort: "High", id: "gemini-4-hydrogen-high", tier: "상", perfNote: "Terminal-Bench 4.1 56.4%", cost: "약 1.8x-2.2x", costNum: 2.0, speed: "빠름", status: "현역", note: "가성비 2위 (경량급 최상 코딩)" },
+      { perf: 20, val: 25, family: "Gemini 4 Argon", model: "Gemini 4 Argon", effort: "Medium", id: "gemini-4-argon-medium", tier: "상", perfNote: "초기 프론티어 균형형", cost: "약 2.5x-3.0x", costNum: 2.75, speed: "보통", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 21, val: 4, family: "Gemini 4 Hydrogen", model: "Gemini 4 Hydrogen", effort: "Medium", id: "gemini-4-hydrogen-medium", tier: "중-상", perfNote: "표준 일상 작업", cost: "1.0x (기준)", costNum: 1.0, speed: "매우 빠름", status: "현역", note: "일상 반복 작업·서브에이전트" },
+      { perf: 22, val: 19, family: "Gemini 4 Argon", model: "Gemini 4 Argon", effort: "Low", id: "gemini-4-argon-low", tier: "중-상", perfNote: "초기 프론티어 경량", cost: "약 1.5x", costNum: 1.5, speed: "빠름", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 23, val: 11, family: "Gemini 3.8 Flash", model: "Gemini 3.8 Flash", effort: "High", id: "gemini-3.8-flash-high", tier: "중-상", perfNote: "고속 멀티모달 고노력", cost: "약 0.5x-0.6x", costNum: 0.55, speed: "매우 빠름", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 24, val: 8, family: "Gemini 4 Hydrogen", model: "Gemini 4 Hydrogen", effort: "Low", id: "gemini-4-hydrogen-low", tier: "중", perfNote: "초고속 단순 작업", cost: "약 0.5x-0.7x", costNum: 0.6, speed: "초고속", status: "현역", note: "단순 수정·요약·문서화" },
+      { perf: 25, val: 12, family: "Gemini 3.8 Flash", model: "Gemini 3.8 Flash", effort: "Medium", id: "gemini-3.8-flash-medium", tier: "중", perfNote: "초고속 일반 작업", cost: "약 0.35x-0.45x", costNum: 0.4, speed: "초고속", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 26, val: 24, family: "GPT-OSS 120B", model: "GPT-OSS 120B", effort: "Medium", id: "gpt-oss-120b-medium", tier: "중-하", perfNote: "오픈웨이트 MoE (활성 5.1B)", cost: "약 0.6x-0.8x", costNum: 0.7, speed: "빠름", status: "종료 예정", note: "2026-11-30 지원 종료" },
+      { perf: 27, val: 17, family: "Gemini 3.8 Flash", model: "Gemini 3.8 Flash", effort: "Low", id: "gemini-3.8-flash-low", tier: "중-하", perfNote: "초저지연 분류/요약", cost: "약 0.2x-0.3x", costNum: 0.25, speed: "초고속", status: "종료 예정", note: "2026-11-30 지원 종료" }
+    ];
+
+    // Theme toggle
+    const themeBtn = document.getElementById("themeToggle");
+    function syncThemeIcon() {
+      const isDark = document.documentElement.dataset.theme === "dark";
+      themeBtn.textContent = isDark ? "☀" : "🌙";
+    }
+    syncThemeIcon();
+    themeBtn.addEventListener("click", () => {
+      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      syncThemeIcon();
+      renderChart();
+    });
+
+    // Scatter Chart
+    function renderChart() {
+      const svg = document.getElementById("scatterChart");
+      const isDark = document.documentElement.dataset.theme === "dark";
+      const gridColor = isDark ? "#334155" : "#e2e8f0";
+      const textColor = isDark ? "#94a3b8" : "#475569";
+      const labelColor = isDark ? "#f8fafc" : "#0f172a";
+
+      const pad = { l: 52, r: 24, t: 24, b: 42 };
+      const w = 640 - pad.l - pad.r;
+      const h = 310 - pad.t - pad.b;
+
+      const xScale = (cost) => pad.l + (Math.min(cost, 9.5) / 9.5) * w;
+      const yScale = (perfRank) => pad.t + ((perfRank - 1) / 26) * h;
+
+      const colorMap = {
+        "Orchestrator": "#f59e0b",
+        "Gemini 4 Neon": "#2563eb",
+        "Gemini 4 Carbon": "#8b5cf6",
+        "Gemini 4 Hydrogen": "#10b981",
+        "Claude 5.5": "#ec4899"
+      };
+
+      let out = "";
+      const sx2 = xScale(3.5);
+      const sy2 = yScale(12);
+      out += `<rect x="${pad.l}" y="${pad.t}" width="${sx2 - pad.l}" height="${sy2 - pad.t}" fill="${isDark ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.10)'}" rx="6"/>`;
+      out += `<text x="${pad.l + 8}" y="${pad.t + 16}" font-size="11" font-weight="700" fill="#d97706">⭐ 고성능·저비용 스위트 스팟</text>`;
+
+      [0, 2, 4, 6, 8].forEach((c) => {
+        const x = xScale(c);
+        out += `<line x1="${x}" y1="${pad.t}" x2="${x}" y2="${pad.t + h}" stroke="${gridColor}" stroke-dasharray="3,3"/>`;
+        out += `<text x="${x}" y="${pad.t + h + 18}" text-anchor="middle" font-size="11" fill="${textColor}">${c}x</text>`;
+      });
+      [1, 7, 14, 21, 27].forEach((r) => {
+        const y = yScale(r);
+        out += `<line x1="${pad.l}" y1="${y}" x2="${pad.l + w}" y2="${y}" stroke="${gridColor}" stroke-dasharray="3,3"/>`;
+        out += `<text x="${pad.l - 10}" y="${y + 4}" text-anchor="end" font-size="11" fill="${textColor}">#${r}</text>`;
+      });
+
+      out += `<text x="${pad.l + w / 2}" y="302" text-anchor="middle" font-size="11" font-weight="600" fill="${textColor}">토큰·쿼터 소비 배수 (낮을수록 절약) →</text>`;
+      out += `<text x="14" y="${pad.t + h / 2}" text-anchor="middle" font-size="11" font-weight="600" fill="${textColor}" transform="rotate(-90 14 ${pad.t + h / 2})">← 성능 순위 (위쪽이 고성능)</text>`;
+
+      const highlightIds = new Set([
+        "gemini-pro-orchestrator-neon",
+        "gemini-4-neon-medium",
+        "claude-sonnet-5-5-medium",
+        "gemini-4-hydrogen-high",
+        "gemini-4-hydrogen-medium",
+        "gemini-4-carbon-high",
+        "claude-opus-5-5-high"
+      ]);
+
+      DATA.forEach((d) => {
+        const cx = xScale(d.costNum);
+        const cy = yScale(d.perf);
+        const fill = d.status === "종료 예정" ? "#94a3b8" : (colorMap[d.family] || "#64748b");
+        const r = highlightIds.has(d.id) ? 6.5 : 4.5;
+        const opacity = d.status === "종료 예정" ? 0.55 : 0.92;
+        out += `<g><title>${d.model} (${d.effort}) | 성능 #${d.perf} | 가성비 #${d.val} | 소비 ${d.cost}</title>`;
+        out += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" fill-opacity="${opacity}" stroke="${isDark ? '#0b1120' : '#ffffff'}" stroke-width="1.5"/>`;
+        if (highlightIds.has(d.id)) {
+          const short = d.id === "gemini-pro-orchestrator-neon" ? "Orch(Neon)" :
+                        d.id === "gemini-4-neon-medium" ? "Neon(Med)" :
+                        d.id === "claude-sonnet-5-5-medium" ? "Sonnet(Med)" :
+                        d.id === "gemini-4-hydrogen-high" ? "H2(High)" :
+                        d.id === "gemini-4-hydrogen-medium" ? "H2(Med)" :
+                        d.id === "gemini-4-carbon-high" ? "Carbon(High)" : "Opus(High)";
+          const dx = d.costNum > 7 ? -8 : 9;
+          const anchor = d.costNum > 7 ? "end" : "start";
+          out += `<text x="${cx + dx}" y="${cy + 3}" text-anchor="${anchor}" font-size="10.5" font-weight="700" fill="${labelColor}">${short}</text>`;
+        }
+        out += `</g>`;
+      });
+
+      svg.innerHTML = out;
+    }
+
+    const state = {
+      search: "",
+      sortBy: "perf",
+      filters: { family: new Set(), effort: new Set(), tier: new Set(), status: new Set() },
+      page: 1,
+      pageSize: 50
+    };
+
+    const tbody = document.getElementById("tableBody");
+    const resultCounter = document.getElementById("resultCounter");
+    const pageInfo = document.getElementById("pageInfo");
+    const popover = document.getElementById("filterPopover");
+    let activeFilterCol = null;
+
+    function getFilteredSorted() {
+      const q = state.search.trim().toLowerCase();
+      let rows = DATA.filter((d) => {
+        for (const key of Object.keys(state.filters)) {
+          if (state.filters[key].size > 0 && !state.filters[key].has(d[key])) return false;
+        }
+        if (q) {
+          const hay = `${d.family} ${d.model} ${d.effort} ${d.id} ${d.tier} ${d.perfNote} ${d.note} ${d.status}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+      rows.sort((a, b) => {
+        if (state.sortBy === "val") return a.val - b.val;
+        if (state.sortBy === "cost") return a.costNum - b.costNum || a.perf - b.perf;
+        return a.perf - b.perf;
+      });
+      return rows;
+    }
+
+    function renderTable() {
+      const rows = getFilteredSorted();
+      const total = rows.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+      if (state.page > totalPages) state.page = totalPages;
+      const start = (state.page - 1) * state.pageSize;
+      const pageRows = rows.slice(start, start + state.pageSize);
+
+      tbody.innerHTML = pageRows.map((d) => {
+        const valBadge = d.val === 1 ? "badge-gold" : d.val === 2 ? "badge-silver" : d.val === 3 ? "badge-bronze" : d.val <= 10 ? "badge-good" : "badge-neutral";
+        const valLabel = d.val === 1 ? "🥇 1위" : d.val === 2 ? "🥈 2위" : d.val === 3 ? "🥉 3위" : `${d.val}위`;
+        const statusBadge = d.status === "현역" ? "badge-good" : d.status === "유료 Pro+" ? "badge-accent" : "badge-danger";
+        return `
+          <tr>
+            <td><strong>#${d.perf}</strong></td>
+            <td><span class="badge ${valBadge}">${valLabel}</span></td>
+            <td>${d.family}</td>
+            <td><strong>${d.model}</strong></td>
+            <td><span class="badge badge-neutral">${d.effort}</span></td>
+            <td><code>${d.id}</code></td>
+            <td><strong>${d.tier}</strong><br><span style="font-size:0.78rem;color:var(--text-muted)">${d.perfNote}</span></td>
+            <td><strong>${d.cost}</strong></td>
+            <td>${d.speed}</td>
+            <td><span class="badge ${statusBadge}">${d.status}</span></td>
+            <td style="font-size:0.82rem;color:var(--text-muted)">${d.note}</td>
+          </tr>
+        `;
+      }).join("");
+
+      resultCounter.textContent = `표시 중: ${total} / ${DATA.length}개`;
+      pageInfo.textContent = `${state.page} / ${totalPages}`;
+      document.getElementById("prevPage").disabled = state.page <= 1;
+      document.getElementById("nextPage").disabled = state.page >= totalPages;
+
+      document.querySelectorAll(".column-filter-trigger").forEach((btn) => {
+        const col = btn.dataset.filter;
+        const count = state.filters[col].size;
+        const span = btn.querySelector(".filter-count");
+        span.textContent = count > 0 ? count : "";
+        span.classList.toggle("has-filter", count > 0);
+      });
+    }
+
+    function openPopover(btn, col) {
+      if (activeFilterCol === col && popover.classList.contains("open")) {
+        closePopover();
+        return;
+      }
+      activeFilterCol = col;
+      document.querySelectorAll(".column-filter-trigger").forEach((b) => b.setAttribute("aria-expanded", "false"));
+      btn.setAttribute("aria-expanded", "true");
+
+      const counts = {};
+      DATA.forEach((d) => { counts[d[col]] = (counts[d[col]] || 0) + 1; });
+      const values = Object.keys(counts);
+
+      popover.innerHTML = `
+        <div class="filter-popover-title">
+          <span>${col.toUpperCase()} 필터</span>
+          <button type="button" class="btn" style="padding:2px 7px;font-size:0.74rem;" id="clearColFilter">해제</button>
+        </div>
+        ${values.map((v) => `
+          <div class="filter-option">
+            <label>
+              <input type="checkbox" value="${v}" ${state.filters[col].has(v) ? "checked" : ""} />
+              <span>${v}</span>
+            </label>
+            <span style="color:var(--text-muted);font-size:0.78rem">${counts[v]}</span>
+          </div>
+        `).join("")}
+      `;
+
+      const rect = btn.getBoundingClientRect();
+      popover.style.left = `${Math.min(rect.left, window.innerWidth - 240)}px`;
+      popover.style.top = `${rect.bottom + 6}px`;
+      popover.classList.add("open");
+
+      popover.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+        cb.addEventListener("change", () => {
+          if (cb.checked) state.filters[col].add(cb.value);
+          else state.filters[col].delete(cb.value);
+          state.page = 1;
+          renderTable();
+        });
+      });
+
+      document.getElementById("clearColFilter").addEventListener("click", () => {
+        state.filters[col].clear();
+        state.page = 1;
+        renderTable();
+        closePopover();
+      });
+    }
+
+    function closePopover() {
+      popover.classList.remove("open");
+      activeFilterCol = null;
+      document.querySelectorAll(".column-filter-trigger").forEach((b) => b.setAttribute("aria-expanded", "false"));
+    }
+
+    document.querySelectorAll(".column-filter-trigger").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openPopover(btn, btn.dataset.filter);
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!popover.contains(e.target)) closePopover();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePopover();
+    });
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      state.search = e.target.value;
+      state.page = 1;
+      renderTable();
+    });
+
+    function setSort(mode, btnId) {
+      state.sortBy = mode;
+      state.page = 1;
+      ["sortPerfBtn", "sortValueBtn", "sortCostBtn"].forEach((id) => {
+        document.getElementById(id).classList.toggle("active", id === btnId);
+      });
+      renderTable();
+    }
+    document.getElementById("sortPerfBtn").addEventListener("click", () => setSort("perf", "sortPerfBtn"));
+    document.getElementById("sortValueBtn").addEventListener("click", () => setSort("val", "sortValueBtn"));
+    document.getElementById("sortCostBtn").addEventListener("click", () => setSort("cost", "sortCostBtn"));
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state.search = "";
+      document.getElementById("searchInput").value = "";
+      Object.values(state.filters).forEach((s) => s.clear());
+      setSort("perf", "sortPerfBtn");
+    });
+
+    document.getElementById("pageSizeSelect").addEventListener("change", (e) => {
+      state.pageSize = parseInt(e.target.value, 10);
+      state.page = 1;
+      renderTable();
+    });
+    document.getElementById("prevPage").addEventListener("click", () => {
+      if (state.page > 1) { state.page--; renderTable(); }
+    });
+    document.getElementById("nextPage").addEventListener("click", () => {
+      state.page++; renderTable();
+    });
+
+    renderChart();
+    renderTable();
+  </script>
+</body>
+</html>
