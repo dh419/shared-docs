@@ -5,284 +5,85 @@
   <meta charset="UTF-8" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>주식 예측 모델 제로 베이스 점검 &amp; v2.0 비대칭 퀀트 엔진 최종 보고서</title>
+  <title>주식 예측 모델 제로 베이스 점검 &amp; 백테스트 전체 결과 보고서 (v2.0)</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --surface: #111827;
-      --surface-2: #0f172a;
-      --border: #1f2937;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --dim: #6b7280;
-      --accent: #6366f1;
-      --accent-soft: rgba(99, 102, 241, 0.16);
-      --green: #10b981;
-      --green-soft: rgba(16, 185, 129, 0.15);
-      --red: #ef4444;
-      --red-soft: rgba(239, 68, 68, 0.15);
-      --blue: #3b82f6;
-      --blue-soft: rgba(59, 130, 246, 0.15);
-      --amber: #f59e0b;
-      --amber-soft: rgba(245, 158, 11, 0.15);
-      --kospi: #10b981;
-      --samsung: #2563eb;
-      --skhynix: #EA002C;
+      --bg: #0b0f19; --surface: #111827; --surface-2: #0f172a; --border: #1f2937;
+      --text: #f3f4f6; --muted: #9ca3af; --dim: #6b7280;
+      --accent: #6366f1; --green: #10b981; --red: #ef4444; --blue: #3b82f6; --amber: #f59e0b;
     }
     :root[data-theme="light"] {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface-2: #f1f5f9;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --muted: #475569;
-      --dim: #64748b;
-      --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.10);
-      --green: #059669;
-      --green-soft: rgba(5, 150, 105, 0.10);
-      --red: #dc2626;
-      --red-soft: rgba(220, 38, 38, 0.10);
-      --blue: #2563eb;
-      --blue-soft: rgba(37, 99, 235, 0.10);
-      --amber: #d97706;
-      --amber-soft: rgba(217, 119, 6, 0.12);
+      --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9; --border: #e2e8f0;
+      --text: #0f172a; --muted: #475569; --dim: #64748b;
+      --accent: #4f46e5; --green: #059669; --red: #dc2626; --blue: #2563eb; --amber: #d97706;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 20px 16px 60px;
-      -webkit-font-smoothing: antialiased;
+      background: var(--bg); color: var(--text); line-height: 1.6;
+      padding: 20px 16px 64px; -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 1080px; margin: 0 auto; }
-
+    .container { max-width: 1120px; margin: 0 auto; }
     header {
       background: linear-gradient(135deg, #131d31 0%, #0d1527 100%);
-      border: 1px solid #1e293b;
-      border-radius: 16px;
-      padding: 24px 26px;
-      margin-bottom: 20px;
-      color: #f8fafc;
+      border: 1px solid #1e293b; border-radius: 16px; padding: 24px 26px; margin-bottom: 20px; color: #f8fafc;
     }
-    :root[data-theme="light"] header {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border-color: #334155;
-    }
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
     .badges { display: flex; flex-wrap: wrap; gap: 8px; }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-    }
-    .badge-solid-indigo { background: #4f46e5; color: #ffffff; }
-    .badge-solid-emerald { background: #059669; color: #ffffff; }
-    .badge-solid-slate { background: #334155; color: #f8fafc; }
-    .theme-btn {
-      background: #1e293b;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 800; }
+    .badge-indigo { background: #4f46e5; color: #fff; }
+    .badge-emerald { background: #059669; color: #fff; }
+    .badge-slate { background: #334155; color: #f8fafc; }
+    .theme-btn { background: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
     .theme-btn:hover { background: #334155; }
-    h1 { font-size: 1.55rem; font-weight: 900; line-height: 1.3; margin-bottom: 8px; }
-    .subtitle { color: #cbd5e1; font-size: 0.92rem; }
+    h1 { font-size: 1.52rem; font-weight: 900; line-height: 1.3; margin-bottom: 8px; }
+    .subtitle { color: #cbd5e1; font-size: 0.9rem; }
 
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
     .kpi-label { font-size: 0.78rem; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
-    .kpi-val { font-size: 1.55rem; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
+    .kpi-val { font-size: 1.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
     .kpi-sub { font-size: 0.78rem; color: var(--dim); }
-    .c-green { color: var(--green); }
-    .c-indigo { color: var(--accent); }
-    .c-amber { color: var(--amber); }
-    .c-red { color: var(--red); }
+    .c-green { color: var(--green); } .c-indigo { color: var(--accent); } .c-amber { color: var(--amber); } .c-red { color: var(--red); }
 
-    section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 22px;
-      margin-bottom: 18px;
-    }
-    h2 {
-      font-size: 1.12rem;
-      font-weight: 800;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-    h3 { font-size: 0.96rem; font-weight: 800; margin: 16px 0 8px; color: var(--text); }
-    p { font-size: 0.9rem; color: var(--muted); margin-bottom: 10px; }
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 18px; }
+    h2 { font-size: 1.12rem; font-weight: 800; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 0.95rem; font-weight: 800; margin: 16px 0 8px; color: var(--text); }
+    p { font-size: 0.89rem; color: var(--muted); margin-bottom: 10px; }
 
-    .callout {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent);
-      border-radius: 10px;
-      padding: 13px 16px;
-      margin-bottom: 14px;
-      font-size: 0.88rem;
-    }
+    .callout { background: var(--surface-2); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 10px; padding: 13px 16px; margin-bottom: 12px; font-size: 0.88rem; }
     .callout.green { border-left-color: var(--green); }
-    .callout.amber { border-left-color: var(--amber); }
     .callout strong { color: var(--text); }
 
-    .table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.84rem;
-      min-width: 640px;
-    }
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    th {
-      background: var(--surface-2);
-      font-weight: 800;
-      color: var(--text);
-      white-space: nowrap;
-    }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 10px; margin: 8px 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 640px; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--surface-2); font-weight: 800; color: var(--text); white-space: nowrap; }
     tr:last-child td { border-bottom: none; }
+    tr.hl { background: rgba(16, 185, 129, 0.12); }
+    tr.hl-warn { background: rgba(239, 68, 68, 0.08); }
     .num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; white-space: nowrap; }
-    .pill {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .pill-add { background: #059669; color: #ffffff; }
-    .pill-fix { background: #2563eb; color: #ffffff; }
-    .pill-del { background: #dc2626; color: #ffffff; }
-    .pill-keep { background: #475569; color: #ffffff; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; white-space: nowrap; }
+    .pill-add { background: #059669; color: #fff; } .pill-fix { background: #2563eb; color: #fff; }
+    .pill-del { background: #dc2626; color: #fff; } .pill-neu { background: #475569; color: #fff; }
 
-    .chart-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 14px;
-      margin-top: 10px;
+    .tab-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tab-btn {
+      background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
     }
-    .chart-box {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-    .chart-title {
-      font-size: 0.88rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
+    .tab-btn.active { background: #4f46e5; color: #ffffff; border-color: #4f46e5; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
 
-    .meter-demo {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .demo-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .demo-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-weight: 800;
-      font-size: 0.9rem;
-    }
-    .track {
-      position: relative;
-      height: 22px;
-      background: rgba(148, 163, 184, 0.14);
-      border-radius: 6px;
-      margin: 8px 0;
-      overflow: hidden;
-    }
-    .zero-line {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #94a3b8;
-      z-index: 3;
-    }
-    .band-bar {
-      position: absolute;
-      top: 3px;
-      bottom: 3px;
-      border-radius: 4px;
-      z-index: 2;
-    }
-    .scale-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--dim);
-      font-family: monospace;
-    }
-    .meta-footer {
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--dim);
-      margin-top: 24px;
-    }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.82em;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
+    .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 10px; }
+    .chart-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .chart-title { font-size: 0.87rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+
+    .filter-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .stat-strip { font-size: 0.82rem; font-weight: 700; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82em; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; }
+    .meta-footer { text-align: center; font-size: 0.78rem; color: var(--dim); margin-top: 24px; }
   </style>
 </head>
 <body>
@@ -290,15 +91,15 @@
   <header>
     <div class="header-top">
       <div class="badges">
-        <span class="badge badge-solid-indigo">Quant Engine v2.0</span>
-        <span class="badge badge-solid-emerald">Origin-Symmetric Eliminated (0.0%)</span>
-        <span class="badge badge-solid-slate">Commit f3541ee · 2026-11-28</span>
+        <span class="badge badge-indigo">Quant Engine v2.0</span>
+        <span class="badge badge-emerald">Full Backtest Report · 250d OOS + 30d Daily Log</span>
+        <span class="badge badge-slate">Commit f3541ee · 2026-11-28</span>
       </div>
       <button class="theme-btn" id="themeToggle" aria-label="테마 전환">☀ 라이트</button>
     </div>
-    <h1>주식 예측 모델 제로 베이스 점검 및 v2.0 비대칭 퀀트 엔진 최종 보고서</h1>
+    <h1>주식 예측 모델 제로 베이스 점검 &amp; 전체 백테스트 결과 보고서</h1>
     <div class="subtitle">
-      대상: <code>dh419/daily-stock-brief</code> (코스피 · 삼성전자 · SK하이닉스) | Out-of-Sample Walk-Forward 250거래일 검증 | AGY-Gemini 브릿지 v12.1 동기화 완료
+      대상: <code>dh419/daily-stock-brief</code> (코스피 · 삼성전자 · SK하이닉스) | Stage 1–3 전수 실험 결과 + 최근 30거래일 일별 실전 백테스트 로그 포함
     </div>
   </header>
 
@@ -306,7 +107,7 @@
     <div class="kpi-card">
       <div class="kpi-label">방향 콜 원점(0%) 걸침률</div>
       <div class="kpi-val c-green">85.9% → 0.0%</div>
-      <div class="kpi-sub">원점 기준 대칭 투망형 구간 완전 제거</div>
+      <div class="kpi-sub">원점 기준 대칭 투망형 밴드 완전 제거</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">평균 MAE Skill (야간선물 반영)</div>
@@ -325,118 +126,25 @@
     </div>
   </div>
 
+  <!-- Section 1 -->
   <section>
-    <h2>1. 핵심 결론 (Executive Summary)</h2>
+    <h2>1. 핵심 결론 및 운영 방식</h2>
     <div class="callout green">
-      <strong>운영 결론 — 야간선물 반영이 기본(메인)입니다.</strong><br/>
-      평일 07:00 KST 개장 브리핑에서 Gemini 앱이 JSON 최상위 <code>nightFuturesPct</code> 필드로 간밤 06:00 마감 코스피200 야간선물 등락률을 전달하면, 엔진이 <strong>Two-Track 하이브리드(야간선물 트랙 85% + 장기 500일 Core 트랙 15%)</strong>로 자동 예측합니다. 야간선물이 휴장·미수집·이상치(±10% 초과)로 <code>null</code>일 때만 <strong>장기 Core 트랙 100%</strong> 폴백으로 안전하게 전환됩니다.
+      <strong>결론 — 야간선물 반영이 기본(메인)입니다.</strong><br/>
+      평일 07:00 KST 개장 브리핑에서 Gemini 앱이 JSON 최상위 <code>nightFuturesPct</code> 필드로 간밤 06:00 마감 코스피200 야간선물 등락률을 전달하면, 엔진이 <strong>Two-Track 하이브리드(야간선물 트랙 85%, 360일 + 장기 Core 트랙 15%, 500일)</strong>로 자동 예측합니다. 야간선물이 휴장·미수집·이상치(±10% 초과)로 <code>null</code>일 때만 <strong>장기 Core 트랙 100%</strong> 폴백으로 안전 전환됩니다.
     </div>
     <div class="callout">
-      <strong>원점 기준 대칭 예측 탈피 완료:</strong> 기존 모델은 방향 콜을 낸 날에도 84.1–87.0%가 0.0%를 가로지르는 거대한 투망형 밴드(예: <code>-1.8% ~ +2.2%</code>)를 생성했습니다. v2.0에서는 동일 부호 레짐 가중(2.0x) 조건부 LOO 잔차 분포를 기반으로, <strong>상승 콜은 원점 위 단방향 구간</strong>, <strong>하락 콜은 원점 아래 단방향 구간</strong>을 제시하며, 전체 80% 꼬리 리스크(<code>tail_q10</code>/<code>tail_q90</code>)는 별도로 병기합니다.
+      <strong>원점 기준 대칭 예측 탈피:</strong> 기존 v1.0은 무조건부 80% 구간으로 방향 콜을 낸 날조차 84.1–87.0%가 0.0%를 가로질렀습니다. v2.0은 레짐 가중(동일 부호 2.0x) 조건부 LOO 잔차 분포를 사용해 <strong>상승 콜은 원점 위 단방향 구간</strong>, <strong>하락 콜은 원점 아래 단방향 구간</strong>(콜 원점 걸침 <strong>0.0%</strong>)을 제시하며, 전체 80% 꼬리 리스크(<code>tail_q10</code>/<code>tail_q90</code>)와 시초가 50% 갭 구간(<code>gap_lo</code>/<code>gap_hi</code>)을 분리 제공합니다.
     </div>
   </section>
 
+  <!-- Section 2: Before vs After Final Comparison -->
   <section>
-    <h2>2. 제로 베이스 진단: 기존 모델(v1.0)에서 발견된 5대 결함</h2>
-    <div class="table-wrap" role="region" aria-label="기존 모델 결함 진단표" tabindex="0">
-      <table>
-        <thead>
-          <tr>
-            <th>진단 항목</th>
-            <th>기존 v1.0 문제점 (실측 근거)</th>
-            <th>v2.0 해결 방안</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>1. 원점 대칭 투망형 밴드</strong></td>
-            <td>무조건부 80% 구간 사용으로 전체 날의 <strong>88.4–91.6%</strong>, 방향 콜 날의 <strong>84.1–87.0%</strong>가 0.0% 걸침 (평균 폭 7.8–13.4%p).</td>
-            <td>레짐 가중 조건부 분포 적용. 콜 시 단방향 비대칭 구간(<code>UP</code> 하단 ≥ 원점이격, <code>DOWN</code> 상단 ≤ -원점이격) → <strong>콜 원점 걸침 0.0%</strong>.</td>
-          </tr>
-          <tr>
-            <td><strong>2. In-sample 잔차 버그</strong></td>
-            <td>학습 구간 내부 잔차(<code>ytr - fitted</code>)를 그대로 사용해 표본 외 불확실성 과소추정 및 비대칭 왜도 미반영.</td>
-            <td>닫힌 해 Hat-Matrix <strong>LOO(Leave-One-Out) 표본 외 잔차</strong>(<code>r / (1 - h_ii)</code>)와 동일 부호 레짐 가중(2.0x vs 0.7x) 도입.</td>
-          </tr>
-          <tr>
-            <td><strong>3. 미국 휴장일 데이터 오염</strong></td>
-            <td>최근 2년간 미국 증시 휴장일 20일에 <code>KRW=X</code>만 존재 → <code>ffill().pct_change()</code>로 <code>ewy=0</code>이 주입되어 가짜 <code>ewy_surprise</code> 생성.</td>
-            <td>미국 주식 거래일(<code>EWY</code>/<code>^SOX</code>)과 24시간 외환(<code>KRW=X</code>) 분리 정렬. 미국 휴장 시 <code>ewy_surprise = 0.0</code> 강제(train/serve 일치).</td>
-          </tr>
-          <tr>
-            <td><strong>4. 이상치 취약 &amp; 고정 λ</strong></td>
-            <td>단일 L2 릿지 + 고정 <code>λ=2.0</code> + 250일 동일가중으로 ±6–12% 급등락에 회귀계수가 왜곡되고 최근 레짐 변화 반영 미흡.</td>
-            <td><strong>60% Huber-IRLS + 40% 가중 L2 릿지</strong>, <strong>반감기 120일 지수 감쇠</strong>, 500일/360일 윈도우 + 매 시점 LOO-CV λ 자동 선택.</td>
-          </tr>
-          <tr>
-            <td><strong>5. 시초가 갭 바 미표시</strong></td>
-            <td><code>to_brief_targets</code>가 시초가를 단일 수치로 출력해 HTML 미터(<code>render_band_meter</code>)의 파란 시초가 바가 렌더링되지 않음.</td>
-            <td>시초가 50% 예측구간(<code>gap_lo ~ gap_hi</code>) 출력 복구. 통합 스모크 테스트에서 <code>gap_bar_ok=True</code> 확인.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>3. 피처 및 아키텍처 보완 · 수정 · 삭제 · 추가 내역</h2>
-    <p>모든 피처와 모델 기법은 감에 의존하지 않고 250거래일 Walk-Forward Leave-One-Out 및 Forward Selection 백테스트를 거쳐 OOS 성과가 개선된 항목만 채택했습니다.</p>
-    <div class="table-wrap" role="region" aria-label="보완 수정 삭제 추가 내역" tabindex="0">
-      <table>
-        <thead>
-          <tr>
-            <th>구분</th>
-            <th>항목</th>
-            <th>백테스트 검증 근거 및 효과</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="pill pill-add">추가</span></td>
-            <td><code>dxy</code> (달러인덱스 <code>DX-Y.NYB</code>)</td>
-            <td>야간선물 유무 모두에서 MAE Skill(<code>+0.0976 → +0.1038</code>), corr, Call Hit 일관 상승.</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-add">추가</span></td>
-            <td><code>ret5</code> (5일 누적 수익률)</td>
-            <td>단기 과열/과매도 평균회귀 포착. 야간선물 모드 MAE Skill(<code>+0.1230 → +0.1289</code>), Call Hit(<code>74.7% → 75.2%</code>) 상승.</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-add">추가</span></td>
-            <td>Huber-IRLS + L2 앙상블 · 반감기 120일 · LOO-CV</td>
-            <td><code>WINDOW=500</code> + <code>halflife=120</code> + Huber 결합 시 No-NF MAE Skill <code>+0.068 → +0.104</code> (+53%).</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-add">추가</span></td>
-            <td>Two-Track 야간선물 하이브리드</td>
-            <td>KRX 야간선물 <code>basDd=t</code>가 미래 누수 없이 시초가 갭과 <code>r=0.816</code>임을 확인. NF 트랙(85%) + 장기 Core 트랙(15%) 결합.</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-del">삭제</span></td>
-            <td><code>org</code> (기관 전일 순매수)</td>
-            <td>Leave-One-Out 검증에서 제거 시 Call Hit 상승(OOS 노이즈 판명) → 삭제.</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-del">기각</span></td>
-            <td><code>tsm</code>, <code>ixic</code>, <code>oil</code>, <code>RV5</code> 블렌드 변동성, 로지스틱 확률 블렌드</td>
-            <td>다중공선성 및 단기 노이즈로 OOS 성능 하락 확인 → 과적합 방지를 위해 채택하지 않음.</td>
-          </tr>
-          <tr>
-            <td><span class="pill pill-fix">수정</span></td>
-            <td>비대칭 조건부 방향구간 &amp; 시초가 갭 구간</td>
-            <td>방향 콜 시 원점 걸침률 0.0% 달성, <code>gap_lo ~ gap_hi</code> 출력으로 HTML 미터 렌더링 정상화.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>4. Before vs After 정량 성과 비교 (250거래일 Walk-Forward OOS)</h2>
+    <h2>2. 최종 모델 Before (v1.0) vs After (v2.0) 250거래일 OOS 성과 비교</h2>
     <div class="chart-grid">
       <div class="chart-box">
         <div class="chart-title">MAE Skill 개선 (야간선물 반영 모드, 높을수록 우수)</div>
-        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;" role="img" aria-label="MAE Skill Before vs After 막대 차트">
+        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;">
           <line x1="78" y1="20" x2="78" y2="150" stroke="#475569" stroke-width="1"/>
           <line x1="78" y1="150" x2="395" y2="150" stroke="#475569" stroke-width="1"/>
           <text x="70" y="46" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">코스피</text>
@@ -454,16 +162,13 @@
           <text x="288" y="133" font-size="10" font-family="monospace" fill="#94a3b8">+0.112 (v1)</text>
           <rect x="80" y="139" width="250" height="15" rx="3" fill="#ef4444"/>
           <text x="336" y="151" font-size="11" font-weight="800" font-family="monospace" fill="#ef4444">+0.139</text>
-          <rect x="80" y="168" width="10" height="10" rx="2" fill="#475569"/>
-          <text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0</text>
-          <rect x="165" y="168" width="10" height="10" rx="2" fill="#10b981"/>
-          <text x="180" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (Huber+L2 Two-Track)</text>
+          <rect x="80" y="168" width="10" height="10" rx="2" fill="#475569"/><text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0</text>
+          <rect x="165" y="168" width="10" height="10" rx="2" fill="#10b981"/><text x="180" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (Huber+L2 Two-Track)</text>
         </svg>
       </div>
-
       <div class="chart-box">
         <div class="chart-title">방향 콜 시 원점(0.0%) 걸침률 비교 (낮을수록 비대칭 선명)</div>
-        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;" role="img" aria-label="원점 걸침률 비교 차트">
+        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;">
           <line x1="78" y1="20" x2="78" y2="150" stroke="#475569" stroke-width="1"/>
           <line x1="78" y1="150" x2="395" y2="150" stroke="#475569" stroke-width="1"/>
           <text x="70" y="46" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">코스피</text>
@@ -481,188 +186,330 @@
           <text x="337" y="133" font-size="10" font-family="monospace" fill="#f87171">86.6% (v1)</text>
           <rect x="80" y="139" width="4" height="15" rx="2" fill="#10b981"/>
           <text x="92" y="151" font-size="11" font-weight="800" font-family="monospace" fill="#10b981">0.0% (v2.0)</text>
-          <rect x="80" y="168" width="10" height="10" rx="2" fill="#ef4444" opacity="0.75"/>
-          <text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0 (80% 투망)</text>
-          <rect x="215" y="168" width="10" height="10" rx="2" fill="#10b981"/>
-          <text x="230" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (조건부 비대칭)</text>
+          <rect x="80" y="168" width="10" height="10" rx="2" fill="#ef4444" opacity="0.75"/><text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0</text>
+          <rect x="175" y="168" width="10" height="10" rx="2" fill="#10b981"/><text x="190" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (조건부 비대칭)</text>
         </svg>
       </div>
     </div>
 
-    <h3>4-1. 야간선물 반영 모드 (평일 개장 브리핑 기본)</h3>
-    <div class="table-wrap" role="region" aria-label="야간선물 반영 모드 백테스트 비교표" tabindex="0">
+    <h3>2-1. 야간선물 반영 모드 (메인) vs 미반영 폴백 모드 상세</h3>
+    <div class="table-wrap" role="region" aria-label="최종 모델 성과 비교" tabindex="0">
       <table>
         <thead>
-          <tr>
-            <th>종목</th>
-            <th>MAE Skill (전 → 후)</th>
-            <th>Pinball Skill (전 → 후)</th>
-            <th>방향 콜 적중률 (전 → 후)</th>
-            <th>콜 원점 걸침률</th>
-            <th>평균 밴드 폭 (전 → 후)</th>
-            <th>80% 꼬리 커버리지</th>
-          </tr>
+          <tr><th>모드</th><th>종목</th><th>MAE Skill (v1 → v2)</th><th>Pinball Skill (v1 → v2)</th><th>방향 콜 적중률 (v1 → v2)</th><th>전체 방향 적중</th><th>콜 원점 걸침</th><th>평균 밴드 폭</th><th>80% 꼬리 커버리지</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>코스피</strong></td>
-            <td class="num">+0.071 → <span class="c-green">+0.146 (+106%)</span></td>
-            <td class="num">+0.119 → <span class="c-green">+0.166 (+39%)</span></td>
-            <td class="num">76.5% → 75.8%</td>
-            <td class="num">84.1% → <span class="c-green">0.0%</span></td>
-            <td class="num">7.78%p → <span class="c-indigo">4.39%p</span></td>
-            <td class="num">81.2%</td>
-          </tr>
-          <tr>
-            <td><strong>삼성전자</strong></td>
-            <td class="num">+0.060 → <span class="c-green">+0.139 (+132%)</span></td>
-            <td class="num">+0.126 → <span class="c-green">+0.139 (+10%)</span></td>
-            <td class="num">70.7% → <span class="c-green">71.7%</span></td>
-            <td class="num">87.0% → <span class="c-green">0.0%</span></td>
-            <td class="num">10.98%p → <span class="c-indigo">6.24%p</span></td>
-            <td class="num">83.2%</td>
-          </tr>
-          <tr>
-            <td><strong>SK하이닉스</strong></td>
-            <td class="num">+0.112 → <span class="c-green">+0.139 (+24%)</span></td>
-            <td class="num">+0.154 → +0.145</td>
-            <td class="num">73.3% → <span class="c-green">74.3%</span></td>
-            <td class="num">86.6% → <span class="c-green">0.0%</span></td>
-            <td class="num">13.40%p → <span class="c-indigo">7.42%p</span></td>
-            <td class="num">82.8%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3>4-2. 야간선물 미반영 폴백 모드 (휴장·미수집 시 자동 전환)</h3>
-    <div class="table-wrap" role="region" aria-label="야간선물 미반영 폴백 모드 백테스트 비교표" tabindex="0">
-      <table>
-        <thead>
-          <tr>
-            <th>종목</th>
-            <th>MAE Skill (전 → 후)</th>
-            <th>Pinball Skill (전 → 후)</th>
-            <th>상관계수 corr (전 → 후)</th>
-            <th>콜 원점 걸침률</th>
-            <th>80% 꼬리 커버리지</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>코스피</strong></td>
-            <td class="num">+0.066 → <span class="c-green">+0.114 (+73%)</span></td>
-            <td class="num">+0.096 → <span class="c-green">+0.118 (+23%)</span></td>
-            <td class="num">0.529 → <span class="c-green">0.531</span></td>
-            <td class="num">84.1% → <span class="c-green">0.0%</span></td>
-            <td class="num">82.0%</td>
-          </tr>
-          <tr>
-            <td><strong>삼성전자</strong></td>
-            <td class="num">+0.049 → <span class="c-green">+0.109 (+122%)</span></td>
-            <td class="num">+0.096 → <span class="c-green">+0.108 (+13%)</span></td>
-            <td class="num">0.477 → <span class="c-green">0.502</span></td>
-            <td class="num">87.0% → <span class="c-green">0.0%</span></td>
-            <td class="num">82.4%</td>
-          </tr>
-          <tr>
-            <td><strong>SK하이닉스</strong></td>
-            <td class="num">+0.090 → <span class="c-green">+0.091</span></td>
-            <td class="num">+0.114 → <span class="c-green">+0.123 (+8%)</span></td>
-            <td class="num">0.509 → 0.499</td>
-            <td class="num">86.6% → <span class="c-green">0.0%</span></td>
-            <td class="num">80.0%</td>
-          </tr>
+          <tr class="hl"><td><strong>야간선물 반영</strong></td><td><strong>코스피</strong></td><td class="num">+0.071 → <span class="c-green">+0.146</span></td><td class="num">+0.119 → <span class="c-green">+0.166</span></td><td class="num">76.5% → 75.8%</td><td class="num">70.8%</td><td class="num c-green">0.0%</td><td class="num">4.39%p</td><td class="num">81.2%</td></tr>
+          <tr class="hl"><td><strong>야간선물 반영</strong></td><td><strong>삼성전자</strong></td><td class="num">+0.060 → <span class="c-green">+0.139</span></td><td class="num">+0.126 → <span class="c-green">+0.139</span></td><td class="num">70.7% → <span class="c-green">71.7%</span></td><td class="num">67.6%</td><td class="num c-green">0.0%</td><td class="num">6.24%p</td><td class="num">83.2%</td></tr>
+          <tr class="hl"><td><strong>야간선물 반영</strong></td><td><strong>SK하이닉스</strong></td><td class="num">+0.112 → <span class="c-green">+0.139</span></td><td class="num">+0.154 → +0.145</td><td class="num">73.3% → <span class="c-green">74.3%</span></td><td class="num">70.0%</td><td class="num c-green">0.0%</td><td class="num">7.42%p</td><td class="num">82.8%</td></tr>
+          <tr><td>폴백 (미반영)</td><td>코스피</td><td class="num">+0.066 → <span class="c-green">+0.114</span></td><td class="num">+0.096 → <span class="c-green">+0.118</span></td><td class="num">73.1% → 72.5%</td><td class="num">66.8%</td><td class="num c-green">0.0%</td><td class="num">4.43%p</td><td class="num">82.0%</td></tr>
+          <tr><td>폴백 (미반영)</td><td>삼성전자</td><td class="num">+0.049 → <span class="c-green">+0.109</span></td><td class="num">+0.096 → <span class="c-green">+0.108</span></td><td class="num">69.1% → <span class="c-green">69.4%</span></td><td class="num">65.2%</td><td class="num c-green">0.0%</td><td class="num">6.21%p</td><td class="num">82.4%</td></tr>
+          <tr><td>폴백 (미반영)</td><td>SK하이닉스</td><td class="num">+0.090 → <span class="c-green">+0.091</span></td><td class="num">+0.114 → <span class="c-green">+0.123</span></td><td class="num">72.7% → <span class="c-green">73.4%</span></td><td class="num">67.2%</td><td class="num c-green">0.0%</td><td class="num">7.47%p</td><td class="num">80.0%</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
+  <!-- Section 3: Full Stage 1-3 Backtest Experiment Logs -->
   <section>
-    <h2>5. 실전 스모크 테스트 출력 예시 (<code>night_fut = +0.8%</code> 시뮬레이션)</h2>
-    <p>원점(0.0%)을 기준으로 대칭이 아닌, 상승 확률과 조건부 잔차 분포에 따라 비대칭적으로 치우친 구간과 시초가 갭 바가 정상 생성됨을 확인했습니다.</p>
-    <div class="meter-demo">
-      <div class="demo-card">
-        <div class="demo-head"><span>코스피 (KOSPI)</span><span style="color:var(--muted); font-size:0.8rem;">― 방향 유보 · P(up) 58%</span></div>
-        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
-        <div class="track">
-          <div class="zero-line"></div>
-          <div class="band-bar" style="left:45.9%; width:16.0%; background:rgba(16,185,129,0.45); border:1px solid #10b981;"></div>
-        </div>
-        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+0.06% ~ +2.00%</code> · 마감: <code>-0.98% ~ +2.85%</code> (기대 +0.87%, 꼬리80% -2.8%~+5.0%)</div>
+    <h2>3. 단계별 백테스트 전수 실험 결과 (Stage 1–3 Walk-Forward Ablation)</h2>
+    <p>아래 탭을 전환하면 이번 제로 베이스 점검에서 실제로 실행한 <strong>전체 50+개 Walk-Forward 실험 수치</strong>를 확인할 수 있습니다. 모든 지표는 3종목(코스피·삼성·하이닉스) 250거래일 표본 외(OOS) 평균 기준입니다.</p>
+
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" onclick="openTab(this,'t-stage1')">Stage 1 · 아키텍처 14종</button>
+      <button class="tab-btn" onclick="openTab(this,'t-feat-loo')">Stage 2A · 피처 제거(LOO) 10종</button>
+      <button class="tab-btn" onclick="openTab(this,'t-feat-add')">Stage 2B · 신규 피처 추가 12종</button>
+      <button class="tab-btn" onclick="openTab(this,'t-grid')">Stage 2C · 윈도우·감쇠·Huber 18종</button>
+      <button class="tab-btn" onclick="openTab(this,'t-stage3')">Stage 3 · 최종 앙상블 5종 &amp; 야간선물 검증</button>
+    </div>
+
+    <!-- Stage 1 -->
+    <div id="t-stage1" class="tab-panel active">
+      <div class="table-wrap" role="region" tabindex="0">
+        <table>
+          <thead><tr><th>실험 구성 (Stage 1)</th><th>전체 방향적중</th><th>콜 적중률 (발생률)</th><th>MAE Skill</th><th>Corr</th><th>K/S/H 방향</th><th>판정</th></tr></thead>
+          <tbody>
+            <tr><td>0. Baseline (휴장정제 + LOO-CV)</td><td class="num">66.7%</td><td class="num">72.4% (66%)</td><td class="num">+0.095</td><td class="num">0.515</td><td class="num">66/64/70</td><td><span class="pill pill-fix">기준선</span></td></tr>
+            <tr class="hl"><td>1. + 지수 감쇠 ExpDecay(hl=90)</td><td class="num">67.3%</td><td class="num">72.5% (68%)</td><td class="num">+0.098</td><td class="num">0.507</td><td class="num">68/66/68</td><td><span class="pill pill-add">채택</span></td></tr>
+            <tr class="hl"><td>2. + Huber-IRLS 강건 회귀</td><td class="num">67.1%</td><td class="num">72.4% (66%)</td><td class="num c-green">+0.101</td><td class="num">0.503</td><td class="num">68/64/69</td><td><span class="pill pill-add">채택</span></td></tr>
+            <tr class="hl-warn"><td>3. + BlendVol (EWM+RV5+HL)</td><td class="num">67.1%</td><td class="num">72.5% (66%)</td><td class="num">+0.091</td><td class="num">0.487</td><td class="num">67/65/69</td><td><span class="pill pill-del">기각(노이즈)</span></td></tr>
+            <tr><td>4. + TwoStage (Gap+Intraday 분해)</td><td class="num">66.9%</td><td class="num">72.3% (66%)</td><td class="num">+0.091</td><td class="num">0.489</td><td class="num">67/66/68</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>5. CleanCore (+TSM -org)</td><td class="num">66.0%</td><td class="num">71.7% (65%)</td><td class="num">+0.088</td><td class="num">0.485</td><td class="num">68/64/67</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>6. RichFeats (+ixic,dxy,tnx,intra,r5)</td><td class="num">65.6%</td><td class="num">72.6% (66%)</td><td class="num">+0.081</td><td class="num">0.473</td><td class="num">66/64/67</td><td><span class="pill pill-del">기각(과적합)</span></td></tr>
+            <tr><td>7. CompactFeats (+tsm,ixic,prev_intra)</td><td class="num">65.1%</td><td class="num">71.9% (70%)</td><td class="num">+0.094</td><td class="num">0.490</td><td class="num">65/62/68</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>8. AsymFeats (+ewy_neg)</td><td class="num">65.5%</td><td class="num">72.1% (71%)</td><td class="num">+0.088</td><td class="num">0.478</td><td class="num">66/64/67</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr class="hl"><td>NF-0. Baseline + 야간선물 (LOO-CV)</td><td class="num c-green">70.0%</td><td class="num c-green">74.7% (76%)</td><td class="num c-green">+0.122</td><td class="num c-green">0.588</td><td class="num">72/69/69</td><td><span class="pill pill-add">핵심 알파</span></td></tr>
+            <tr><td>NF-1. Compact + Huber + 2Stage + NF</td><td class="num">68.3%</td><td class="num">75.5% (74%)</td><td class="num">+0.122</td><td class="num">0.561</td><td class="num">70/65/69</td><td><span class="pill pill-neu">참고</span></td></tr>
+            <tr><td>NF-3. CleanCore + hl=120 + NF</td><td class="num">68.8%</td><td class="num">74.9% (76%)</td><td class="num">+0.129</td><td class="num">0.569</td><td class="num">71/67/69</td><td><span class="pill pill-neu">참고</span></td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="demo-card">
-        <div class="demo-head"><span>삼성전자 (005930)</span><span style="color:#ef4444; font-size:0.8rem;">▲ 상승 콜 · P(up) 63%</span></div>
-        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
-        <div class="track">
-          <div class="zero-line"></div>
-          <div class="band-bar" style="left:55.0%; width:25.6%; background:rgba(37,99,235,0.45); border:1px solid #3b82f6;"></div>
-        </div>
-        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+1.47% ~ +3.92%</code> · 마감: <code>+1.20% ~ +7.34%</code> (기대 +1.43%, 꼬리80% -3.6%~+7.0%)</div>
+    </div>
+
+    <!-- Stage 2A -->
+    <div id="t-feat-loo" class="tab-panel">
+      <div class="table-wrap" role="region" tabindex="0">
+        <table>
+          <thead><tr><th>제거 대상 피처 (Leave-One-Out)</th><th>No-NF Call Hit</th><th>No-NF MAE</th><th>NF Call Hit</th><th>NF MAE</th><th>결론</th></tr></thead>
+          <tbody>
+            <tr><td><strong>기준 (ALL BASE 10개)</strong></td><td class="num">72.07%</td><td class="num">+0.0976</td><td class="num">74.67%</td><td class="num">+0.1230</td><td><span class="pill pill-fix">기준</span></td></tr>
+            <tr><td>DROP <code>mu</code> (마이크론)</td><td class="num">72.06%</td><td class="num c-red">+0.0795</td><td class="num">75.86%</td><td class="num c-red">+0.1164</td><td><span class="pill pill-add">핵심 유지</span></td></tr>
+            <tr><td>DROP <code>krw</code> (원/달러)</td><td class="num c-red">70.69%</td><td class="num">+0.0942</td><td class="num c-red">73.84%</td><td class="num">+0.1212</td><td><span class="pill pill-add">핵심 유지</span></td></tr>
+            <tr><td>DROP <code>vix_diff</code></td><td class="num c-red">71.54%</td><td class="num c-red">+0.0881</td><td class="num">74.83%</td><td class="num">+0.1228</td><td><span class="pill pill-add">핵심 유지</span></td></tr>
+            <tr><td>DROP <code>frg</code> (외국인 1일)</td><td class="num c-red">70.90%</td><td class="num">+0.0949</td><td class="num c-red">74.16%</td><td class="num c-red">+0.1183</td><td><span class="pill pill-add">핵심 유지</span></td></tr>
+            <tr><td>DROP <code>frg3</code> (외국인 3일)</td><td class="num">71.65%</td><td class="num">+0.0990</td><td class="num c-red">74.12%</td><td class="num c-red">+0.1177</td><td><span class="pill pill-add">유지</span></td></tr>
+            <tr><td>DROP <code>ewy_surprise</code></td><td class="num">72.22%</td><td class="num c-red">+0.0920</td><td class="num">74.53%</td><td class="num">+0.1314</td><td><span class="pill pill-add">유지(No-NF 핵심)</span></td></tr>
+            <tr><td>DROP <code>sox</code> / <code>nvda</code> / <code>own_prev</code></td><td class="num">72.2-72.5%</td><td class="num">+0.095-0.098</td><td class="num">74.5-75.1%</td><td class="num">+0.115-0.122</td><td><span class="pill pill-add">유지</span></td></tr>
+            <tr class="hl-warn"><td><strong>DROP <code>org</code> (기관 전일)</strong></td><td class="num c-green">72.24% (↑)</td><td class="num">+0.0959</td><td class="num">74.41%</td><td class="num">+0.1230</td><td><span class="pill pill-del">삭제 확정</span></td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="demo-card">
-        <div class="demo-head"><span>SK하이닉스 (000660)</span><span style="color:#ef4444; font-size:0.8rem;">▲ 상승 콜 · P(up) 67%</span></div>
-        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
-        <div class="track">
-          <div class="zero-line"></div>
-          <div class="band-bar" style="left:56.9%; width:33.0%; background:rgba(234,0,44,0.42); border:1px solid #EA002C;"></div>
-        </div>
-        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+1.66% ~ +5.07%</code> · 마감: <code>+1.65% ~ +9.58%</code> (기대 +2.14%, 꼬리80% -4.3%~+9.6%)</div>
+    </div>
+
+    <!-- Stage 2B -->
+    <div id="t-feat-add" class="tab-panel">
+      <div class="table-wrap" role="region" tabindex="0">
+        <table>
+          <thead><tr><th>추가 후보 피처 (Forward Add)</th><th>No-NF Call Hit</th><th>No-NF MAE</th><th>No-NF Corr</th><th>NF Call Hit</th><th>NF MAE</th><th>결론</th></tr></thead>
+          <tbody>
+            <tr><td><strong>기준 (ALL BASE)</strong></td><td class="num">72.07%</td><td class="num">+0.0976</td><td class="num">0.5102</td><td class="num">74.67%</td><td class="num">+0.1230</td><td><span class="pill pill-fix">기준</span></td></tr>
+            <tr class="hl"><td><strong>ADD <code>dxy</code> (달러인덱스)</strong></td><td class="num c-green">72.18%</td><td class="num c-green">+0.1038</td><td class="num c-green">0.5167</td><td class="num c-green">74.74%</td><td class="num c-green">+0.1254</td><td><span class="pill pill-add">추가 확정</span></td></tr>
+            <tr class="hl"><td><strong>ADD <code>ret5</code> (5일 평균회귀)</strong></td><td class="num">71.13%</td><td class="num c-green">+0.0996</td><td class="num c-green">0.5112</td><td class="num c-green">75.18%</td><td class="num c-green">+0.1289</td><td><span class="pill pill-add">추가 확정</span></td></tr>
+            <tr><td>ADD <code>tsm</code> (TSMC ADR)</td><td class="num">71.82%</td><td class="num">+0.0942</td><td class="num">0.5089</td><td class="num">74.03%</td><td class="num">+0.1244</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>ADD <code>ixic</code> / <code>gspc</code></td><td class="num">72.08-72.63%</td><td class="num">+0.0964-0.0966</td><td class="num">0.508-0.509</td><td class="num">74.68-74.82%</td><td class="num">+0.120-0.121</td><td><span class="pill pill-del">기각(다중공선)</span></td></tr>
+            <tr><td>ADD <code>tnx_diff</code> (미10년물)</td><td class="num">71.91%</td><td class="num">+0.0986</td><td class="num">0.5102</td><td class="num">74.59%</td><td class="num">+0.1213</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>ADD <code>oil</code> (WTI 유가)</td><td class="num">71.95%</td><td class="num c-red">+0.0926</td><td class="num">0.5059</td><td class="num">74.23%</td><td class="num c-red">+0.1096</td><td><span class="pill pill-del">기각</span></td></tr>
+            <tr><td>ADD <code>vix_lvl</code> / <code>prev_intra</code> / <code>ewy_neg</code> / <code>sox_neg</code></td><td class="num">71.1-71.9%</td><td class="num">+0.093-0.102</td><td class="num">0.503-0.512</td><td class="num">73.5-74.6%</td><td class="num">+0.118-0.124</td><td><span class="pill pill-del">기각</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Stage 2C -->
+    <div id="t-grid" class="tab-panel">
+      <div class="table-wrap" role="region" tabindex="0">
+        <table>
+          <thead><tr><th>윈도우 (W)</th><th>반감기 (hl)</th><th>Huber-IRLS</th><th>전체 방향</th><th>콜 적중률</th><th>MAE Skill</th><th>Corr</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td class="num">250</td><td class="num">None</td><td class="num">0</td><td class="num">66.53%</td><td class="num">72.07%</td><td class="num">+0.0976</td><td class="num">0.5102</td><td>기준</td></tr>
+            <tr><td class="num">250</td><td class="num">120</td><td class="num">0</td><td class="num">67.07%</td><td class="num">72.56%</td><td class="num">+0.1029</td><td class="num">0.5091</td><td>감쇠 효과</td></tr>
+            <tr><td class="num">250</td><td class="num">180</td><td class="num">0</td><td class="num">67.33%</td><td class="num">72.66%</td><td class="num">+0.1018</td><td class="num">0.5106</td><td></td></tr>
+            <tr><td class="num">360</td><td class="num">120</td><td class="num">1</td><td class="num">66.53%</td><td class="num c-green">73.33%</td><td class="num c-green">+0.1042</td><td class="num">0.5096</td><td>NF 트랙 채택</td></tr>
+            <tr><td class="num">500</td><td class="num">None</td><td class="num">0</td><td class="num">65.20%</td><td class="num">70.91%</td><td class="num">+0.0968</td><td class="num">0.5238</td><td>감쇠 없이 500일은 둔함</td></tr>
+            <tr><td class="num">500</td><td class="num">120</td><td class="num">0</td><td class="num">66.53%</td><td class="num">72.83%</td><td class="num">+0.0995</td><td class="num">0.5159</td><td>L2 40% 블렌드</td></tr>
+            <tr class="hl"><td class="num"><strong>500</strong></td><td class="num"><strong>120</strong></td><td class="num"><strong>1</strong></td><td class="num"><strong>66.53%</strong></td><td class="num c-green"><strong>73.37%</strong></td><td class="num c-green"><strong>+0.1045</strong></td><td class="num"><strong>0.5133</strong></td><td><span class="pill pill-add">최적 (Core 트랙 채택)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Stage 3 -->
+    <div id="t-stage3" class="tab-panel">
+      <div class="callout">
+        <strong>KRX 야간선물 미래 누수 검증 (358거래일):</strong>
+        <code>corr(nf_ret[t], gap[t]) = +0.8163</code> · <code>corr(nf_ret[t], ret[t]) = +0.6584</code> · <code>corr(nf_ret[t-1], gap[t]) = -0.0729</code> · <code>corr(nf_ret[t+1], ret[t]) = -0.0943</code> → <strong>Look-ahead bias 없음 100% 확인.</strong>
+      </div>
+      <div class="table-wrap" role="region" tabindex="0">
+        <table>
+          <thead><tr><th>최종 후보 아키텍처 (Stage 3)</th><th>평균 방향</th><th>평균 콜 적중</th><th>평균 MAE</th><th>평균 Corr</th><th>콜 원점 걸침</th><th>결론</th></tr></thead>
+          <tbody>
+            <tr><td>NO-NF: Huber+L2 Blend (Core+dxy+ret5-org)</td><td class="num">66.40%</td><td class="num">71.79%</td><td class="num">+0.1044</td><td class="num">0.5105</td><td class="num c-green">0.0%</td><td><span class="pill pill-add">폴백 채택</span></td></tr>
+            <tr><td>NO-NF: + Logistic Prob Ensemble</td><td class="num">66.40%</td><td class="num">71.45%</td><td class="num">+0.1044</td><td class="num">0.5105</td><td class="num c-green">0.0%</td><td><span class="pill pill-del">기각(콜 하락)</span></td></tr>
+            <tr><td>WITH-NF: Single Track Huber+L2</td><td class="num">69.97%</td><td class="num">74.60%</td><td class="num">+0.1404</td><td class="num">0.5793</td><td class="num c-green">0.0%</td><td><span class="pill pill-neu">차선</span></td></tr>
+            <tr class="hl"><td><strong>WITH-NF: Two-Track Hybrid (NF 85% + Core 15%)</strong></td><td class="num"><strong>69.47%</strong></td><td class="num c-green"><strong>73.94%</strong></td><td class="num c-green"><strong>+0.1416</strong></td><td class="num"><strong>0.5767</strong></td><td class="num c-green"><strong>0.0%</strong></td><td><span class="pill pill-add">최종 채택 (꼬리 81-83% 최고 안정)</span></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
 
+  <!-- Section 4: Interactive 30-Day Daily Backtest Log & Chart -->
   <section>
-    <h2>6. 반영 완료 내역 (GitHub 저장소 및 AGY-Gemini 브릿지)</h2>
-    <div class="table-wrap" role="region" aria-label="배포 및 동기화 내역" tabindex="0">
+    <h2>4. 최근 30거래일 일별 Out-of-Sample 실전 백테스트 로그 &amp; 차트 (v2.0 야간선물 반영)</h2>
+    <p>11월 초 서킷브레이커(-6%)·사이드카(+6%)가 연발한 초고변동 장세를 포함한 최근 30거래일 실제 표본 외 백테스트 전수 기록입니다. 종목과 필터를 눌러 일별 비대칭 밴드와 실제 종가를 대조할 수 있습니다.</p>
+
+    <div class="filter-row">
+      <div class="tab-bar" style="margin-bottom:0;" id="assetTabs">
+        <button class="tab-btn active" onclick="setAsset('kospi', this)">코스피 (KOSPI)</button>
+        <button class="tab-btn" onclick="setAsset('samsung', this)">삼성전자 (005930)</button>
+        <button class="tab-btn" onclick="setAsset('skhynix', this)">SK하이닉스 (000660)</button>
+      </div>
+      <div class="tab-bar" style="margin-bottom:0;" id="hitFilters">
+        <button class="tab-btn active" onclick="setFilter('ALL', this)">전체 (30일)</button>
+        <button class="tab-btn" onclick="setFilter('CALL', this)">방향 콜만</button>
+        <button class="tab-btn" onclick="setFilter('⭕', this)">⭕ 적중</button>
+        <button class="tab-btn" onclick="setFilter('❌', this)">❌ 이탈</button>
+        <button class="tab-btn" onclick="setFilter('➖', this)">➖ 유보</button>
+      </div>
+    </div>
+    <div id="dailySummary" class="stat-strip" aria-live="polite" style="margin-bottom:10px;"></div>
+    <div class="chart-box" style="margin-bottom:12px;">
+      <div class="chart-title" id="dailyChartTitle">최근 30거래일 비대칭 예측 밴드(막대) vs 실제 종가 수익률(점)</div>
+      <div id="dailyChartSvg"></div>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="최근 30거래일 일별 백테스트 상세 로그" tabindex="0">
       <table>
         <thead>
           <tr>
-            <th>대상</th>
-            <th>반영 내역</th>
-            <th>상태</th>
+            <th>거래일</th><th>야간선물</th><th>콜 방향</th><th>상승확률</th><th>기대종가</th>
+            <th>비대칭 예측밴드</th><th>80% 꼬리구간</th><th>실제 종가</th><th>콜 판정</th><th>꼬리80%</th>
           </tr>
         </thead>
+        <tbody id="dailyTbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 5: Deployment & Bridge -->
+  <section>
+    <h2>5. 반영 완료 내역 (GitHub · AGY-Gemini 브릿지)</h2>
+    <div class="table-wrap" role="region" tabindex="0">
+      <table>
+        <thead><tr><th>대상</th><th>반영 내역</th><th>상태</th></tr></thead>
         <tbody>
-          <tr>
-            <td><code>dh419/daily-stock-brief</code><br/>(<code>origin/main</code>, <code>f3541ee</code>)</td>
-            <td><code>scripts/quant_engine.py</code> v2.0 전면 업그레이드, <code>scripts/sync_from_gdrive.py</code> 배지·로직 연동, <code>scripts/generate_stock_brief.py</code> <code>nightFuturesPct</code> 스키마 추가, <code>data/krx_night_fut.csv</code> 최신 행 반영.</td>
-            <td><span class="pill pill-add">푸시·검증 완료</span></td>
-          </tr>
-          <tr>
-            <td><code>AGY-Gemini-Handoff</code><br/>(Google Docs 브릿지)</td>
-            <td><code>[2]</code> <strong>[지침 v12.1]</strong> 갱신 (v2.0 비대칭 방향구간 vs 80% 꼬리 리스크 구분, <code>nightFuturesPct</code> 유지, 저녁 감사 <code>reason</code> 기록 기준), <code>[3]</code> 완료 보고 2건 정리 및 <code>Last Actor: AGY</code> 갱신.</td>
-            <td><span class="pill pill-add">동기화 완료</span></td>
-          </tr>
-          <tr>
-            <td><code>dh419/shared-docs</code><br/>(GitHub Pages 공유 문서)</td>
-            <td>본 보고서(<code>2026-11-28-quant-engine-v2-zero-base-report.html</code>) Google Drive <code>dashboard_incoming/shared-docs</code> 업로드 및 <code>sync_shared_docs.yml</code> 자동 배포.</td>
-            <td><span class="pill pill-add">게시 완료</span></td>
-          </tr>
+          <tr><td><code>dh419/daily-stock-brief</code> (<code>f3541ee</code>)</td><td><code>quant_engine.py</code> v2.0 업그레이드, <code>sync_from_gdrive.py</code>·<code>generate_stock_brief.py</code> 연동, <code>krx_night_fut.csv</code> 최신화</td><td><span class="pill pill-add">푸시 완료</span></td></tr>
+          <tr><td><code>AGY-Gemini-Handoff</code> (브릿지)</td><td><code>[2]</code> <strong>[지침 v12.1]</strong> 동기화 (비대칭 방향구간 vs 꼬리 80% 구분, <code>nightFuturesPct</code> 필수 유지), <code>[3]</code> 완료 보고 2건 정리</td><td><span class="pill pill-add">동기화 완료</span></td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <div class="meta-footer">
-    Generated by Antigravity (AGY) · 2026-11-28 17:00 KST · Pure NumPy/Pandas Zero-Base Quant Engine v2.0
+    Generated by Antigravity (AGY) · 2026-11-28 17:20 KST · Pure NumPy/Pandas Zero-Base Quant Engine v2.0
   </div>
 </div>
 
 <script>
+var DAILY_DATA = {"kospi": [{"date": "2026-10-19", "nf": -3.5, "center": -2.82, "band_lo": -6.07, "band_hi": -1.44, "tail_lo": -6.8, "tail_hi": 0.32, "p_up": 13, "call": "DOWN", "actual": 1.76, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-10-20", "nf": -0.13, "center": -0.13, "band_lo": -1.69, "band_hi": 1.68, "tail_lo": -4.09, "tail_hi": 3.19, "p_up": 49, "call": "NO-CALL", "actual": -3.73, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-10-21", "nf": 1.84, "center": 2.04, "band_lo": 1.07, "band_hi": 4.87, "tail_lo": -0.93, "tail_hi": 5.26, "p_up": 81, "call": "UP", "actual": 3.29, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-22", "nf": -0.53, "center": -0.02, "band_lo": -1.6, "band_hi": 1.87, "tail_lo": -4.05, "tail_hi": 3.4, "p_up": 50, "call": "NO-CALL", "actual": -3.52, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-10-23", "nf": -2.61, "center": -1.13, "band_lo": -5.11, "band_hi": -0.81, "tail_lo": -5.09, "tail_hi": 2.25, "p_up": 35, "call": "DOWN", "actual": 0.3, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-26", "nf": -0.19, "center": -0.09, "band_lo": -1.67, "band_hi": 1.72, "tail_lo": -3.91, "tail_hi": 3.2, "p_up": 50, "call": "NO-CALL", "actual": -1.46, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-10-27", "nf": 2.63, "center": 1.53, "band_lo": 0.71, "band_hi": 4.18, "tail_lo": -1.26, "tail_hi": 4.5, "p_up": 77, "call": "UP", "actual": 3.09, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-28", "nf": 1.99, "center": 0.97, "band_lo": 0.64, "band_hi": 4.02, "tail_lo": -1.89, "tail_hi": 4.04, "p_up": 66, "call": "UP", "actual": 6.63, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-10-29", "nf": 0.55, "center": 1.08, "band_lo": 0.79, "band_hi": 4.89, "tail_lo": -2.42, "tail_hi": 4.88, "p_up": 64, "call": "UP", "actual": -1.24, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-30", "nf": -2.13, "center": -0.71, "band_lo": -2.49, "band_hi": 1.23, "tail_lo": -5.03, "tail_hi": 2.96, "p_up": 42, "call": "NO-CALL", "actual": -3.48, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-02", "nf": -2.93, "center": -1.74, "band_lo": -5.74, "band_hi": -0.9, "tail_lo": -6.03, "tail_hi": 1.95, "p_up": 26, "call": "DOWN", "actual": 2.24, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-11-03", "nf": -3.84, "center": -3.07, "band_lo": -6.56, "band_hi": -1.65, "tail_lo": -7.22, "tail_hi": 0.59, "p_up": 13, "call": "DOWN", "actual": -3.59, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-04", "nf": 1.7, "center": 1.29, "band_lo": 0.84, "band_hi": 4.9, "tail_lo": -1.94, "tail_hi": 4.95, "p_up": 68, "call": "UP", "actual": 0.62, "hit": "⭕", "in_band": false, "in_tail": true}, {"date": "2026-11-05", "nf": -1.66, "center": -1.06, "band_lo": -5.13, "band_hi": -0.91, "tail_lo": -4.96, "tail_hi": 2.43, "p_up": 37, "call": "DOWN", "actual": -5.28, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-11-06", "nf": -7.87, "center": -5.97, "band_lo": -9.35, "band_hi": -3.61, "tail_lo": -10.09, "tail_hi": -2.25, "p_up": 3, "call": "DOWN", "actual": -6.02, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-09", "nf": 1.6, "center": -0.25, "band_lo": -2.21, "band_hi": 1.82, "tail_lo": -4.63, "tail_hi": 3.65, "p_up": 47, "call": "NO-CALL", "actual": -0.81, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-11-10", "nf": 5.78, "center": 5.52, "band_lo": 3.81, "band_hi": 8.39, "tail_lo": 2.17, "tail_hi": 9.31, "p_up": 96, "call": "UP", "actual": 4.39, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-11", "nf": -1.74, "center": -1.99, "band_lo": -6.2, "band_hi": -1.11, "tail_lo": -6.39, "tail_hi": 1.93, "p_up": 24, "call": "DOWN", "actual": 2.6, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-11-12", "nf": 1.96, "center": 1.77, "band_lo": 0.9, "band_hi": 5.31, "tail_lo": -1.84, "tail_hi": 5.63, "p_up": 74, "call": "UP", "actual": -0.61, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-13", "nf": 0.78, "center": 1.2, "band_lo": 0.7, "band_hi": 4.91, "tail_lo": -2.11, "tail_hi": 4.91, "p_up": 67, "call": "UP", "actual": -0.98, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-16", "nf": -0.72, "center": -0.6, "band_lo": -2.5, "band_hi": 1.32, "tail_lo": -4.65, "tail_hi": 3.04, "p_up": 41, "call": "NO-CALL", "actual": -3.59, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-17", "nf": -1.76, "center": -1.38, "band_lo": -5.32, "band_hi": -0.92, "tail_lo": -5.34, "tail_hi": 2.28, "p_up": 30, "call": "DOWN", "actual": -2.59, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-18", "nf": 0.1, "center": 0.26, "band_lo": -1.27, "band_hi": 1.75, "tail_lo": -2.71, "tail_hi": 3.75, "p_up": 52, "call": "NO-CALL", "actual": 1.99, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-19", "nf": -1.41, "center": -1.45, "band_lo": -5.02, "band_hi": -0.89, "tail_lo": -5.23, "tail_hi": 2.06, "p_up": 28, "call": "DOWN", "actual": 1.39, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-20", "nf": -3.66, "center": -2.03, "band_lo": -5.32, "band_hi": -1.02, "tail_lo": -5.81, "tail_hi": 1.39, "p_up": 20, "call": "DOWN", "actual": -5.21, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-23", "nf": -7.01, "center": -4.2, "band_lo": -7.43, "band_hi": -2.36, "tail_lo": -8.04, "tail_hi": -0.65, "p_up": 7, "call": "DOWN", "actual": -3.31, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-24", "nf": 7.06, "center": 3.13, "band_lo": 1.79, "band_hi": 5.88, "tail_lo": 0.15, "tail_hi": 6.58, "p_up": 88, "call": "UP", "actual": 6.32, "hit": "⭕", "in_band": false, "in_tail": true}, {"date": "2026-11-25", "nf": -4.56, "center": -3.98, "band_lo": -7.7, "band_hi": -2.09, "tail_lo": -8.63, "tail_hi": 0.01, "p_up": 10, "call": "DOWN", "actual": -6.16, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-26", "nf": 0.35, "center": 0.53, "band_lo": -1.32, "band_hi": 2.54, "tail_lo": -3.22, "tail_hi": 4.73, "p_up": 54, "call": "NO-CALL", "actual": 0.29, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-11-27", "nf": 0.17, "center": 0.41, "band_lo": -1.34, "band_hi": 2.34, "tail_lo": -3.15, "tail_hi": 4.42, "p_up": 54, "call": "NO-CALL", "actual": 4.34, "hit": "➖", "in_band": false, "in_tail": true}], "samsung": [{"date": "2026-10-19", "nf": -3.5, "center": -2.69, "band_lo": -7.25, "band_hi": -1.42, "tail_lo": -7.67, "tail_hi": 1.7, "p_up": 20, "call": "DOWN", "actual": 1.16, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-20", "nf": -0.13, "center": 0.92, "band_lo": 0.82, "band_hi": 5.99, "tail_lo": -3.42, "tail_hi": 5.69, "p_up": 61, "call": "UP", "actual": -2.98, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-21", "nf": 1.84, "center": 2.25, "band_lo": 1.32, "band_hi": 6.23, "tail_lo": -1.72, "tail_hi": 6.94, "p_up": 75, "call": "UP", "actual": 5.67, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-22", "nf": -0.53, "center": 0.07, "band_lo": -2.3, "band_hi": 1.96, "tail_lo": -4.3, "tail_hi": 5.11, "p_up": 50, "call": "NO-CALL", "actual": -4.03, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-10-23", "nf": -2.61, "center": -1.47, "band_lo": -6.31, "band_hi": -1.06, "tail_lo": -6.27, "tail_hi": 2.91, "p_up": 30, "call": "DOWN", "actual": 0.47, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-26", "nf": -0.19, "center": 0.25, "band_lo": -1.99, "band_hi": 2.09, "tail_lo": -3.57, "tail_hi": 5.01, "p_up": 52, "call": "NO-CALL", "actual": -1.16, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-10-27", "nf": 2.63, "center": 1.92, "band_lo": 1.11, "band_hi": 5.83, "tail_lo": -1.69, "tail_hi": 6.4, "p_up": 73, "call": "UP", "actual": 4.23, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-28", "nf": 1.99, "center": 1.12, "band_lo": 0.91, "band_hi": 5.84, "tail_lo": -2.66, "tail_hi": 5.63, "p_up": 62, "call": "UP", "actual": 9.01, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-10-29", "nf": 0.55, "center": 1.19, "band_lo": 1.06, "band_hi": 6.98, "tail_lo": -3.53, "tail_hi": 6.76, "p_up": 60, "call": "UP", "actual": -4.13, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-10-30", "nf": -2.13, "center": -1.47, "band_lo": -6.91, "band_hi": -1.05, "tail_lo": -6.77, "tail_hi": 3.41, "p_up": 32, "call": "DOWN", "actual": -3.02, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-02", "nf": -2.93, "center": -2.18, "band_lo": -7.2, "band_hi": -1.51, "tail_lo": -7.28, "tail_hi": 2.49, "p_up": 28, "call": "DOWN", "actual": 1.78, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-03", "nf": -3.84, "center": -3.12, "band_lo": -7.72, "band_hi": -1.71, "tail_lo": -8.08, "tail_hi": 1.33, "p_up": 19, "call": "DOWN", "actual": -4.15, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-04", "nf": 1.7, "center": 1.74, "band_lo": 1.08, "band_hi": 6.73, "tail_lo": -2.53, "tail_hi": 6.77, "p_up": 69, "call": "UP", "actual": -0.68, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-05", "nf": -1.66, "center": -0.91, "band_lo": -5.56, "band_hi": -1.26, "tail_lo": -5.46, "tail_hi": 3.33, "p_up": 38, "call": "DOWN", "actual": -7.57, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-11-06", "nf": -7.87, "center": -5.89, "band_lo": -10.14, "band_hi": -3.13, "tail_lo": -10.68, "tail_hi": -1.02, "p_up": 7, "call": "DOWN", "actual": -6.35, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-09", "nf": 1.6, "center": 1.39, "band_lo": 0.96, "band_hi": 6.5, "tail_lo": -3.22, "tail_hi": 6.3, "p_up": 64, "call": "UP", "actual": 0.64, "hit": "⭕", "in_band": false, "in_tail": true}, {"date": "2026-11-10", "nf": 5.78, "center": 6.08, "band_lo": 3.43, "band_hi": 9.64, "tail_lo": 1.66, "tail_hi": 10.74, "p_up": 95, "call": "UP", "actual": 4.74, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-11", "nf": -1.74, "center": -1.69, "band_lo": -6.44, "band_hi": -1.18, "tail_lo": -6.45, "tail_hi": 3.21, "p_up": 29, "call": "DOWN", "actual": 3.57, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-11-12", "nf": 1.96, "center": 2.65, "band_lo": 1.35, "band_hi": 7.11, "tail_lo": -1.94, "tail_hi": 7.7, "p_up": 77, "call": "UP", "actual": 0.97, "hit": "⭕", "in_band": false, "in_tail": true}, {"date": "2026-11-13", "nf": 0.78, "center": 1.62, "band_lo": 1.01, "band_hi": 6.3, "tail_lo": -2.7, "tail_hi": 6.31, "p_up": 68, "call": "UP", "actual": -0.96, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-16", "nf": -0.72, "center": -0.51, "band_lo": -2.71, "band_hi": 2.0, "tail_lo": -4.93, "tail_hi": 3.92, "p_up": 42, "call": "NO-CALL", "actual": -4.47, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-17", "nf": -1.76, "center": -1.54, "band_lo": -5.87, "band_hi": -1.11, "tail_lo": -5.89, "tail_hi": 2.95, "p_up": 29, "call": "DOWN", "actual": -3.3, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-18", "nf": 0.1, "center": 0.52, "band_lo": -1.61, "band_hi": 2.37, "tail_lo": -3.44, "tail_hi": 5.04, "p_up": 54, "call": "NO-CALL", "actual": 2.31, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-11-19", "nf": -1.41, "center": -1.24, "band_lo": -5.43, "band_hi": -1.16, "tail_lo": -5.41, "tail_hi": 3.0, "p_up": 32, "call": "DOWN", "actual": 1.13, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-20", "nf": -3.66, "center": -1.8, "band_lo": -5.85, "band_hi": -1.25, "tail_lo": -5.9, "tail_hi": 2.13, "p_up": 27, "call": "DOWN", "actual": -7.01, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-11-23", "nf": -7.01, "center": -4.7, "band_lo": -8.69, "band_hi": -2.46, "tail_lo": -9.09, "tail_hi": -0.28, "p_up": 9, "call": "DOWN", "actual": -3.06, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-24", "nf": 7.06, "center": 4.21, "band_lo": 2.09, "band_hi": 7.59, "tail_lo": 0.36, "tail_hi": 8.63, "p_up": 92, "call": "UP", "actual": 6.7, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-25", "nf": -4.56, "center": -4.31, "band_lo": -8.56, "band_hi": -2.0, "tail_lo": -9.37, "tail_hi": 0.25, "p_up": 12, "call": "DOWN", "actual": -9.87, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-11-26", "nf": 0.35, "center": 1.26, "band_lo": -1.29, "band_hi": 3.75, "tail_lo": -3.88, "tail_hi": 7.11, "p_up": 60, "call": "NO-CALL", "actual": 0.35, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-11-27", "nf": 0.17, "center": 0.54, "band_lo": -1.87, "band_hi": 2.95, "tail_lo": -4.37, "tail_hi": 6.13, "p_up": 53, "call": "NO-CALL", "actual": 4.55, "hit": "➖", "in_band": false, "in_tail": true}], "skhynix": [{"date": "2026-10-19", "nf": -3.5, "center": -4.69, "band_lo": -9.18, "band_hi": -3.02, "tail_lo": -10.19, "tail_hi": 0.69, "p_up": 13, "call": "DOWN", "actual": 0.39, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-10-20", "nf": -0.13, "center": 0.27, "band_lo": -2.38, "band_hi": 2.49, "tail_lo": -5.03, "tail_hi": 5.83, "p_up": 53, "call": "NO-CALL", "actual": -4.23, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-10-21", "nf": 1.84, "center": 1.82, "band_lo": 1.2, "band_hi": 6.94, "tail_lo": -2.94, "tail_hi": 7.09, "p_up": 70, "call": "UP", "actual": 5.81, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-22", "nf": -0.53, "center": -0.56, "band_lo": -3.24, "band_hi": 1.95, "tail_lo": -5.94, "tail_hi": 4.98, "p_up": 45, "call": "NO-CALL", "actual": -5.49, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-10-23", "nf": -2.61, "center": -1.65, "band_lo": -6.81, "band_hi": -1.05, "tail_lo": -6.87, "tail_hi": 3.87, "p_up": 30, "call": "DOWN", "actual": 4.42, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-10-26", "nf": -0.19, "center": -0.25, "band_lo": -3.15, "band_hi": 2.18, "tail_lo": -5.71, "tail_hi": 5.71, "p_up": 47, "call": "NO-CALL", "actual": -0.16, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-10-27", "nf": 2.63, "center": 2.23, "band_lo": 1.47, "band_hi": 7.75, "tail_lo": -2.99, "tail_hi": 7.8, "p_up": 72, "call": "UP", "actual": 5.18, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-28", "nf": 1.99, "center": 0.87, "band_lo": -2.02, "band_hi": 3.27, "tail_lo": -4.61, "tail_hi": 6.6, "p_up": 59, "call": "NO-CALL", "actual": 10.89, "hit": "➖", "in_band": false, "in_tail": false}, {"date": "2026-10-29", "nf": 0.55, "center": 1.36, "band_lo": 1.58, "band_hi": 8.53, "tail_lo": -5.13, "tail_hi": 8.25, "p_up": 61, "call": "UP", "actual": 2.62, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-10-30", "nf": -2.13, "center": -1.98, "band_lo": -8.02, "band_hi": -1.37, "tail_lo": -8.15, "tail_hi": 4.45, "p_up": 30, "call": "DOWN", "actual": -7.08, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-02", "nf": -2.93, "center": -0.99, "band_lo": -4.35, "band_hi": 1.79, "tail_lo": -7.43, "tail_hi": 5.82, "p_up": 41, "call": "NO-CALL", "actual": 3.81, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-03", "nf": -3.84, "center": -4.36, "band_lo": -9.69, "band_hi": -2.8, "tail_lo": -10.63, "tail_hi": 2.35, "p_up": 20, "call": "DOWN", "actual": -5.03, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-04", "nf": 1.7, "center": 2.11, "band_lo": 1.44, "band_hi": 8.67, "tail_lo": -4.3, "tail_hi": 8.82, "p_up": 70, "call": "UP", "actual": -0.14, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-05", "nf": -1.66, "center": -2.71, "band_lo": -7.75, "band_hi": -1.47, "tail_lo": -8.23, "tail_hi": 3.68, "p_up": 25, "call": "DOWN", "actual": -9.46, "hit": "⭕", "in_band": false, "in_tail": false}, {"date": "2026-11-06", "nf": -7.87, "center": -8.73, "band_lo": -13.91, "band_hi": -5.63, "tail_lo": -15.23, "tail_hi": -1.75, "p_up": 5, "call": "DOWN", "actual": -10.44, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-09", "nf": 1.6, "center": 0.14, "band_lo": -3.34, "band_hi": 3.32, "tail_lo": -6.99, "tail_hi": 7.67, "p_up": 51, "call": "NO-CALL", "actual": 0.35, "hit": "➖", "in_band": true, "in_tail": true}, {"date": "2026-11-10", "nf": 5.78, "center": 5.92, "band_lo": 3.32, "band_hi": 11.88, "tail_lo": -0.91, "tail_hi": 13.09, "p_up": 88, "call": "UP", "actual": 6.69, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-11", "nf": -1.74, "center": -3.46, "band_lo": -9.5, "band_hi": -1.97, "tail_lo": -10.45, "tail_hi": 4.02, "p_up": 23, "call": "DOWN", "actual": 5.36, "hit": "❌", "in_band": false, "in_tail": false}, {"date": "2026-11-12", "nf": 1.96, "center": 4.18, "band_lo": 2.44, "band_hi": 10.8, "tail_lo": -2.95, "tail_hi": 11.52, "p_up": 79, "call": "UP", "actual": -1.8, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-13", "nf": 0.78, "center": 1.89, "band_lo": 1.48, "band_hi": 9.06, "tail_lo": -4.9, "tail_hi": 8.95, "p_up": 65, "call": "UP", "actual": -3.03, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-16", "nf": -0.72, "center": -0.46, "band_lo": -3.56, "band_hi": 2.39, "tail_lo": -6.96, "tail_hi": 6.3, "p_up": 44, "call": "NO-CALL", "actual": -7.89, "hit": "➖", "in_band": false, "in_tail": false}, {"date": "2026-11-17", "nf": -1.76, "center": -1.76, "band_lo": -8.56, "band_hi": -1.43, "tail_lo": -8.54, "tail_hi": 5.1, "p_up": 32, "call": "DOWN", "actual": -1.96, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-18", "nf": 0.1, "center": 0.25, "band_lo": -2.96, "band_hi": 2.89, "tail_lo": -5.88, "tail_hi": 6.91, "p_up": 51, "call": "NO-CALL", "actual": 4.19, "hit": "➖", "in_band": false, "in_tail": true}, {"date": "2026-11-19", "nf": -1.41, "center": -2.37, "band_lo": -8.52, "band_hi": -1.55, "tail_lo": -8.84, "tail_hi": 4.05, "p_up": 27, "call": "DOWN", "actual": 3.41, "hit": "❌", "in_band": false, "in_tail": true}, {"date": "2026-11-20", "nf": -3.66, "center": -3.02, "band_lo": -8.63, "band_hi": -1.77, "tail_lo": -9.41, "tail_hi": 3.17, "p_up": 24, "call": "DOWN", "actual": -5.92, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-23", "nf": -7.01, "center": -6.09, "band_lo": -11.31, "band_hi": -3.78, "tail_lo": -12.49, "tail_hi": 0.11, "p_up": 11, "call": "DOWN", "actual": -2.52, "hit": "⭕", "in_band": false, "in_tail": true}, {"date": "2026-11-24", "nf": 7.06, "center": 4.26, "band_lo": 2.53, "band_hi": 9.65, "tail_lo": -1.13, "tail_hi": 10.42, "p_up": 83, "call": "UP", "actual": 6.73, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-25", "nf": -4.56, "center": -6.17, "band_lo": -11.46, "band_hi": -3.57, "tail_lo": -12.7, "tail_hi": 0.15, "p_up": 11, "call": "DOWN", "actual": -11.05, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-26", "nf": 0.35, "center": 2.2, "band_lo": 1.62, "band_hi": 9.41, "tail_lo": -4.07, "tail_hi": 9.44, "p_up": 68, "call": "UP", "actual": 2.23, "hit": "⭕", "in_band": true, "in_tail": true}, {"date": "2026-11-27", "nf": 0.17, "center": 0.27, "band_lo": -2.87, "band_hi": 3.11, "tail_lo": -5.78, "tail_hi": 7.25, "p_up": 53, "call": "NO-CALL", "actual": 7.45, "hit": "➖", "in_band": false, "in_tail": false}]};
+var curAsset = 'kospi';
+var curFilter = 'ALL';
+var ASSET_META = {
+  kospi: { label: '코스피 (KOSPI)', color: '#10b981' },
+  samsung: { label: '삼성전자 (005930)', color: '#3b82f6' },
+  skhynix: { label: 'SK하이닉스 (000660)', color: '#ef4444' }
+};
+
+function openTab(btn, id) {
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  ['t-stage1','t-feat-loo','t-feat-add','t-grid','t-stage3'].forEach(function(p) {
+    document.getElementById(p).classList.toggle('active', p === id);
+  });
+}
+
+function setAsset(asset, btn) {
+  curAsset = asset;
+  document.getElementById('assetTabs').querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderDaily();
+}
+
+function setFilter(f, btn) {
+  curFilter = f;
+  document.getElementById('hitFilters').querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderDaily();
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined) return '-';
+  return (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+}
+
+function renderDaily() {
+  var rows = DAILY_DATA[curAsset] || [];
+  var meta = ASSET_META[curAsset];
+  var calls = rows.filter(function(r) { return r.call !== 'NO-CALL'; });
+  var wins = calls.filter(function(r) { return r.hit === '⭕'; });
+  var tails = rows.filter(function(r) { return r.in_tail; });
+  var strad = calls.filter(function(r) { return r.band_lo < 0 && r.band_hi > 0; });
+  document.getElementById('dailySummary').textContent =
+    meta.label + ' 최근 30거래일 요약: 방향 콜 ' + calls.length + '회 중 ' + wins.length + '회 적중 (' +
+    (calls.length ? (wins.length / calls.length * 100).toFixed(1) : '0.0') + '%) · 80% 꼬리 포함 ' +
+    tails.length + '/' + rows.length + ' (' + (tails.length / Math.max(1, rows.length) * 100).toFixed(1) + '%) · 콜 원점 걸침 ' + strad.length + '회';
+
+  // Render SVG chart
+  var W = 940, H = 190, pl = 44, pr = 16, pt = 18, pb = 26;
+  var pw = W - pl - pr, ph = H - pt - pb;
+  var minY = -6, maxY = 6;
+  rows.forEach(function(r) {
+    minY = Math.min(minY, r.band_lo - 1, r.actual - 1);
+    maxY = Math.max(maxY, r.band_hi + 1, r.actual + 1);
+  });
+  minY = Math.max(-14, minY); maxY = Math.min(14, maxY);
+  function yPos(v) {
+    var c = Math.max(minY, Math.min(maxY, v));
+    return pt + ph * (1 - (c - minY) / (maxY - minY));
+  }
+  var step = pw / Math.max(1, rows.length);
+  var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;">'];
+  [-10, -5, 0, 5, 10].forEach(function(g) {
+    if (g >= minY && g <= maxY) {
+      var gy = yPos(g).toFixed(1);
+      var isZ = g === 0;
+      svg.push('<line x1="' + pl + '" y1="' + gy + '" x2="' + (W - pr) + '" y2="' + gy + '" stroke="' + (isZ ? '#94a3b8' : '#334155') + '" stroke-width="' + (isZ ? '1.5' : '0.8') + '"' + (isZ ? '' : ' stroke-dasharray="3 3"') + '/>');
+      svg.push('<text x="' + (pl - 6) + '" y="' + (parseFloat(gy) + 3).toFixed(1) + '" text-anchor="end" font-size="9.5" fill="' + (isZ ? '#e2e8f0' : '#64748b') + '" font-family="monospace">' + (isZ ? '0%' : (g > 0 ? '+' + g + '%' : g + '%')) + '</text>');
+    }
+  });
+  rows.forEach(function(r, idx) {
+    var cx = pl + step * (idx + 0.5);
+    var yTop = yPos(r.band_hi), yBot = yPos(r.band_lo);
+    var bh = Math.max(3, yBot - yTop);
+    var barCol = r.call === 'NO-CALL' ? '#64748b' : meta.color;
+    var dotCol = r.hit === '⭕' ? '#10b981' : (r.hit === '❌' ? '#ef4444' : '#94a3b8');
+    var tip = r.date + ' | ' + r.call + ' (' + r.p_up + '%) | 밴드 ' + fmtPct(r.band_lo) + '~' + fmtPct(r.band_hi) + ' | 실제 ' + fmtPct(r.actual) + ' (' + r.hit + ')';
+    svg.push('<g><title>' + tip + '</title>');
+    svg.push('<rect x="' + (cx - 5).toFixed(1) + '" y="' + yTop.toFixed(1) + '" width="10" height="' + bh.toFixed(1) + '" rx="2" fill="' + barCol + '" opacity="0.42" stroke="' + barCol + '" stroke-width="1"/>');
+    svg.push('<circle cx="' + cx.toFixed(1) + '" cy="' + yPos(r.actual).toFixed(1) + '" r="4" fill="' + dotCol + '" stroke="#0b0f19" stroke-width="1.2"/>');
+    if (idx === 0 || idx === rows.length - 1 || idx % 5 === 0) {
+      svg.push('<text x="' + cx.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="monospace">' + r.date.slice(5) + '</text>');
+    }
+    svg.push('</g>');
+  });
+  svg.push('</svg>');
+  document.getElementById('dailyChartSvg').innerHTML = svg.join('');
+
+  // Render table (newest first)
+  var filtered = rows.slice().reverse().filter(function(r) {
+    if (curFilter === 'ALL') return true;
+    if (curFilter === 'CALL') return r.call !== 'NO-CALL';
+    return r.hit === curFilter;
+  });
+  var html = filtered.map(function(r) {
+    var callBadge = r.call === 'UP' ? '<span class="pill pill-del">▲ 상승 콜</span>' :
+                    (r.call === 'DOWN' ? '<span class="pill pill-fix">▼ 하락 콜</span>' : '<span class="pill pill-neu">― 유보</span>');
+    var actCls = r.actual > 0 ? 'c-red' : (r.actual < 0 ? 'c-indigo' : '');
+    return '<tr>' +
+      '<td class="num">' + r.date + '</td>' +
+      '<td class="num">' + fmtPct(r.nf) + '</td>' +
+      '<td>' + callBadge + '</td>' +
+      '<td class="num">' + r.p_up + '%</td>' +
+      '<td class="num">' + fmtPct(r.center) + '</td>' +
+      '<td class="num">' + fmtPct(r.band_lo) + ' ~ ' + fmtPct(r.band_hi) + '</td>' +
+      '<td class="num" style="color:var(--dim);">' + fmtPct(r.tail_lo) + ' ~ ' + fmtPct(r.tail_hi) + '</td>' +
+      '<td class="num ' + actCls + '">' + fmtPct(r.actual) + '</td>' +
+      '<td style="text-align:center;font-weight:800;">' + r.hit + '</td>' +
+      '<td style="text-align:center;">' + (r.in_tail ? '⭕' : '❌') + '</td>' +
+      '</tr>';
+  }).join('');
+  document.getElementById('dailyTbody').innerHTML = html || '<tr><td colspan="10" style="text-align:center;color:var(--dim);">조건에 맞는 기록이 없습니다.</td></tr>';
+}
+
 (function() {
   var btn = document.getElementById('themeToggle');
-  function syncLabel() {
+  function sync() {
     var cur = document.documentElement.dataset.theme || 'dark';
     btn.textContent = cur === 'light' ? '🌙 다크' : '☀ 라이트';
   }
-  syncLabel();
+  sync();
   btn.addEventListener('click', function() {
     var next = (document.documentElement.dataset.theme === 'light') ? 'dark' : 'light';
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch (e) {}
-    syncLabel();
+    sync();
   });
+  renderDaily();
 })();
 </script>
 </body>
