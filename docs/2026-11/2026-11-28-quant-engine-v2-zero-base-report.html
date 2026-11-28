@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>주식 예측 모델 제로 베이스 점검 &amp; v2.0 비대칭 퀀트 엔진 최종 보고서</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-2: #0f172a;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --dim: #6b7280;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.16);
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.15);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.15);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.15);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --kospi: #10b981;
+      --samsung: #2563eb;
+      --skhynix: #EA002C;
+    }
+    :root[data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #475569;
+      --dim: #64748b;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.10);
+      --green: #059669;
+      --green-soft: rgba(5, 150, 105, 0.10);
+      --red: #dc2626;
+      --red-soft: rgba(220, 38, 38, 0.10);
+      --blue: #2563eb;
+      --blue-soft: rgba(37, 99, 235, 0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px 16px 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 1080px; margin: 0 auto; }
+
+    header {
+      background: linear-gradient(135deg, #131d31 0%, #0d1527 100%);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px 26px;
+      margin-bottom: 20px;
+      color: #f8fafc;
+    }
+    :root[data-theme="light"] header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-color: #334155;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .badge-solid-indigo { background: #4f46e5; color: #ffffff; }
+    .badge-solid-emerald { background: #059669; color: #ffffff; }
+    .badge-solid-slate { background: #334155; color: #f8fafc; }
+    .theme-btn {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .theme-btn:hover { background: #334155; }
+    h1 { font-size: 1.55rem; font-weight: 900; line-height: 1.3; margin-bottom: 8px; }
+    .subtitle { color: #cbd5e1; font-size: 0.92rem; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .kpi-label { font-size: 0.78rem; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+    .kpi-val { font-size: 1.55rem; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
+    .kpi-sub { font-size: 0.78rem; color: var(--dim); }
+    .c-green { color: var(--green); }
+    .c-indigo { color: var(--accent); }
+    .c-amber { color: var(--amber); }
+    .c-red { color: var(--red); }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 18px;
+    }
+    h2 {
+      font-size: 1.12rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 { font-size: 0.96rem; font-weight: 800; margin: 16px 0 8px; color: var(--text); }
+    p { font-size: 0.9rem; color: var(--muted); margin-bottom: 10px; }
+
+    .callout {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 13px 16px;
+      margin-bottom: 14px;
+      font-size: 0.88rem;
+    }
+    .callout.green { border-left-color: var(--green); }
+    .callout.amber { border-left-color: var(--amber); }
+    .callout strong { color: var(--text); }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      min-width: 640px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-2);
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: none; }
+    .num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; white-space: nowrap; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .pill-add { background: #059669; color: #ffffff; }
+    .pill-fix { background: #2563eb; color: #ffffff; }
+    .pill-del { background: #dc2626; color: #ffffff; }
+    .pill-keep { background: #475569; color: #ffffff; }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .chart-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .chart-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .meter-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .demo-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .demo-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+    .track {
+      position: relative;
+      height: 22px;
+      background: rgba(148, 163, 184, 0.14);
+      border-radius: 6px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+    .zero-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #94a3b8;
+      z-index: 3;
+    }
+    .band-bar {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .scale-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--dim);
+      font-family: monospace;
+    }
+    .meta-footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--dim);
+      margin-top: 24px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82em;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-top">
+      <div class="badges">
+        <span class="badge badge-solid-indigo">Quant Engine v2.0</span>
+        <span class="badge badge-solid-emerald">Origin-Symmetric Eliminated (0.0%)</span>
+        <span class="badge badge-solid-slate">Commit f3541ee · 2026-11-28</span>
+      </div>
+      <button class="theme-btn" id="themeToggle" aria-label="테마 전환">☀ 라이트</button>
+    </div>
+    <h1>주식 예측 모델 제로 베이스 점검 및 v2.0 비대칭 퀀트 엔진 최종 보고서</h1>
+    <div class="subtitle">
+      대상: <code>dh419/daily-stock-brief</code> (코스피 · 삼성전자 · SK하이닉스) | Out-of-Sample Walk-Forward 250거래일 검증 | AGY-Gemini 브릿지 v12.1 동기화 완료
+    </div>
+  </header>
+
+  <div class="kpi-grid" aria-live="polite">
+    <div class="kpi-card">
+      <div class="kpi-label">방향 콜 원점(0%) 걸침률</div>
+      <div class="kpi-val c-green">85.9% → 0.0%</div>
+      <div class="kpi-sub">원점 기준 대칭 투망형 구간 완전 제거</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">평균 MAE Skill (야간선물 반영)</div>
+      <div class="kpi-val c-indigo">+0.081 → +0.142</div>
+      <div class="kpi-sub">기존 대비 +75% 향상 (코스피 +106%, 삼성 +132%)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">평균 예측 밴드 폭 정밀화</div>
+      <div class="kpi-val c-amber">-42% 축소</div>
+      <div class="kpi-sub">코스피 7.78%p → 4.39%p / 하이닉스 13.4%p → 7.42%p</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">야간선물(KRX) 시초가 상관계수</div>
+      <div class="kpi-val c-green">r = 0.816</div>
+      <div class="kpi-sub">미래 누수 없음 검증 · Two-Track 85% 기본 반영</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>1. 핵심 결론 (Executive Summary)</h2>
+    <div class="callout green">
+      <strong>운영 결론 — 야간선물 반영이 기본(메인)입니다.</strong><br/>
+      평일 07:00 KST 개장 브리핑에서 Gemini 앱이 JSON 최상위 <code>nightFuturesPct</code> 필드로 간밤 06:00 마감 코스피200 야간선물 등락률을 전달하면, 엔진이 <strong>Two-Track 하이브리드(야간선물 트랙 85% + 장기 500일 Core 트랙 15%)</strong>로 자동 예측합니다. 야간선물이 휴장·미수집·이상치(±10% 초과)로 <code>null</code>일 때만 <strong>장기 Core 트랙 100%</strong> 폴백으로 안전하게 전환됩니다.
+    </div>
+    <div class="callout">
+      <strong>원점 기준 대칭 예측 탈피 완료:</strong> 기존 모델은 방향 콜을 낸 날에도 84.1–87.0%가 0.0%를 가로지르는 거대한 투망형 밴드(예: <code>-1.8% ~ +2.2%</code>)를 생성했습니다. v2.0에서는 동일 부호 레짐 가중(2.0x) 조건부 LOO 잔차 분포를 기반으로, <strong>상승 콜은 원점 위 단방향 구간</strong>, <strong>하락 콜은 원점 아래 단방향 구간</strong>을 제시하며, 전체 80% 꼬리 리스크(<code>tail_q10</code>/<code>tail_q90</code>)는 별도로 병기합니다.
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 제로 베이스 진단: 기존 모델(v1.0)에서 발견된 5대 결함</h2>
+    <div class="table-wrap" role="region" aria-label="기존 모델 결함 진단표" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>진단 항목</th>
+            <th>기존 v1.0 문제점 (실측 근거)</th>
+            <th>v2.0 해결 방안</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. 원점 대칭 투망형 밴드</strong></td>
+            <td>무조건부 80% 구간 사용으로 전체 날의 <strong>88.4–91.6%</strong>, 방향 콜 날의 <strong>84.1–87.0%</strong>가 0.0% 걸침 (평균 폭 7.8–13.4%p).</td>
+            <td>레짐 가중 조건부 분포 적용. 콜 시 단방향 비대칭 구간(<code>UP</code> 하단 ≥ 원점이격, <code>DOWN</code> 상단 ≤ -원점이격) → <strong>콜 원점 걸침 0.0%</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>2. In-sample 잔차 버그</strong></td>
+            <td>학습 구간 내부 잔차(<code>ytr - fitted</code>)를 그대로 사용해 표본 외 불확실성 과소추정 및 비대칭 왜도 미반영.</td>
+            <td>닫힌 해 Hat-Matrix <strong>LOO(Leave-One-Out) 표본 외 잔차</strong>(<code>r / (1 - h_ii)</code>)와 동일 부호 레짐 가중(2.0x vs 0.7x) 도입.</td>
+          </tr>
+          <tr>
+            <td><strong>3. 미국 휴장일 데이터 오염</strong></td>
+            <td>최근 2년간 미국 증시 휴장일 20일에 <code>KRW=X</code>만 존재 → <code>ffill().pct_change()</code>로 <code>ewy=0</code>이 주입되어 가짜 <code>ewy_surprise</code> 생성.</td>
+            <td>미국 주식 거래일(<code>EWY</code>/<code>^SOX</code>)과 24시간 외환(<code>KRW=X</code>) 분리 정렬. 미국 휴장 시 <code>ewy_surprise = 0.0</code> 강제(train/serve 일치).</td>
+          </tr>
+          <tr>
+            <td><strong>4. 이상치 취약 &amp; 고정 λ</strong></td>
+            <td>단일 L2 릿지 + 고정 <code>λ=2.0</code> + 250일 동일가중으로 ±6–12% 급등락에 회귀계수가 왜곡되고 최근 레짐 변화 반영 미흡.</td>
+            <td><strong>60% Huber-IRLS + 40% 가중 L2 릿지</strong>, <strong>반감기 120일 지수 감쇠</strong>, 500일/360일 윈도우 + 매 시점 LOO-CV λ 자동 선택.</td>
+          </tr>
+          <tr>
+            <td><strong>5. 시초가 갭 바 미표시</strong></td>
+            <td><code>to_brief_targets</code>가 시초가를 단일 수치로 출력해 HTML 미터(<code>render_band_meter</code>)의 파란 시초가 바가 렌더링되지 않음.</td>
+            <td>시초가 50% 예측구간(<code>gap_lo ~ gap_hi</code>) 출력 복구. 통합 스모크 테스트에서 <code>gap_bar_ok=True</code> 확인.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 피처 및 아키텍처 보완 · 수정 · 삭제 · 추가 내역</h2>
+    <p>모든 피처와 모델 기법은 감에 의존하지 않고 250거래일 Walk-Forward Leave-One-Out 및 Forward Selection 백테스트를 거쳐 OOS 성과가 개선된 항목만 채택했습니다.</p>
+    <div class="table-wrap" role="region" aria-label="보완 수정 삭제 추가 내역" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>항목</th>
+            <th>백테스트 검증 근거 및 효과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-add">추가</span></td>
+            <td><code>dxy</code> (달러인덱스 <code>DX-Y.NYB</code>)</td>
+            <td>야간선물 유무 모두에서 MAE Skill(<code>+0.0976 → +0.1038</code>), corr, Call Hit 일관 상승.</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-add">추가</span></td>
+            <td><code>ret5</code> (5일 누적 수익률)</td>
+            <td>단기 과열/과매도 평균회귀 포착. 야간선물 모드 MAE Skill(<code>+0.1230 → +0.1289</code>), Call Hit(<code>74.7% → 75.2%</code>) 상승.</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-add">추가</span></td>
+            <td>Huber-IRLS + L2 앙상블 · 반감기 120일 · LOO-CV</td>
+            <td><code>WINDOW=500</code> + <code>halflife=120</code> + Huber 결합 시 No-NF MAE Skill <code>+0.068 → +0.104</code> (+53%).</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-add">추가</span></td>
+            <td>Two-Track 야간선물 하이브리드</td>
+            <td>KRX 야간선물 <code>basDd=t</code>가 미래 누수 없이 시초가 갭과 <code>r=0.816</code>임을 확인. NF 트랙(85%) + 장기 Core 트랙(15%) 결합.</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-del">삭제</span></td>
+            <td><code>org</code> (기관 전일 순매수)</td>
+            <td>Leave-One-Out 검증에서 제거 시 Call Hit 상승(OOS 노이즈 판명) → 삭제.</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-del">기각</span></td>
+            <td><code>tsm</code>, <code>ixic</code>, <code>oil</code>, <code>RV5</code> 블렌드 변동성, 로지스틱 확률 블렌드</td>
+            <td>다중공선성 및 단기 노이즈로 OOS 성능 하락 확인 → 과적합 방지를 위해 채택하지 않음.</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-fix">수정</span></td>
+            <td>비대칭 조건부 방향구간 &amp; 시초가 갭 구간</td>
+            <td>방향 콜 시 원점 걸침률 0.0% 달성, <code>gap_lo ~ gap_hi</code> 출력으로 HTML 미터 렌더링 정상화.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Before vs After 정량 성과 비교 (250거래일 Walk-Forward OOS)</h2>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title">MAE Skill 개선 (야간선물 반영 모드, 높을수록 우수)</div>
+        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;" role="img" aria-label="MAE Skill Before vs After 막대 차트">
+          <line x1="78" y1="20" x2="78" y2="150" stroke="#475569" stroke-width="1"/>
+          <line x1="78" y1="150" x2="395" y2="150" stroke="#475569" stroke-width="1"/>
+          <text x="70" y="46" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">코스피</text>
+          <rect x="80" y="30" width="128" height="14" rx="3" fill="#475569"/>
+          <text x="214" y="41" font-size="10" font-family="monospace" fill="#94a3b8">+0.071 (v1)</text>
+          <rect x="80" y="47" width="263" height="15" rx="3" fill="#10b981"/>
+          <text x="348" y="59" font-size="11" font-weight="800" font-family="monospace" fill="#10b981">+0.146</text>
+          <text x="70" y="92" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">삼성전자</text>
+          <rect x="80" y="76" width="108" height="14" rx="3" fill="#475569"/>
+          <text x="194" y="87" font-size="10" font-family="monospace" fill="#94a3b8">+0.060 (v1)</text>
+          <rect x="80" y="93" width="250" height="15" rx="3" fill="#3b82f6"/>
+          <text x="336" y="105" font-size="11" font-weight="800" font-family="monospace" fill="#3b82f6">+0.139</text>
+          <text x="70" y="138" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">SK하이닉스</text>
+          <rect x="80" y="122" width="202" height="14" rx="3" fill="#475569"/>
+          <text x="288" y="133" font-size="10" font-family="monospace" fill="#94a3b8">+0.112 (v1)</text>
+          <rect x="80" y="139" width="250" height="15" rx="3" fill="#ef4444"/>
+          <text x="336" y="151" font-size="11" font-weight="800" font-family="monospace" fill="#ef4444">+0.139</text>
+          <rect x="80" y="168" width="10" height="10" rx="2" fill="#475569"/>
+          <text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0</text>
+          <rect x="165" y="168" width="10" height="10" rx="2" fill="#10b981"/>
+          <text x="180" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (Huber+L2 Two-Track)</text>
+        </svg>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">방향 콜 시 원점(0.0%) 걸침률 비교 (낮을수록 비대칭 선명)</div>
+        <svg viewBox="0 0 420 185" style="width:100%; height:auto; display:block;" role="img" aria-label="원점 걸침률 비교 차트">
+          <line x1="78" y1="20" x2="78" y2="150" stroke="#475569" stroke-width="1"/>
+          <line x1="78" y1="150" x2="395" y2="150" stroke="#475569" stroke-width="1"/>
+          <text x="70" y="46" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">코스피</text>
+          <rect x="80" y="30" width="244" height="14" rx="3" fill="#ef4444" opacity="0.75"/>
+          <text x="330" y="41" font-size="10" font-family="monospace" fill="#f87171">84.1% (v1)</text>
+          <rect x="80" y="47" width="4" height="15" rx="2" fill="#10b981"/>
+          <text x="92" y="59" font-size="11" font-weight="800" font-family="monospace" fill="#10b981">0.0% (v2.0)</text>
+          <text x="70" y="92" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">삼성전자</text>
+          <rect x="80" y="76" width="252" height="14" rx="3" fill="#ef4444" opacity="0.75"/>
+          <text x="338" y="87" font-size="10" font-family="monospace" fill="#f87171">87.0% (v1)</text>
+          <rect x="80" y="93" width="4" height="15" rx="2" fill="#10b981"/>
+          <text x="92" y="105" font-size="11" font-weight="800" font-family="monospace" fill="#10b981">0.0% (v2.0)</text>
+          <text x="70" y="138" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">SK하이닉스</text>
+          <rect x="80" y="122" width="251" height="14" rx="3" fill="#ef4444" opacity="0.75"/>
+          <text x="337" y="133" font-size="10" font-family="monospace" fill="#f87171">86.6% (v1)</text>
+          <rect x="80" y="139" width="4" height="15" rx="2" fill="#10b981"/>
+          <text x="92" y="151" font-size="11" font-weight="800" font-family="monospace" fill="#10b981">0.0% (v2.0)</text>
+          <rect x="80" y="168" width="10" height="10" rx="2" fill="#ef4444" opacity="0.75"/>
+          <text x="95" y="177" font-size="10" fill="#94a3b8">기존 v1.0 (80% 투망)</text>
+          <rect x="215" y="168" width="10" height="10" rx="2" fill="#10b981"/>
+          <text x="230" y="177" font-size="10" fill="#94a3b8">개선 v2.0 (조건부 비대칭)</text>
+        </svg>
+      </div>
+    </div>
+
+    <h3>4-1. 야간선물 반영 모드 (평일 개장 브리핑 기본)</h3>
+    <div class="table-wrap" role="region" aria-label="야간선물 반영 모드 백테스트 비교표" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>MAE Skill (전 → 후)</th>
+            <th>Pinball Skill (전 → 후)</th>
+            <th>방향 콜 적중률 (전 → 후)</th>
+            <th>콜 원점 걸침률</th>
+            <th>평균 밴드 폭 (전 → 후)</th>
+            <th>80% 꼬리 커버리지</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>코스피</strong></td>
+            <td class="num">+0.071 → <span class="c-green">+0.146 (+106%)</span></td>
+            <td class="num">+0.119 → <span class="c-green">+0.166 (+39%)</span></td>
+            <td class="num">76.5% → 75.8%</td>
+            <td class="num">84.1% → <span class="c-green">0.0%</span></td>
+            <td class="num">7.78%p → <span class="c-indigo">4.39%p</span></td>
+            <td class="num">81.2%</td>
+          </tr>
+          <tr>
+            <td><strong>삼성전자</strong></td>
+            <td class="num">+0.060 → <span class="c-green">+0.139 (+132%)</span></td>
+            <td class="num">+0.126 → <span class="c-green">+0.139 (+10%)</span></td>
+            <td class="num">70.7% → <span class="c-green">71.7%</span></td>
+            <td class="num">87.0% → <span class="c-green">0.0%</span></td>
+            <td class="num">10.98%p → <span class="c-indigo">6.24%p</span></td>
+            <td class="num">83.2%</td>
+          </tr>
+          <tr>
+            <td><strong>SK하이닉스</strong></td>
+            <td class="num">+0.112 → <span class="c-green">+0.139 (+24%)</span></td>
+            <td class="num">+0.154 → +0.145</td>
+            <td class="num">73.3% → <span class="c-green">74.3%</span></td>
+            <td class="num">86.6% → <span class="c-green">0.0%</span></td>
+            <td class="num">13.40%p → <span class="c-indigo">7.42%p</span></td>
+            <td class="num">82.8%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4-2. 야간선물 미반영 폴백 모드 (휴장·미수집 시 자동 전환)</h3>
+    <div class="table-wrap" role="region" aria-label="야간선물 미반영 폴백 모드 백테스트 비교표" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>MAE Skill (전 → 후)</th>
+            <th>Pinball Skill (전 → 후)</th>
+            <th>상관계수 corr (전 → 후)</th>
+            <th>콜 원점 걸침률</th>
+            <th>80% 꼬리 커버리지</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>코스피</strong></td>
+            <td class="num">+0.066 → <span class="c-green">+0.114 (+73%)</span></td>
+            <td class="num">+0.096 → <span class="c-green">+0.118 (+23%)</span></td>
+            <td class="num">0.529 → <span class="c-green">0.531</span></td>
+            <td class="num">84.1% → <span class="c-green">0.0%</span></td>
+            <td class="num">82.0%</td>
+          </tr>
+          <tr>
+            <td><strong>삼성전자</strong></td>
+            <td class="num">+0.049 → <span class="c-green">+0.109 (+122%)</span></td>
+            <td class="num">+0.096 → <span class="c-green">+0.108 (+13%)</span></td>
+            <td class="num">0.477 → <span class="c-green">0.502</span></td>
+            <td class="num">87.0% → <span class="c-green">0.0%</span></td>
+            <td class="num">82.4%</td>
+          </tr>
+          <tr>
+            <td><strong>SK하이닉스</strong></td>
+            <td class="num">+0.090 → <span class="c-green">+0.091</span></td>
+            <td class="num">+0.114 → <span class="c-green">+0.123 (+8%)</span></td>
+            <td class="num">0.509 → 0.499</td>
+            <td class="num">86.6% → <span class="c-green">0.0%</span></td>
+            <td class="num">80.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. 실전 스모크 테스트 출력 예시 (<code>night_fut = +0.8%</code> 시뮬레이션)</h2>
+    <p>원점(0.0%)을 기준으로 대칭이 아닌, 상승 확률과 조건부 잔차 분포에 따라 비대칭적으로 치우친 구간과 시초가 갭 바가 정상 생성됨을 확인했습니다.</p>
+    <div class="meter-demo">
+      <div class="demo-card">
+        <div class="demo-head"><span>코스피 (KOSPI)</span><span style="color:var(--muted); font-size:0.8rem;">― 방향 유보 · P(up) 58%</span></div>
+        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
+        <div class="track">
+          <div class="zero-line"></div>
+          <div class="band-bar" style="left:45.9%; width:16.0%; background:rgba(16,185,129,0.45); border:1px solid #10b981;"></div>
+        </div>
+        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+0.06% ~ +2.00%</code> · 마감: <code>-0.98% ~ +2.85%</code> (기대 +0.87%, 꼬리80% -2.8%~+5.0%)</div>
+      </div>
+      <div class="demo-card">
+        <div class="demo-head"><span>삼성전자 (005930)</span><span style="color:#ef4444; font-size:0.8rem;">▲ 상승 콜 · P(up) 63%</span></div>
+        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
+        <div class="track">
+          <div class="zero-line"></div>
+          <div class="band-bar" style="left:55.0%; width:25.6%; background:rgba(37,99,235,0.45); border:1px solid #3b82f6;"></div>
+        </div>
+        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+1.47% ~ +3.92%</code> · 마감: <code>+1.20% ~ +7.34%</code> (기대 +1.43%, 꼬리80% -3.6%~+7.0%)</div>
+      </div>
+      <div class="demo-card">
+        <div class="demo-head"><span>SK하이닉스 (000660)</span><span style="color:#ef4444; font-size:0.8rem;">▲ 상승 콜 · P(up) 67%</span></div>
+        <div class="scale-row"><span>-12%</span><span>0.0%</span><span>+12%</span></div>
+        <div class="track">
+          <div class="zero-line"></div>
+          <div class="band-bar" style="left:56.9%; width:33.0%; background:rgba(234,0,44,0.42); border:1px solid #EA002C;"></div>
+        </div>
+        <div style="font-size:0.78rem; color:var(--muted);">시초: <code>+1.66% ~ +5.07%</code> · 마감: <code>+1.65% ~ +9.58%</code> (기대 +2.14%, 꼬리80% -4.3%~+9.6%)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. 반영 완료 내역 (GitHub 저장소 및 AGY-Gemini 브릿지)</h2>
+    <div class="table-wrap" role="region" aria-label="배포 및 동기화 내역" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>대상</th>
+            <th>반영 내역</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>dh419/daily-stock-brief</code><br/>(<code>origin/main</code>, <code>f3541ee</code>)</td>
+            <td><code>scripts/quant_engine.py</code> v2.0 전면 업그레이드, <code>scripts/sync_from_gdrive.py</code> 배지·로직 연동, <code>scripts/generate_stock_brief.py</code> <code>nightFuturesPct</code> 스키마 추가, <code>data/krx_night_fut.csv</code> 최신 행 반영.</td>
+            <td><span class="pill pill-add">푸시·검증 완료</span></td>
+          </tr>
+          <tr>
+            <td><code>AGY-Gemini-Handoff</code><br/>(Google Docs 브릿지)</td>
+            <td><code>[2]</code> <strong>[지침 v12.1]</strong> 갱신 (v2.0 비대칭 방향구간 vs 80% 꼬리 리스크 구분, <code>nightFuturesPct</code> 유지, 저녁 감사 <code>reason</code> 기록 기준), <code>[3]</code> 완료 보고 2건 정리 및 <code>Last Actor: AGY</code> 갱신.</td>
+            <td><span class="pill pill-add">동기화 완료</span></td>
+          </tr>
+          <tr>
+            <td><code>dh419/shared-docs</code><br/>(GitHub Pages 공유 문서)</td>
+            <td>본 보고서(<code>2026-11-28-quant-engine-v2-zero-base-report.html</code>) Google Drive <code>dashboard_incoming/shared-docs</code> 업로드 및 <code>sync_shared_docs.yml</code> 자동 배포.</td>
+            <td><span class="pill pill-add">게시 완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="meta-footer">
+    Generated by Antigravity (AGY) · 2026-11-28 17:00 KST · Pure NumPy/Pandas Zero-Base Quant Engine v2.0
+  </div>
+</div>
+
+<script>
+(function() {
+  var btn = document.getElementById('themeToggle');
+  function syncLabel() {
+    var cur = document.documentElement.dataset.theme || 'dark';
+    btn.textContent = cur === 'light' ? '🌙 다크' : '☀ 라이트';
+  }
+  syncLabel();
+  btn.addEventListener('click', function() {
+    var next = (document.documentElement.dataset.theme === 'light') ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    syncLabel();
+  });
+})();
+</script>
+</body>
+</html>
